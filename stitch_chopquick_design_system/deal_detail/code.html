@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ChopQuick - Deal Detail</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-fixed-variant": "#594400",
+                        "surface": "#141218",
+                        "on-surface": "#e6e0e9",
+                        "outline-variant": "#494551",
+                        "on-primary-container": "#e0d2ff",
+                        "on-secondary": "#342b4b",
+                        "inverse-on-surface": "#322f35",
+                        "error-container": "#93000a",
+                        "error": "#ffb4ab",
+                        "surface-container-highest": "#36343a",
+                        "on-secondary-fixed": "#1f1635",
+                        "on-error": "#690005",
+                        "secondary": "#cdc0e9",
+                        "on-background": "#e6e0e9",
+                        "inverse-surface": "#e6e0e9",
+                        "primary-fixed-dim": "#cfbcff",
+                        "on-secondary-container": "#bfb2da",
+                        "surface-container": "#211f24",
+                        "outline": "#948e9c",
+                        "primary-fixed": "#e9ddff",
+                        "background": "#141218",
+                        "surface-tint": "#cfbcff",
+                        "primary": "#cfbcff",
+                        "surface-container-low": "#1d1b20",
+                        "surface-container-high": "#2b292f",
+                        "secondary-fixed-dim": "#cdc0e9",
+                        "on-primary-fixed": "#22005d",
+                        "on-primary": "#381e72",
+                        "surface-dim": "#141218",
+                        "tertiary-fixed-dim": "#e7c365",
+                        "tertiary-container": "#c9a74d",
+                        "secondary-container": "#4d4465",
+                        "surface-container-lowest": "#0f0d13",
+                        "surface-bright": "#3b383e",
+                        "on-secondary-fixed-variant": "#4b4263",
+                        "on-tertiary-container": "#503d00",
+                        "on-tertiary-fixed": "#241a00",
+                        "tertiary-fixed": "#ffdf93",
+                        "secondary-fixed": "#e9ddff",
+                        "on-primary-fixed-variant": "#4f378a",
+                        "on-error-container": "#ffdad6",
+                        "tertiary": "#e7c365",
+                        "inverse-primary": "#6750a4",
+                        "surface-variant": "#36343a",
+                        "primary-container": "#6750a4",
+                        "on-tertiary": "#3e2e00",
+                        "on-surface-variant": "#cbc4d2",
+                        "accent-orange": "#E8480F" // Added custom color for ChopQuick Orange
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "md": "1rem",
+                        "sm": "0.5rem",
+                        "gutter": "1rem",
+                        "xs": "0.25rem",
+                        "lg": "1.5rem",
+                        "margin_desktop": "2.5rem",
+                        "xl": "2rem",
+                        "margin_mobile": "1rem",
+                        "xxl": "3rem"
+                    },
+                    "fontFamily": {
+                        "h2": ["Inter"],
+                        "display": ["Inter"],
+                        "caption": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "h1": ["Inter"],
+                        "display-mobile": ["Inter"],
+                        "body": ["Inter"]
+                    },
+                    "fontSize": {
+                        "h2": ["20px", { "lineHeight": "1.4", "fontWeight": "600" }],
+                        "display": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "caption": ["13px", { "lineHeight": "1.4", "fontWeight": "400" }],
+                        "label-caps": ["11px", { "lineHeight": "1.0", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "h1": ["24px", { "lineHeight": "1.3", "fontWeight": "700" }],
+                        "display-mobile": ["40px", { "lineHeight": "1.1", "fontWeight": "700" }],
+                        "body": ["16px", { "lineHeight": "1.5", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .glow-orange {
+            box-shadow: 0 0 20px rgba(232, 72, 15, 0.35);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface font-body min-h-screen flex flex-col pb-24">
+<!-- Hero Image Section -->
+<div class="relative h-72 md:h-96 w-full">
+<img class="absolute inset-0 w-full h-full object-cover" data-alt="A high-resolution, appetizing shot of Jollof Rice and fried chicken. The food is presented in a modern, dark setting that matches a premium, high-contrast aesthetic. Lighting is dramatic and focused on the dish, creating rich colors and deep shadows. The vibrant red-orange of the Jollof rice pops against the deep black background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDbhCdZoP_WBlbkw5MCbj3z-jowZ-zqVJ-zmlzmb0-mYQ5pNOt0zkMP1-9oOsEa0jt5i6LIYn3dJxI6KttVhcqYOzmyMLgP9i0EQA2CFzFCr-C6apXSASn_rmtrLQCoWH4GqS8n9PvO88ILqxIQUPLPhPof3-5Qw2HA110rzsjxMTpT97larRcxkWkB1ROatJQaxgEuMip3wLIOl8TvbnY9IUg9BDJMeoIa-Yyr47MBy69BIRIXeyGbenCPlkxtYTLOPMmuHNTYvV8"/>
+<!-- Gradient Overlay for readability -->
+<div class="absolute inset-0 bg-gradient-to-b from-background/60 via-transparent to-background"></div>
+<!-- Top Actions -->
+<div class="absolute top-0 left-0 right-0 flex justify-between items-center px-margin_mobile md:px-margin_desktop pt-md">
+<button aria-label="Go back" class="bg-surface-container/80 backdrop-blur-md p-sm rounded-full text-on-surface hover:bg-surface-variant transition-colors">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">arrow_back</span>
+</button>
+<button aria-label="Share" class="bg-surface-container/80 backdrop-blur-md p-sm rounded-full text-on-surface hover:bg-surface-variant transition-colors">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">share</span>
+</button>
+</div>
+<!-- Status Pill -->
+<div class="absolute bottom-md left-margin_mobile md:left-margin_desktop">
+<div class="inline-flex items-center gap-xs bg-error/10 border border-error text-error px-3 py-1.5 rounded-full font-label-caps text-label-caps glow-orange">
+<div class="w-2 h-2 rounded-full bg-error animate-pulse"></div>
+                LIVE — 38 mins left
+            </div>
+</div>
+</div>
+<!-- Main Content -->
+<main class="flex-1 px-margin_mobile md:px-margin_desktop py-md max-w-screen-lg mx-auto w-full flex flex-col gap-xl">
+<!-- Header Info -->
+<div class="flex flex-col gap-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">store</span>
+<span class="font-caption text-caption">Chicken Republic</span>
+</div>
+<div class="flex items-center gap-xs text-tertiary">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-caption text-caption font-bold">4.6</span>
+</div>
+</div>
+<h1 class="font-h1 text-h1 text-on-surface">Jollof Rice + Chicken</h1>
+<div class="flex items-end gap-md">
+<span class="font-display text-h1 md:text-display text-on-surface">₦1,500</span>
+<span class="font-body text-body text-on-surface-variant line-through pb-1">₦3,750</span>
+<span class="bg-primary/20 text-primary px-2 py-1 rounded font-label-caps text-label-caps mb-1">60% OFF</span>
+</div>
+</div>
+<!-- Urgency Bar -->
+<div class="bg-surface-container rounded-lg p-md border border-outline-variant">
+<div class="flex justify-between items-center mb-sm">
+<span class="font-caption text-caption text-on-surface-variant">Availability</span>
+<span class="font-caption text-caption text-error font-bold">4 portions left</span>
+</div>
+<div class="h-2 w-full bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-error w-1/4 rounded-full"></div>
+</div>
+</div>
+<!-- Description -->
+<div>
+<h2 class="font-h2 text-h2 mb-sm">Description</h2>
+<p class="font-body text-body text-on-surface-variant leading-relaxed">
+                A hearty portion of our signature spicy Jollof rice served with a quarter piece of golden fried chicken. This surplus meal is freshly packed from today's lunch service and kept warm. Perfectly sealed and ready for immediate pickup to help reduce food waste.
+            </p>
+</div>
+<!-- Tags -->
+<div class="flex flex-wrap gap-sm">
+<div class="inline-flex items-center gap-xs px-3 py-1.5 rounded-full bg-surface-container-high border border-outline-variant font-caption text-caption text-on-surface">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 0;">lock</span>
+                Sealed
+            </div>
+<div class="inline-flex items-center gap-xs px-3 py-1.5 rounded-full bg-surface-container-high border border-outline-variant font-caption text-caption text-on-surface">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 0;">schedule</span>
+                Time-stamped
+            </div>
+<div class="inline-flex items-center gap-xs px-3 py-1.5 rounded-full bg-surface-container-high border border-outline-variant font-caption text-caption text-on-surface">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 0;">directions_walk</span>
+                Pickup only
+            </div>
+</div>
+<!-- Map Thumbnail -->
+<div class="rounded-xl overflow-hidden border border-outline-variant h-48 relative">
+<img class="w-full h-full object-cover opacity-80" data-alt="A stylized, dark-mode map of Lagos showing street networks. The map uses deep charcoal and black tones, fitting perfectly within a premium, high-contrast UI aesthetic. A subtle, bright orange marker indicates a specific location on the map, glowing slightly against the dark background to draw attention." data-location="Lagos" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBnri4uMcf7h5y3qEYfAKQwKcuZ1cmNcUATMdEpp0fptPjx7NoDrD5K8MhXlk7os13Q2nmjt9fHJq4pjOZt4935TfyH3O6WkSZE10JFEM_J_MbRxOm9mWpj615snay56ixO4MivgwJzzSsXT8GVmbGuV2kM_U5TResfW4-exhAXlhviqO7mK7tQZdVSLxtk_EoK0Ow75m4eR23NmYUXrd_F7W5WaWqAxaa_6de-Ofhud0C-aXVJc_bRyKWQn-Fo2pmBeIcbAPJoq34"/>
+<div class="absolute inset-0 flex items-center justify-center">
+<span class="material-symbols-outlined text-[32px] text-accent-orange drop-shadow-md" style="font-variation-settings: 'FILL' 1;">location_on</span>
+</div>
+<div class="absolute bottom-0 left-0 right-0 bg-surface-container/90 backdrop-blur p-sm text-center">
+<p class="font-caption text-caption text-on-surface">12 Allen Avenue, Ikeja</p>
+</div>
+</div>
+</main>
+<!-- Sticky Bottom Action Bar -->
+<div class="fixed bottom-0 left-0 right-0 bg-surface-container border-t border-outline-variant p-margin_mobile md:px-margin_desktop z-50">
+<div class="max-w-screen-lg mx-auto flex items-center justify-between gap-md">
+<!-- Quantity Selector -->
+<div class="flex items-center gap-md bg-surface-container-high rounded-full px-sm py-xs border border-outline-variant">
+<button class="w-8 h-8 flex items-center justify-center text-on-surface-variant hover:text-on-surface disabled:opacity-50" disabled="">
+<span class="material-symbols-outlined text-sm">remove</span>
+</button>
+<span class="font-body text-body text-on-surface min-w-[20px] text-center">1</span>
+<button class="w-8 h-8 flex items-center justify-center bg-accent-orange text-white rounded-full glow-orange">
+<span class="material-symbols-outlined text-sm">add</span>
+</button>
+</div>
+<!-- Add to Order Button -->
+<button class="flex-1 bg-accent-orange text-white font-h2 text-h2 py-3 rounded-full glow-orange hover:bg-opacity-90 transition-all active:scale-95 text-center">
+                Add to Order — ₦1,500
+            </button>
+</div>
+</div>
+</body></html>

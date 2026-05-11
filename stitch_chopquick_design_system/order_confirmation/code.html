@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Order Confirmation</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-fixed-variant": "#594400",
+                        "surface": "#141218",
+                        "on-surface": "#e6e0e9",
+                        "outline-variant": "#494551",
+                        "on-primary-container": "#e0d2ff",
+                        "on-secondary": "#342b4b",
+                        "inverse-on-surface": "#322f35",
+                        "error-container": "#93000a",
+                        "error": "#ffb4ab",
+                        "surface-container-highest": "#36343a",
+                        "on-secondary-fixed": "#1f1635",
+                        "on-error": "#690005",
+                        "secondary": "#cdc0e9",
+                        "on-background": "#e6e0e9",
+                        "inverse-surface": "#e6e0e9",
+                        "primary-fixed-dim": "#cfbcff",
+                        "on-secondary-container": "#bfb2da",
+                        "surface-container": "#211f24",
+                        "outline": "#948e9c",
+                        "primary-fixed": "#e9ddff",
+                        "background": "#141218",
+                        "surface-tint": "#cfbcff",
+                        "primary": "#cfbcff",
+                        "surface-container-low": "#1d1b20",
+                        "surface-container-high": "#2b292f",
+                        "secondary-fixed-dim": "#cdc0e9",
+                        "on-primary-fixed": "#22005d",
+                        "on-primary": "#381e72",
+                        "surface-dim": "#141218",
+                        "tertiary-fixed-dim": "#e7c365",
+                        "tertiary-container": "#c9a74d",
+                        "secondary-container": "#4d4465",
+                        "surface-container-lowest": "#0f0d13",
+                        "surface-bright": "#3b383e",
+                        "on-secondary-fixed-variant": "#4b4263",
+                        "on-tertiary-container": "#503d00",
+                        "on-tertiary-fixed": "#241a00",
+                        "tertiary-fixed": "#ffdf93",
+                        "secondary-fixed": "#e9ddff",
+                        "on-primary-fixed-variant": "#4f378a",
+                        "on-error-container": "#ffdad6",
+                        "tertiary": "#e7c365",
+                        "inverse-primary": "#6750a4",
+                        "surface-variant": "#36343a",
+                        "primary-container": "#6750a4",
+                        "on-tertiary": "#3e2e00",
+                        "on-surface-variant": "#cbc4d2",
+                        "brand-orange": "#E8480F",
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "md": "1rem",
+                        "sm": "0.5rem",
+                        "gutter": "1rem",
+                        "xs": "0.25rem",
+                        "lg": "1.5rem",
+                        "margin_desktop": "2.5rem",
+                        "xl": "2rem",
+                        "margin_mobile": "1rem",
+                        "xxl": "3rem"
+                    },
+                    "fontFamily": {
+                        "h2": ["Inter"],
+                        "display": ["Inter"],
+                        "caption": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "h1": ["Inter"],
+                        "display-mobile": ["Inter"],
+                        "body": ["Inter"]
+                    },
+                    "fontSize": {
+                        "h2": ["20px", { "lineHeight": "1.4", "fontWeight": "600" }],
+                        "display": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "caption": ["13px", { "lineHeight": "1.4", "fontWeight": "400" }],
+                        "label-caps": ["11px", { "lineHeight": "1.0", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "h1": ["24px", { "lineHeight": "1.3", "fontWeight": "700" }],
+                        "display-mobile": ["40px", { "lineHeight": "1.1", "fontWeight": "700" }],
+                        "body": ["16px", { "lineHeight": "1.5", "fontWeight": "400" }]
+                    },
+                    boxShadow: {
+                        'neon-glow': '0 0 20px rgba(232, 72, 15, 0.35)',
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .icon-fill {
+            font-variation-settings: 'FILL' 1;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface min-h-screen flex flex-col font-body antialiased selection:bg-brand-orange selection:text-white">
+<!-- Header / TopAppBar -->
+<header class="sticky top-0 w-full z-50 bg-surface flex justify-between items-center px-margin_mobile h-16 w-full">
+<div class="flex items-center gap-sm">
+<button class="text-on-surface-variant hover:opacity-80 transition-opacity duration-200 p-sm rounded-full active:scale-95">
+<span class="material-symbols-outlined text-[24px]">close</span>
+</button>
+</div>
+<div class="font-h1 text-h1 font-bold text-primary text-center absolute left-1/2 -translate-x-1/2">
+            ChopQuick
+        </div>
+<div class="w-10"></div> <!-- Spacer for center alignment -->
+</header>
+<!-- Main Content -->
+<main class="flex-1 flex flex-col px-margin_mobile md:px-margin_desktop max-w-lg mx-auto w-full pt-xl pb-xxl">
+<!-- Success State -->
+<div class="flex flex-col items-center text-center mb-xl">
+<div class="w-24 h-24 rounded-full bg-[#1A110F] border border-brand-orange/30 flex items-center justify-center mb-md shadow-neon-glow relative overflow-hidden">
+<div class="absolute inset-0 bg-brand-orange opacity-10 blur-xl"></div>
+<span class="material-symbols-outlined text-[48px] text-brand-orange icon-fill z-10">check_circle</span>
+</div>
+<h1 class="font-display-mobile text-display-mobile mb-sm">Order Confirmed!</h1>
+<p class="font-body text-body text-on-surface-variant">Your order has been successfully placed and is being prepared.</p>
+</div>
+<!-- QR Code Card -->
+<div class="bg-surface-container rounded-xl border border-outline-variant p-lg flex flex-col items-center mb-xl shadow-lg relative overflow-hidden">
+<div class="absolute top-0 w-full h-1 bg-brand-orange"></div>
+<p class="font-caption text-caption text-on-surface-variant mb-xs">Show this at the restaurant</p>
+<h2 class="font-h2 text-h2 mb-lg tracking-wider font-mono text-primary">CQ-K7X3M</h2>
+<div class="bg-white p-sm rounded-lg mb-lg w-48 h-48 flex items-center justify-center">
+<img alt="QR Code" class="w-full h-full object-cover rounded-md mix-blend-multiply" data-alt="A clean, high-contrast abstract representation of a scannable QR code pattern, strictly black and white. It sits isolated against a pure white background. The geometric squares are sharp and digital. The aesthetic is purely functional and modern." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBY-12gsJwqui9HYsV4OY7L1E_DHSCujcgAXA_OJS8l2LoNr7A-lDxBT5Mb4CQv5yA6BLPlcHwU2XBzKKEHziv4YYEhJhGUMz21Jex73jJdHCS5ohs-vkg4G7vk6fa8YHJ-_94SFWUJQ7X0SkpyqGASDWQq3JgKPSLFVjPskkEQGBcK-d-E1MIpkebpMS3UKB_-H3xFV9mLFd_6gkQI1I5pIAB-Lh6sK66qrQJbrx27dfQVDIeI0xPjfRIOej1gDa3o7h3QUrCdRFo"/>
+</div>
+<div class="flex items-center gap-xs text-brand-orange bg-brand-orange/10 px-md py-sm rounded-full">
+<span class="material-symbols-outlined text-[18px]">timer</span>
+<span class="font-label-caps text-label-caps">Code expires in 1h 22m</span>
+</div>
+</div>
+<!-- Pickup Info -->
+<div class="bg-surface-container-low rounded-xl border border-outline-variant p-md mb-xl">
+<h3 class="font-h2 text-h2 mb-md border-b border-outline-variant pb-sm">Pickup Details</h3>
+<div class="flex items-start gap-md mb-md">
+<div class="w-10 h-10 rounded-full bg-surface-variant flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-on-surface-variant">storefront</span>
+</div>
+<div>
+<h4 class="font-body text-body font-semibold">Iya Basira's Kitchen</h4>
+<p class="font-caption text-caption text-on-surface-variant">123 Allen Avenue, Ikeja</p>
+</div>
+</div>
+<div class="flex items-start gap-md">
+<div class="w-10 h-10 rounded-full bg-surface-variant flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-on-surface-variant">shopping_bag</span>
+</div>
+<div>
+<h4 class="font-body text-body font-semibold">2x Jollof Rice Special</h4>
+<p class="font-caption text-caption text-on-surface-variant">Total: ₦3,500</p>
+</div>
+</div>
+</div>
+<!-- Actions -->
+<div class="mt-auto flex flex-col gap-md">
+<button class="w-full bg-[#25D366] text-black font-body text-body font-semibold py-md rounded-full flex items-center justify-center gap-sm hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined">share</span>
+                Share via WhatsApp
+            </button>
+<button class="w-full bg-transparent border border-outline-variant text-on-surface font-body text-body font-semibold py-md rounded-full hover:bg-surface-variant transition-colors">
+                View Receipt
+            </button>
+</div>
+</main>
+</body></html>

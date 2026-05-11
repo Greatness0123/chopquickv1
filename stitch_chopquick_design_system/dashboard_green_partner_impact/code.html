@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Green Partner Badge - ChopQuick</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-container-high": "#2b292f",
+                      "secondary": "#cdc0e9",
+                      "on-primary": "#381e72",
+                      "on-tertiary": "#3e2e00",
+                      "on-primary-container": "#e0d2ff",
+                      "primary-fixed": "#e9ddff",
+                      "outline": "#948e9c",
+                      "error": "#ffb4ab",
+                      "surface": "#141218",
+                      "on-secondary-fixed-variant": "#4b4263",
+                      "surface-tint": "#cfbcff",
+                      "surface-variant": "#36343a",
+                      "surface-bright": "#3b383e",
+                      "surface-container": "#211f24",
+                      "tertiary-fixed-dim": "#e7c365",
+                      "on-tertiary-fixed-variant": "#594400",
+                      "on-secondary-container": "#bfb2da",
+                      "primary-container": "#6750a4",
+                      "secondary-container": "#4d4465",
+                      "background": "#141218",
+                      "surface-container-lowest": "#0f0d13",
+                      "on-error": "#690005",
+                      "tertiary-container": "#c9a74d",
+                      "surface-dim": "#141218",
+                      "inverse-primary": "#6750a4",
+                      "secondary-fixed-dim": "#cdc0e9",
+                      "surface-container-highest": "#36343a",
+                      "on-tertiary-fixed": "#241a00",
+                      "inverse-surface": "#e6e0e9",
+                      "error-container": "#93000a",
+                      "on-primary-fixed": "#22005d",
+                      "inverse-on-surface": "#322f35",
+                      "surface-container-low": "#1d1b20",
+                      "on-error-container": "#ffdad6",
+                      "on-tertiary-container": "#503d00",
+                      "on-secondary-fixed": "#1f1635",
+                      "on-background": "#e6e0e9",
+                      "tertiary": "#e7c365",
+                      "on-secondary": "#342b4b",
+                      "on-surface-variant": "#cbc4d2",
+                      "outline-variant": "#494551",
+                      "tertiary-fixed": "#ffdf93",
+                      "on-surface": "#e6e0e9",
+                      "secondary-fixed": "#e9ddff",
+                      "primary-fixed-dim": "#cfbcff",
+                      "primary": "#cfbcff",
+                      "on-primary-fixed-variant": "#4f378a"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "xxl": "3rem",
+                      "margin_mobile": "1rem",
+                      "xs": "0.25rem",
+                      "sm": "0.5rem",
+                      "lg": "1.5rem",
+                      "xl": "2rem",
+                      "gutter": "1rem",
+                      "margin_desktop": "2.5rem",
+                      "md": "1rem"
+              },
+              "fontFamily": {
+                      "h1": [
+                              "Inter"
+                      ],
+                      "caption": [
+                              "Inter"
+                      ],
+                      "display-mobile": [
+                              "Inter"
+                      ],
+                      "body": [
+                              "Inter"
+                      ],
+                      "label-caps": [
+                              "Inter"
+                      ],
+                      "h2": [
+                              "Inter"
+                      ],
+                      "display": [
+                              "Inter"
+                      ]
+              },
+              "fontSize": {
+                      "h1": [
+                              "24px",
+                              {
+                                      "lineHeight": "1.3",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "caption": [
+                              "13px",
+                              {
+                                      "lineHeight": "1.4",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "display-mobile": [
+                              "40px",
+                              {
+                                      "lineHeight": "1.1",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "body": [
+                              "16px",
+                              {
+                                      "lineHeight": "1.5",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "label-caps": [
+                              "11px",
+                              {
+                                      "lineHeight": "1.0",
+                                      "letterSpacing": "0.05em",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "h2": [
+                              "20px",
+                              {
+                                      "lineHeight": "1.4",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "display": [
+                              "48px",
+                              {
+                                      "lineHeight": "1.1",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+      </script>
+<style>
+        .glow-effect {
+            box-shadow: 0 0 20px rgba(232,72,15,0.35);
+        }
+        .urgent-border {
+            border: 1px solid #cfbcff; /* primary */
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body text-body min-h-screen flex">
+<!-- SideNavBar (Web) -->
+<nav class="hidden md:flex flex-col fixed left-0 top-0 h-full w-64 p-md border-r border-outline-variant bg-surface-container dark:bg-surface-container z-40">
+<div class="mb-xl">
+<h2 class="text-h2 font-h2 text-on-surface">Mama's Kitchen</h2>
+<p class="font-caption text-caption text-on-surface-variant">Lagos Island Branch</p>
+</div>
+<div class="flex-grow flex flex-col gap-sm">
+<a class="flex items-center gap-md text-on-surface-variant hover:bg-surface-variant rounded-lg px-md py-sm transition-all" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span>Dashboard</span>
+</a>
+<a class="flex items-center gap-md text-on-surface-variant hover:bg-surface-variant rounded-lg px-md py-sm transition-all" href="#">
+<span class="material-symbols-outlined">storefront</span>
+<span>Listings</span>
+</a>
+<a class="flex items-center gap-md bg-secondary-container text-on-secondary-container rounded-lg px-md py-sm Active: scale-95" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span>Reports</span>
+</a>
+<a class="flex items-center gap-md text-on-surface-variant hover:bg-surface-variant rounded-lg px-md py-sm transition-all" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span>Settings</span>
+</a>
+</div>
+<button class="w-full bg-primary text-on-primary py-sm rounded-full font-h2 text-h2 mb-lg glow-effect transition-colors hover:bg-primary-fixed-dim">
+            Create Flash Deal
+        </button>
+<div class="flex flex-col gap-sm mt-auto border-t border-outline-variant pt-md">
+<a class="flex items-center gap-md text-on-surface-variant hover:bg-surface-variant rounded-lg px-md py-sm transition-all" href="#">
+<span class="material-symbols-outlined">help</span>
+<span>Help Center</span>
+</a>
+<a class="flex items-center gap-md text-on-surface-variant hover:bg-surface-variant rounded-lg px-md py-sm transition-all" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span>Logout</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Area -->
+<div class="flex-grow md:ml-64 flex flex-col">
+<!-- TopNavBar -->
+<header class="sticky top-0 z-50 flex justify-between items-center w-full px-md h-16 bg-surface dark:bg-surface border-b border-outline-variant dark:border-outline-variant">
+<div class="text-h1 font-h1 text-primary dark:text-primary">ChopQuick Partner</div>
+<div class="flex items-center gap-md">
+<span class="font-body text-body text-primary font-bold border-b-2 border-primary">Live</span>
+<span class="font-body text-body text-on-surface-variant hover:text-primary transition-colors cursor-pointer">Switch Branch</span>
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">account_circle</span>
+</button>
+</div>
+</header>
+<!-- Canvas -->
+<main class="p-margin_mobile md:p-margin_desktop max-w-7xl mx-auto w-full flex-grow flex flex-col gap-xxl">
+<!-- Hero / Badge Section -->
+<section class="flex flex-col items-center justify-center text-center gap-lg">
+<div class="relative w-48 h-48 md:w-64 md:h-64 rounded-full flex items-center justify-center bg-surface-container-high border-4 border-tertiary shadow-[0_0_40px_rgba(231,195,101,0.2)] glow-effect">
+<span class="material-symbols-outlined text-[80px] md:text-[120px] text-tertiary" style="font-variation-settings: 'FILL' 1;">eco</span>
+<!-- Sparkles decoration -->
+<span class="material-symbols-outlined absolute top-4 right-4 text-primary">auto_awesome</span>
+<span class="material-symbols-outlined absolute bottom-8 left-4 text-primary">auto_awesome</span>
+</div>
+<div>
+<h1 class="font-display text-display-mobile md:text-display text-on-surface mb-sm">ChopQuick Green Partner</h1>
+<p class="font-body text-body text-on-surface-variant max-w-2xl mx-auto">Congratulations! Mama's Kitchen has achieved Green Partner status for outstanding commitment to reducing food waste in Lagos.</p>
+</div>
+</section>
+<!-- Stats Widgets (Bento Grid) -->
+<section class="grid grid-cols-1 md:grid-cols-3 gap-md">
+<div class="bg-surface-container rounded-xl p-lg border border-outline-variant flex flex-col gap-sm relative overflow-hidden">
+<div class="absolute -right-4 -top-4 opacity-10">
+<span class="material-symbols-outlined text-[100px] text-tertiary" style="font-variation-settings: 'FILL' 1;">restaurant</span>
+</div>
+<div class="flex items-center gap-xs text-on-surface-variant">
+<span class="material-symbols-outlined text-tertiary">restaurant</span>
+<span class="font-h2 text-h2">Meals Saved</span>
+</div>
+<div class="font-display text-display-mobile text-on-surface mt-sm">2,450</div>
+<p class="font-caption text-caption text-secondary">+12% this month</p>
+</div>
+<div class="bg-surface-container rounded-xl p-lg border border-outline-variant flex flex-col gap-sm relative overflow-hidden">
+<div class="absolute -right-4 -top-4 opacity-10">
+<span class="material-symbols-outlined text-[100px] text-primary" style="font-variation-settings: 'FILL' 1;">cloud</span>
+</div>
+<div class="flex items-center gap-xs text-on-surface-variant">
+<span class="material-symbols-outlined text-primary">co2</span>
+<span class="font-h2 text-h2">CO2 Diverted</span>
+</div>
+<div class="font-display text-display-mobile text-on-surface mt-sm">4.2t</div>
+<p class="font-caption text-caption text-secondary">Equivalent to 10 trees planted</p>
+</div>
+<div class="bg-surface-container rounded-xl p-lg urgent-border glow-effect flex flex-col gap-sm relative overflow-hidden">
+<div class="absolute -right-4 -top-4 opacity-10">
+<span class="material-symbols-outlined text-[100px] text-tertiary" style="font-variation-settings: 'FILL' 1;">payments</span>
+</div>
+<div class="flex items-center gap-xs text-on-surface-variant">
+<span class="material-symbols-outlined text-tertiary">payments</span>
+<span class="font-h2 text-h2">Revenue Recovered</span>
+</div>
+<div class="font-display text-display-mobile text-on-surface mt-sm">₦1.2M</div>
+<p class="font-caption text-caption text-secondary">Added to your bottom line</p>
+</div>
+</section>
+<!-- Share Section -->
+<section class="grid grid-cols-1 lg:grid-cols-2 gap-xl items-center bg-surface-container-high rounded-xl p-lg border border-outline-variant">
+<!-- Preview Card -->
+<div class="flex flex-col items-center gap-md">
+<h3 class="font-h2 text-h2 text-on-surface w-full text-left">Your Impact Card</h3>
+<div class="w-full max-w-sm aspect-[4/5] bg-surface rounded-xl border border-outline-variant flex flex-col items-center justify-center p-lg relative overflow-hidden group">
+<!-- Decorative bg -->
+<div class="absolute inset-0 bg-gradient-to-br from-surface-container-lowest to-surface-container opacity-50"></div>
+<div class="relative z-10 flex flex-col items-center text-center gap-md">
+<h4 class="font-h1 text-h1 text-on-surface">Mama's Kitchen</h4>
+<span class="material-symbols-outlined text-6xl text-tertiary glow-effect rounded-full bg-surface-container-high p-sm" style="font-variation-settings: 'FILL' 1;">eco</span>
+<div class="font-display text-display-mobile text-on-surface mt-sm">2,450</div>
+<p class="font-h2 text-h2 text-on-surface-variant">Meals Saved in Lagos</p>
+<p class="font-caption text-caption text-primary mt-auto pt-md border-t border-outline-variant w-full">Join us on ChopQuick</p>
+</div>
+</div>
+</div>
+<!-- Actions -->
+<div class="flex flex-col gap-lg">
+<div>
+<h3 class="font-h2 text-h2 text-on-surface mb-xs">Share Your Success</h3>
+<p class="font-body text-body text-on-surface-variant">Let your customers know about your commitment to sustainability. Share your impact card on social media.</p>
+</div>
+<div class="flex flex-col gap-md">
+<button class="w-full flex items-center justify-center gap-sm bg-primary text-on-primary py-sm rounded-full font-h2 text-h2 glow-effect transition-colors hover:bg-primary-fixed-dim">
+<span class="material-symbols-outlined">download</span>
+                            Download Impact Card
+                        </button>
+<button class="w-full flex items-center justify-center gap-sm bg-surface-container border border-outline-variant text-on-surface py-sm rounded-full font-h2 text-h2 transition-colors hover:bg-surface-variant">
+<span class="material-symbols-outlined text-[#E1306C]">photo_camera</span>
+                            Share to Instagram
+                        </button>
+<button class="w-full flex items-center justify-center gap-sm bg-surface-container border border-outline-variant text-on-surface py-sm rounded-full font-h2 text-h2 transition-colors hover:bg-surface-variant">
+<span class="material-symbols-outlined text-[#25D366]">chat</span>
+                            Share to WhatsApp
+                        </button>
+</div>
+</div>
+</section>
+<!-- Leaderboard -->
+<section class="flex flex-col gap-md">
+<div class="flex items-center justify-between border-b border-outline-variant pb-sm">
+<h3 class="font-h1 text-h1 text-on-surface">Lagos Impact Leaderboard</h3>
+<span class="font-label-caps text-label-caps bg-secondary-container text-on-secondary-container px-sm py-xs rounded-full">Top 10%</span>
+</div>
+<div class="flex flex-col gap-xs">
+<!-- Rank Item -->
+<div class="flex items-center justify-between p-sm rounded-lg hover:bg-surface-container transition-colors">
+<div class="flex items-center gap-md">
+<span class="font-h2 text-h2 text-on-surface-variant w-8 text-center">1</span>
+<div class="w-10 h-10 rounded-full bg-surface-variant flex items-center justify-center">
+<span class="material-symbols-outlined text-on-surface">restaurant</span>
+</div>
+<span class="font-body text-body text-on-surface">Bukka Hut - Lekki</span>
+</div>
+<span class="font-body text-body text-on-surface font-bold">5,200</span>
+</div>
+<!-- Rank Item (Self) -->
+<div class="flex items-center justify-between p-sm rounded-lg bg-surface-container border border-primary relative">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-primary rounded-l-lg"></div>
+<div class="flex items-center gap-md ml-2">
+<span class="font-h2 text-h2 text-primary w-8 text-center">4</span>
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary-container">storefront</span>
+</div>
+<span class="font-body text-body text-primary font-bold">Mama's Kitchen</span>
+</div>
+<span class="font-body text-body text-primary font-bold">2,450</span>
+</div>
+<!-- Rank Item -->
+<div class="flex items-center justify-between p-sm rounded-lg hover:bg-surface-container transition-colors">
+<div class="flex items-center gap-md">
+<span class="font-h2 text-h2 text-on-surface-variant w-8 text-center">5</span>
+<div class="w-10 h-10 rounded-full bg-surface-variant flex items-center justify-center">
+<span class="material-symbols-outlined text-on-surface">local_cafe</span>
+</div>
+<span class="font-body text-body text-on-surface">Cafe Neo - VI</span>
+</div>
+<span class="font-body text-body text-on-surface font-bold">2,100</span>
+</div>
+</div>
+</section>
+</main>
+</div>
+</body></html>

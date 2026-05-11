@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ChopQuick - Orders</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-fixed-variant": "#594400",
+                        "surface": "#141218",
+                        "on-surface": "#e6e0e9",
+                        "outline-variant": "#494551",
+                        "on-primary-container": "#e0d2ff",
+                        "on-secondary": "#342b4b",
+                        "inverse-on-surface": "#322f35",
+                        "error-container": "#93000a",
+                        "error": "#ffb4ab",
+                        "surface-container-highest": "#36343a",
+                        "on-secondary-fixed": "#1f1635",
+                        "on-error": "#690005",
+                        "secondary": "#cdc0e9",
+                        "on-background": "#e6e0e9",
+                        "inverse-surface": "#e6e0e9",
+                        "primary-fixed-dim": "#cfbcff",
+                        "on-secondary-container": "#bfb2da",
+                        "surface-container": "#211f24",
+                        "outline": "#948e9c",
+                        "primary-fixed": "#e9ddff",
+                        "background": "#141218",
+                        "surface-tint": "#cfbcff",
+                        "primary": "#cfbcff",
+                        "surface-container-low": "#1d1b20",
+                        "surface-container-high": "#2b292f",
+                        "secondary-fixed-dim": "#cdc0e9",
+                        "on-primary-fixed": "#22005d",
+                        "on-primary": "#381e72",
+                        "surface-dim": "#141218",
+                        "tertiary-fixed-dim": "#e7c365",
+                        "tertiary-container": "#c9a74d",
+                        "secondary-container": "#4d4465",
+                        "surface-container-lowest": "#0f0d13",
+                        "surface-bright": "#3b383e",
+                        "on-secondary-fixed-variant": "#4b4263",
+                        "on-tertiary-container": "#503d00",
+                        "on-tertiary-fixed": "#241a00",
+                        "tertiary-fixed": "#ffdf93",
+                        "secondary-fixed": "#e9ddff",
+                        "on-primary-fixed-variant": "#4f378a",
+                        "on-error-container": "#ffdad6",
+                        "tertiary": "#e7c365",
+                        "inverse-primary": "#6750a4",
+                        "surface-variant": "#36343a",
+                        "primary-container": "#6750a4",
+                        "on-tertiary": "#3e2e00",
+                        "on-surface-variant": "#cbc4d2"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "md": "1rem",
+                        "sm": "0.5rem",
+                        "gutter": "1rem",
+                        "xs": "0.25rem",
+                        "lg": "1.5rem",
+                        "margin_desktop": "2.5rem",
+                        "xl": "2rem",
+                        "margin_mobile": "1rem",
+                        "xxl": "3rem"
+                    },
+                    "fontFamily": {
+                        "h2": ["Inter"],
+                        "display": ["Inter"],
+                        "caption": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "h1": ["Inter"],
+                        "display-mobile": ["Inter"],
+                        "body": ["Inter"]
+                    },
+                    "fontSize": {
+                        "h2": ["20px", { "lineHeight": "1.4", "fontWeight": "600" }],
+                        "display": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "caption": ["13px", { "lineHeight": "1.4", "fontWeight": "400" }],
+                        "label-caps": ["11px", { "lineHeight": "1.0", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "h1": ["24px", { "lineHeight": "1.3", "fontWeight": "700" }],
+                        "display-mobile": ["40px", { "lineHeight": "1.1", "fontWeight": "700" }],
+                        "body": ["16px", { "lineHeight": "1.5", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.fill-icon {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        /* Custom scrollbar for webkit */
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #494551;
+            border-radius: 4px;
+        }
+        .glow-urgent {
+            box-shadow: 0 0 20px rgba(232,72,15,0.35); /* ChopQuick Orange glow mapped to design instructions */
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body text-body min-h-screen flex flex-col antialiased selection:bg-primary-container selection:text-on-primary-container">
+<!-- TopAppBar -->
+<header class="sticky top-0 w-full z-50 bg-surface dark:bg-surface flex justify-between items-center px-margin_mobile h-16 shadow-none">
+<button class="text-primary dark:text-primary hover:opacity-80 transition-opacity duration-200">
+<span class="material-symbols-outlined">location_on</span>
+</button>
+<h1 class="font-h1 text-h1 font-bold text-primary dark:text-primary">ChopQuick</h1>
+<button class="text-on-surface-variant hover:opacity-80 transition-opacity duration-200">
+<span class="material-symbols-outlined">search</span>
+</button>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-grow overflow-y-auto px-margin_mobile pt-md pb-[100px] flex flex-col gap-lg md:px-margin_desktop max-w-[1280px] mx-auto w-full">
+<!-- Page Title & Tabs Segmented Control -->
+<div class="flex flex-col gap-md">
+<h2 class="font-display-mobile text-display-mobile text-on-surface">Orders</h2>
+<div class="flex bg-surface-container rounded-full p-1 border border-outline-variant/30">
+<button class="flex-1 py-2 text-center rounded-full bg-primary text-on-primary font-h2 text-h2 shadow-md transition-all">
+                    Active
+                </button>
+<button class="flex-1 py-2 text-center rounded-full text-on-surface-variant font-h2 text-h2 hover:bg-surface-variant transition-all">
+                    Past
+                </button>
+</div>
+</div>
+<!-- Active Orders Section (Bento-style Cards) -->
+<section class="flex flex-col gap-md">
+<!-- Urgent / Flash Deal Active Order -->
+<article class="bg-surface-container border border-primary rounded-[16px] p-md flex flex-col gap-sm glow-urgent relative overflow-hidden">
+<!-- Status Banner -->
+<div class="flex justify-between items-center w-full">
+<span class="font-label-caps text-label-caps bg-primary/20 text-primary px-3 py-1 rounded-full flex items-center gap-1">
+<span class="material-symbols-outlined fill-icon text-[14px]">timer</span>
+                        Pick up in 15m
+                    </span>
+<span class="font-caption text-caption text-on-surface-variant">Order #CQ-8921</span>
+</div>
+<div class="flex gap-md mt-2">
+<!-- Details -->
+<div class="flex flex-col flex-1 justify-center gap-xs">
+<h3 class="font-h1 text-h1 text-on-surface leading-tight">Spicy Jollof &amp; Plantain</h3>
+<p class="font-caption text-caption text-on-surface-variant">Mama Cass Restaurant • 1.2km away</p>
+<p class="font-h2 text-h2 text-primary mt-1">₦ 3,500</p>
+</div>
+<!-- Mini QR Thumbnail Container -->
+<div class="w-24 h-24 bg-surface-container-high rounded-xl p-2 border border-outline-variant flex flex-col items-center justify-center gap-1">
+<img alt="QR Code" class="w-full h-full object-cover rounded-lg opacity-80" data-alt="A stylized, high-contrast digital QR code graphic displayed on a dark grey screen with glowing orange accent lines. The code itself is crisp black and white, but the surrounding container emits a subtle, vibrant neon light. The overall aesthetic is modern, tech-forward, and integrated into a premium dark-mode interface design." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA91u3vmgyr9DB5V8ImOul1i_3LGfkqxGZuXYduJhb0UK2oA7oPrC9vlKN7Vrf1CLkaff2ovxJHpH9ZFbCMaHQ_KJR22bnNh41aJUW4ZavP_8QTlA-3Um_SkMq5PNA0G6-n85ns5Mp5DrEp6k5Yz9hUv4JmEnSG5v9rpzz42xCHtH3-mRGbh3ycmoabN09D42wbJ-iZo1ZsB9wBaVo13PMLlKRc_j_EIRWv24yWg8uS5iVJKhpYmx9e8tbvfxNcc9iSCUX2dc1AijQ"/>
+</div>
+</div>
+<button class="mt-sm w-full bg-surface-variant text-on-surface font-h2 text-h2 py-3 rounded-full hover:bg-outline-variant transition-colors flex justify-center items-center gap-2">
+<span class="material-symbols-outlined">directions_walk</span> Get Directions
+                </button>
+</article>
+<!-- Standard Active Order -->
+<article class="bg-surface-container border border-outline-variant rounded-[16px] p-md flex flex-col gap-sm">
+<div class="flex justify-between items-center w-full">
+<span class="font-label-caps text-label-caps bg-secondary-container text-on-secondary-container px-3 py-1 rounded-full flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">soup_kitchen</span>
+                        Preparing
+                    </span>
+<span class="font-caption text-caption text-on-surface-variant">Order #CQ-8840</span>
+</div>
+<div class="flex gap-md mt-2">
+<div class="flex flex-col flex-1 justify-center gap-xs">
+<h3 class="font-h1 text-h1 text-on-surface leading-tight">Assorted Pepper Soup</h3>
+<p class="font-caption text-caption text-on-surface-variant">Lagos Buka • 3.5km away</p>
+<p class="font-h2 text-h2 text-on-surface mt-1">₦ 4,200</p>
+</div>
+<div class="w-24 h-24 bg-surface-container-high rounded-xl p-2 border border-outline-variant flex flex-col items-center justify-center">
+<span class="material-symbols-outlined text-outline text-4xl opacity-50">qr_code_2</span>
+<span class="font-label-caps text-label-caps text-outline mt-1 text-center">Pending</span>
+</div>
+</div>
+</article>
+</section>
+<!-- Divider -->
+<hr class="border-outline-variant/30 my-sm"/>
+<!-- Past Orders Preview List -->
+<section class="flex flex-col gap-sm">
+<h3 class="font-h2 text-h2 text-on-surface mb-xs">Recent History</h3>
+<!-- Past Order Item: Collected -->
+<div class="flex items-center justify-between p-sm bg-surface-container-low rounded-lg hover:bg-surface-container transition-colors">
+<div class="flex items-center gap-md">
+<div class="w-12 h-12 rounded-full bg-surface-variant flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined">restaurant</span>
+</div>
+<div class="flex flex-col">
+<span class="font-h2 text-h2 text-on-surface">Chicken Republic</span>
+<span class="font-caption text-caption text-on-surface-variant">Oct 24, 2023 • ₦ 2,800</span>
+</div>
+</div>
+<div class="font-label-caps text-label-caps bg-[rgba(56,229,77,0.1)] text-[#38E54D] px-2 py-1 rounded-full">
+                    Collected
+                </div>
+</div>
+<!-- Past Order Item: Refunded -->
+<div class="flex items-center justify-between p-sm bg-surface-container-low rounded-lg hover:bg-surface-container transition-colors">
+<div class="flex items-center gap-md">
+<div class="w-12 h-12 rounded-full bg-surface-variant flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined">bakery_dining</span>
+</div>
+<div class="flex flex-col">
+<span class="font-h2 text-h2 text-on-surface">Sweet Sensation</span>
+<span class="font-caption text-caption text-on-surface-variant">Oct 21, 2023 • ₦ 1,500</span>
+</div>
+</div>
+<div class="font-label-caps text-label-caps bg-error-container text-on-error-container px-2 py-1 rounded-full">
+                    Refunded
+                </div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 w-full z-50 rounded-t-xl bg-surface-container dark:bg-surface-container shadow-lg md:hidden">
+<div class="flex justify-around items-center px-4 py-2 w-full border-t border-outline-variant dark:border-outline-variant">
+<!-- Inactive: Explore -->
+<button class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-variant transition-colors active:scale-95 duration-150 rounded-lg p-2 flex-1">
+<span class="material-symbols-outlined mb-1 text-[24px]">explore</span>
+<span class="font-caption text-caption">Explore</span>
+</button>
+<!-- Active: Orders -->
+<button class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full px-4 py-1 hover:bg-surface-variant transition-colors active:scale-95 duration-150 flex-1">
+<span class="material-symbols-outlined fill-icon mb-1 text-[24px]">receipt_long</span>
+<span class="font-caption text-caption font-semibold">Orders</span>
+</button>
+<!-- Inactive: Wallet -->
+<button class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-variant transition-colors active:scale-95 duration-150 rounded-lg p-2 flex-1">
+<span class="material-symbols-outlined mb-1 text-[24px]">account_balance_wallet</span>
+<span class="font-caption text-caption">Wallet</span>
+</button>
+<!-- Inactive: Profile -->
+<button class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-variant transition-colors active:scale-95 duration-150 rounded-lg p-2 flex-1">
+<span class="material-symbols-outlined mb-1 text-[24px]">person</span>
+<span class="font-caption text-caption">Profile</span>
+</button>
+</div>
+</nav>
+</body></html>

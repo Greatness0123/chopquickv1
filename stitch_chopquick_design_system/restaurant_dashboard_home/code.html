@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ChopQuick Partner - Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-high": "#2b292f",
+                        "secondary": "#cdc0e9",
+                        "on-primary": "#381e72",
+                        "on-tertiary": "#3e2e00",
+                        "on-primary-container": "#e0d2ff",
+                        "primary-fixed": "#e9ddff",
+                        "outline": "#948e9c",
+                        "error": "#ffb4ab",
+                        "surface": "#141218",
+                        "on-secondary-fixed-variant": "#4b4263",
+                        "surface-tint": "#cfbcff",
+                        "surface-variant": "#36343a",
+                        "surface-bright": "#3b383e",
+                        "surface-container": "#211f24",
+                        "tertiary-fixed-dim": "#e7c365",
+                        "on-tertiary-fixed-variant": "#594400",
+                        "on-secondary-container": "#bfb2da",
+                        "primary-container": "#6750a4",
+                        "secondary-container": "#4d4465",
+                        "background": "#141218",
+                        "surface-container-lowest": "#0f0d13",
+                        "on-error": "#690005",
+                        "tertiary-container": "#c9a74d",
+                        "surface-dim": "#141218",
+                        "inverse-primary": "#6750a4",
+                        "secondary-fixed-dim": "#cdc0e9",
+                        "surface-container-highest": "#36343a",
+                        "on-tertiary-fixed": "#241a00",
+                        "inverse-surface": "#e6e0e9",
+                        "error-container": "#93000a",
+                        "on-primary-fixed": "#22005d",
+                        "inverse-on-surface": "#322f35",
+                        "surface-container-low": "#1d1b20",
+                        "on-error-container": "#ffdad6",
+                        "on-tertiary-container": "#503d00",
+                        "on-secondary-fixed": "#1f1635",
+                        "on-background": "#e6e0e9",
+                        "tertiary": "#e7c365",
+                        "on-secondary": "#342b4b",
+                        "on-surface-variant": "#cbc4d2",
+                        "outline-variant": "#494551",
+                        "tertiary-fixed": "#ffdf93",
+                        "on-surface": "#e6e0e9",
+                        "secondary-fixed": "#e9ddff",
+                        "primary-fixed-dim": "#cfbcff",
+                        "primary": "#cfbcff",
+                        "on-primary-fixed-variant": "#4f378a"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xxl": "3rem",
+                        "margin_mobile": "1rem",
+                        "xs": "0.25rem",
+                        "sm": "0.5rem",
+                        "lg": "1.5rem",
+                        "xl": "2rem",
+                        "gutter": "1rem",
+                        "margin_desktop": "2.5rem",
+                        "md": "1rem"
+                    },
+                    "fontFamily": {
+                        "h1": ["Inter"],
+                        "caption": ["Inter"],
+                        "display-mobile": ["Inter"],
+                        "body": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "h2": ["Inter"],
+                        "display": ["Inter"]
+                    },
+                    "fontSize": {
+                        "h1": ["24px", { "lineHeight": "1.3", "fontWeight": "700" }],
+                        "caption": ["13px", { "lineHeight": "1.4", "fontWeight": "400" }],
+                        "display-mobile": ["40px", { "lineHeight": "1.1", "fontWeight": "700" }],
+                        "body": ["16px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "label-caps": ["11px", { "lineHeight": "1.0", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "h2": ["20px", { "lineHeight": "1.4", "fontWeight": "600" }],
+                        "display": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .glow-accent {
+            box-shadow: 0 0 20px rgba(232, 72, 15, 0.35);
+        }
+        .text-accent {
+            color: #E8480F;
+        }
+        .bg-accent {
+            background-color: #E8480F;
+        }
+        .border-accent {
+            border-color: #E8480F;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body min-h-screen flex flex-col md:flex-row overflow-x-hidden">
+<!-- TopNavBar (Mobile Only) -->
+<header class="md:hidden sticky top-0 z-50 flex justify-between items-center w-full px-md h-16 bg-surface border-b border-outline-variant">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary font-bold text-2xl">restaurant</span>
+<h1 class="text-h1 font-h1 text-primary">ChopQuick Partner</h1>
+</div>
+<div class="flex items-center gap-sm">
+<button class="text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined">notifications</span></button>
+<button class="text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined">account_circle</span></button>
+</div>
+</header>
+<!-- SideNavBar (Desktop Only) -->
+<nav class="hidden md:flex flex-col fixed left-0 top-0 h-full w-64 p-md border-r border-outline-variant bg-surface-container">
+<div class="flex items-center gap-sm mb-xl">
+<span class="material-symbols-outlined text-primary font-bold text-3xl">restaurant</span>
+<div class="flex flex-col">
+<span class="text-h2 font-h2 text-on-surface">Mama's Kitchen</span>
+<span class="text-caption font-caption text-on-surface-variant">Lagos Island Branch</span>
+</div>
+</div>
+<button class="w-full bg-accent text-white font-bold py-sm px-md rounded-full mb-lg hover:opacity-90 transition-opacity glow-accent flex items-center justify-center gap-xs">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">add_circle</span>
+            Create Flash Deal
+        </button>
+<div class="flex flex-col gap-xs flex-1">
+<a class="flex items-center gap-md bg-secondary-container text-on-secondary-container rounded-lg px-md py-sm hover:opacity-80 transition-opacity font-bold" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+                Dashboard
+            </a>
+<a class="flex items-center gap-md text-on-surface-variant hover:bg-surface-variant rounded-lg px-md py-sm transition-all" href="#">
+<span class="material-symbols-outlined">storefront</span>
+                Listings
+            </a>
+<a class="flex items-center gap-md text-on-surface-variant hover:bg-surface-variant rounded-lg px-md py-sm transition-all" href="#">
+<span class="material-symbols-outlined">analytics</span>
+                Reports
+            </a>
+<a class="flex items-center gap-md text-on-surface-variant hover:bg-surface-variant rounded-lg px-md py-sm transition-all" href="#">
+<span class="material-symbols-outlined">settings</span>
+                Settings
+            </a>
+</div>
+<div class="flex flex-col gap-xs mt-auto pt-md border-t border-outline-variant">
+<a class="flex items-center gap-md text-on-surface-variant hover:bg-surface-variant rounded-lg px-md py-sm transition-all" href="#">
+<span class="material-symbols-outlined">help</span>
+                Help Center
+            </a>
+<a class="flex items-center gap-md text-on-surface-variant hover:bg-surface-variant rounded-lg px-md py-sm transition-all" href="#">
+<span class="material-symbols-outlined">logout</span>
+                Logout
+            </a>
+</div>
+</nav>
+<!-- Main Canvas -->
+<main class="flex-1 md:ml-64 p-margin_mobile md:p-margin_desktop flex flex-col gap-xl">
+<!-- Header Actions -->
+<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-md">
+<div>
+<h2 class="text-display-mobile md:text-display font-display text-on-surface">Dashboard</h2>
+<p class="text-body font-body text-on-surface-variant mt-xs">Manage tonight's surplus and track your recovery.</p>
+</div>
+<div class="flex flex-wrap items-center gap-md">
+<div class="flex items-center bg-surface-container-highest rounded-full p-1 border border-outline-variant">
+<button class="px-md py-xs rounded-full bg-accent text-white font-bold text-sm shadow-sm">Live</button>
+<button class="px-md py-xs rounded-full text-on-surface-variant font-bold text-sm hover:text-on-surface transition-colors">Offline</button>
+</div>
+<button class="flex items-center gap-xs px-md py-sm rounded-full border border-outline text-on-surface hover:bg-surface-variant transition-colors">
+<span class="material-symbols-outlined text-sm">swap_horiz</span>
+<span class="font-bold text-sm">Switch Branch</span>
+</button>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-lg lg:gap-xl">
+<!-- Left Panel: Tonight's Surplus -->
+<div class="lg:col-span-8 flex flex-col gap-md">
+<div class="flex justify-between items-end mb-sm">
+<h3 class="text-h2 font-h2 text-on-surface">Tonight's Surplus</h3>
+<a class="text-primary hover:underline text-sm font-bold" href="#">View All Listings</a>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-md">
+<!-- Urgent Card (Flash Deal) -->
+<div class="bg-surface-container border border-accent rounded-xl overflow-hidden glow-accent flex flex-col">
+<div class="h-32 bg-surface-variant relative">
+<img alt="Surplus Food Listing" class="w-full h-full object-cover" data-alt="A vibrant, high-contrast overhead shot of a healthy mixed salad bowl with fresh greens, tomatoes, and grilled chicken, presented against a dark, moody background. The scene is illuminated by dramatic, warm spotlighting that highlights the textures of the food, creating a premium, appetizing look fitting for a modern food delivery app in dark mode. Deep shadows and rich colors emphasize freshness and urgency." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAR9urPunVBGREs-0poY2JfWNq_PEnjxEAzyEHp8cYh3F6kLsisN1dwXp7d12rN47cWPjRZyzELXpFNHzuRCJGOCOFVweJDxZ5zjQIOK77FbscNsBLvvlvpdCn1llonEDgjEzZ0F8puQK13oq8N6O_cUWVosk4S6HD4E_PibI9--Qk9bstDkkRaJpnyIKutzUtohwGqh7A3JcTyKRumIxJmfI4Zv8BGUnJSaOh6LkSHbhZ8Xq2hHWnhL1WhyRf0_NFOnSh8jpf462c"/>
+<div class="absolute top-sm right-sm bg-[rgba(232,72,15,0.1)] text-accent px-sm py-xs rounded-full text-label-caps font-label-caps font-bold border border-accent flex items-center gap-1 backdrop-blur-sm">
+<span class="material-symbols-outlined text-[12px]" style="font-variation-settings: 'FILL' 1;">fiber_manual_record</span> LIVE
+                             </div>
+</div>
+<div class="p-md flex flex-col flex-1">
+<div class="flex justify-between items-start mb-xs">
+<h4 class="text-h2 font-h2 text-on-surface leading-tight">Mixed Grill Platter</h4>
+<span class="text-h2 font-h2 text-accent">₦3,500</span>
+</div>
+<p class="text-caption font-caption text-on-surface-variant mb-md line-clamp-2">Assorted grilled meats with a side of spicy jollof rice and fried plantains. Originally ₦7,000.</p>
+<div class="mt-auto flex items-center justify-between border-t border-outline-variant pt-sm">
+<div class="flex items-center gap-xs text-on-surface">
+<span class="material-symbols-outlined text-on-surface-variant text-sm">inventory_2</span>
+<span class="font-bold">4 Portions</span>
+</div>
+<div class="flex items-center gap-xs text-error">
+<span class="material-symbols-outlined text-sm">schedule</span>
+<span class="font-bold text-sm">Ends in 2h</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Standard Card -->
+<div class="bg-surface-container border border-outline-variant rounded-xl overflow-hidden flex flex-col">
+<div class="h-32 bg-surface-variant relative">
+<img alt="Surplus Food Listing 2" class="w-full h-full object-cover grayscale-[20%]" data-alt="A close-up shot of a gourmet beef burger with melting cheese and fresh lettuce on a dark slate surface. The lighting is low-key with subtle edge highlights, giving the meal a rich, savory appearance. The composition is tight, focusing on the details of the ingredients, perfectly complementing a sleek, dark-themed restaurant dashboard aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBQD_4wY3KF6_2kBoy9SwovzGyuLTbEvL2CQGhTzRQ2gACfVhvG-fNG-d_f2I1RPxfkWxWjrCyD_qfp8maRJpAzxFs4I14yfr32aUPX4nXN64HIwKWYW4a9jGWZP-g8buF0MWG3aiBH_mxhBp2vuSI1u7a-QCyw0XDC26P_qkHwxoq5xmqWgR20XSmzKBOK1wTpEysf2VXGmXcqJHy9hHaSUBVJlyMqTNDzKcIgZSlXLOE__8PsxFRh_tdU3zJfm6O0AhdISGsFT6w"/>
+<div class="absolute top-sm right-sm bg-surface-container-highest text-on-surface px-sm py-xs rounded-full text-label-caps font-label-caps font-bold border border-outline flex items-center gap-1">
+                                SCHEDULED
+                             </div>
+</div>
+<div class="p-md flex flex-col flex-1">
+<div class="flex justify-between items-start mb-xs">
+<h4 class="text-h2 font-h2 text-on-surface leading-tight">Classic Beef Burger</h4>
+<span class="text-h2 font-h2 text-primary">₦2,000</span>
+</div>
+<p class="text-caption font-caption text-on-surface-variant mb-md line-clamp-2">Double beef patty with cheese, lettuce, and our secret sauce. Chips not included.</p>
+<div class="mt-auto flex items-center justify-between border-t border-outline-variant pt-sm">
+<div class="flex items-center gap-xs text-on-surface">
+<span class="material-symbols-outlined text-on-surface-variant text-sm">inventory_2</span>
+<span class="font-bold">12 Portions</span>
+</div>
+<div class="flex items-center gap-xs text-on-surface-variant">
+<span class="material-symbols-outlined text-sm">schedule</span>
+<span class="font-bold text-sm">Starts 9 PM</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Add New Item Placeholder -->
+<button class="bg-surface border-2 border-dashed border-outline-variant rounded-xl p-xl flex flex-col items-center justify-center gap-sm hover:border-primary hover:bg-surface-container transition-colors min-h-[250px]">
+<div class="w-12 h-12 rounded-full bg-surface-container-highest flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-2xl">add</span>
+</div>
+<span class="text-body font-body font-bold text-on-surface">Add New Item</span>
+<span class="text-caption font-caption text-on-surface-variant text-center max-w-[200px]">Post surplus food to start recovering costs.</span>
+</button>
+</div>
+</div>
+<!-- Right Panel: Tonight's Recovery -->
+<div class="lg:col-span-4 flex flex-col gap-md">
+<h3 class="text-h2 font-h2 text-on-surface mb-sm">Tonight's Recovery</h3>
+<!-- Main Stats Card (Bento Style) -->
+<div class="bg-surface-container-high rounded-xl p-md border border-outline-variant relative overflow-hidden">
+<!-- Subtle background gradient -->
+<div class="absolute top-0 right-0 w-32 h-32 bg-accent opacity-10 blur-3xl rounded-full"></div>
+<div class="relative z-10 flex flex-col gap-lg">
+<div>
+<span class="text-caption font-caption text-on-surface-variant uppercase tracking-wider font-bold">Revenue Recovered</span>
+<div class="text-display-mobile font-display text-primary mt-xs">₦18,400</div>
+</div>
+<div class="grid grid-cols-2 gap-sm">
+<div class="bg-surface rounded-lg p-sm border border-outline-variant">
+<span class="material-symbols-outlined text-on-surface-variant mb-xs">check_circle</span>
+<div class="text-h1 font-h1 text-on-surface">8</div>
+<span class="text-caption font-caption text-on-surface-variant">Portions Sold</span>
+</div>
+<div class="bg-surface rounded-lg p-sm border border-outline-variant">
+<span class="material-symbols-outlined text-accent mb-xs">warning</span>
+<div class="text-h1 font-h1 text-on-surface">4</div>
+<span class="text-caption font-caption text-on-surface-variant">Remaining</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Mini Chart Card -->
+<div class="bg-surface-container border border-outline-variant rounded-xl p-md">
+<div class="flex justify-between items-center mb-md">
+<span class="text-body font-body font-bold text-on-surface">Weekly Recovery</span>
+<span class="material-symbols-outlined text-on-surface-variant text-sm">more_horiz</span>
+</div>
+<!-- Simulated Bar Chart -->
+<div class="h-24 flex items-end justify-between gap-2 border-b border-outline-variant pb-2">
+<div class="w-1/6 bg-primary opacity-40 rounded-t-sm" style="height: 40%"></div>
+<div class="w-1/6 bg-primary opacity-60 rounded-t-sm" style="height: 70%"></div>
+<div class="w-1/6 bg-primary opacity-50 rounded-t-sm" style="height: 50%"></div>
+<div class="w-1/6 bg-accent rounded-t-sm glow-accent relative" style="height: 90%">
+<!-- Active day marker -->
+</div>
+<div class="w-1/6 bg-surface-variant rounded-t-sm" style="height: 20%"></div>
+<div class="w-1/6 bg-surface-variant rounded-t-sm" style="height: 10%"></div>
+</div>
+<div class="flex justify-between text-label-caps font-label-caps text-on-surface-variant mt-2 px-1">
+<span>M</span><span>T</span><span>W</span><span class="text-on-surface font-bold">T</span><span>F</span><span>S</span>
+</div>
+</div>
+<!-- Impact Tip Card -->
+<div class="bg-surface border border-outline-variant rounded-xl p-md flex gap-md items-start">
+<div class="bg-secondary-container text-on-secondary-container p-sm rounded-full flex-shrink-0">
+<span class="material-symbols-outlined text-sm">eco</span>
+</div>
+<div>
+<h5 class="text-body font-body font-bold text-on-surface mb-xs">Impact Tip</h5>
+<p class="text-caption font-caption text-on-surface-variant">Discounting meals by 50% one hour before closing increases recovery rates by 3x.</p>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ChopQuick Partner - Order Verification</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-high": "#2b292f",
+                        "secondary": "#cdc0e9",
+                        "on-primary": "#381e72",
+                        "on-tertiary": "#3e2e00",
+                        "on-primary-container": "#e0d2ff",
+                        "primary-fixed": "#e9ddff",
+                        "outline": "#948e9c",
+                        "error": "#ffb4ab",
+                        "surface": "#141218",
+                        "on-secondary-fixed-variant": "#4b4263",
+                        "surface-tint": "#cfbcff",
+                        "surface-variant": "#36343a",
+                        "surface-bright": "#3b383e",
+                        "surface-container": "#211f24",
+                        "tertiary-fixed-dim": "#e7c365",
+                        "on-tertiary-fixed-variant": "#594400",
+                        "on-secondary-container": "#bfb2da",
+                        "primary-container": "#6750a4",
+                        "secondary-container": "#4d4465",
+                        "background": "#141218",
+                        "surface-container-lowest": "#0f0d13",
+                        "on-error": "#690005",
+                        "tertiary-container": "#c9a74d",
+                        "surface-dim": "#141218",
+                        "inverse-primary": "#6750a4",
+                        "secondary-fixed-dim": "#cdc0e9",
+                        "surface-container-highest": "#36343a",
+                        "on-tertiary-fixed": "#241a00",
+                        "inverse-surface": "#e6e0e9",
+                        "error-container": "#93000a",
+                        "on-primary-fixed": "#22005d",
+                        "inverse-on-surface": "#322f35",
+                        "surface-container-low": "#1d1b20",
+                        "on-error-container": "#ffdad6",
+                        "on-tertiary-container": "#503d00",
+                        "on-secondary-fixed": "#1f1635",
+                        "on-background": "#e6e0e9",
+                        "tertiary": "#e7c365",
+                        "on-secondary": "#342b4b",
+                        "on-surface-variant": "#cbc4d2",
+                        "outline-variant": "#494551",
+                        "tertiary-fixed": "#ffdf93",
+                        "on-surface": "#e6e0e9",
+                        "secondary-fixed": "#e9ddff",
+                        "primary-fixed-dim": "#cfbcff",
+                        "primary": "#cfbcff",
+                        "on-primary-fixed-variant": "#4f378a",
+                        "amber-banner": "#F59E0B"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xxl": "3rem",
+                        "margin_mobile": "1rem",
+                        "xs": "0.25rem",
+                        "sm": "0.5rem",
+                        "lg": "1.5rem",
+                        "xl": "2rem",
+                        "gutter": "1rem",
+                        "margin_desktop": "2.5rem",
+                        "md": "1rem"
+                    },
+                    "fontFamily": {
+                        "h1": ["Inter"],
+                        "caption": ["Inter"],
+                        "display-mobile": ["Inter"],
+                        "body": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "h2": ["Inter"],
+                        "display": ["Inter"]
+                    },
+                    "fontSize": {
+                        "h1": ["24px", {"lineHeight": "1.3", "fontWeight": "700"}],
+                        "caption": ["13px", {"lineHeight": "1.4", "fontWeight": "400"}],
+                        "display-mobile": ["40px", {"lineHeight": "1.1", "fontWeight": "700"}],
+                        "body": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                        "label-caps": ["11px", {"lineHeight": "1.0", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                        "h2": ["20px", {"lineHeight": "1.4", "fontWeight": "600"}],
+                        "display": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .glow-primary {
+            box-shadow: 0 0 20px rgba(232,72,15,0.35);
+        }
+        .viewfinder-corner {
+            width: 40px;
+            height: 40px;
+            border-color: theme('colors.primary');
+            position: absolute;
+        }
+        .scan-line {
+            height: 2px;
+            background-color: theme('colors.primary');
+            box-shadow: 0 0 10px theme('colors.primary');
+            animation: scan 2s linear infinite;
+        }
+        @keyframes scan {
+            0% { top: 10%; opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { top: 90%; opacity: 0; }
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body h-screen w-full overflow-hidden flex flex-col relative">
+<!-- Offline Banner -->
+<div class="bg-amber-banner text-on-tertiary font-label-caps text-label-caps py-sm px-md flex items-center justify-center gap-sm absolute top-0 w-full z-[60]">
+<span class="material-symbols-outlined" data-icon="cloud_off" style="font-variation-settings: 'FILL' 1;">cloud_off</span>
+<span>OFFLINE MODE - VERIFYING LOCALLY</span>
+</div>
+<!-- Top Navigation (Task-focused departure) -->
+<header class="sticky top-0 z-50 flex justify-between items-center w-full px-md h-16 pt-8 bg-surface dark:bg-surface">
+<button class="text-primary hover:text-primary-fixed transition-colors flex items-center p-sm rounded-full bg-surface-container-low hover:bg-surface-container">
+<span class="material-symbols-outlined" data-icon="close">close</span>
+</button>
+<h1 class="font-h2 text-h2 text-primary font-bold">Verify Order</h1>
+<button class="text-on-surface-variant hover:text-primary transition-colors flex items-center p-sm rounded-full hover:bg-surface-container">
+<span class="material-symbols-outlined" data-icon="flash_on">flash_on</span>
+</button>
+</header>
+<!-- Main Content Area - Split View for Desktop, Stacked for Mobile -->
+<main class="flex-1 flex flex-col md:flex-row relative">
+<!-- Camera / Scan Area -->
+<section class="flex-1 relative flex flex-col items-center justify-center bg-black min-h-[512px]">
+<!-- Simulated Camera Feed Background -->
+<div class="absolute inset-0 bg-surface-container-highest opacity-50 bg-cover bg-center" data-alt="A blurred perspective view looking down onto a dark, gritty wooden restaurant counter. The lighting is dim, moody, and cinematic, emphasizing deep blacks and a subtle neon-like ambiance suitable for a modern food app background. It feels like a point-of-view shot waiting for a transaction." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuD07cWAMtkjjgU0cA4HtOoAKIq2xI0LOIf3aKnSierbzxPmFWma6GAgftCyPB7vAMytQahpRU7DFLeBqAFGOs9vg9lonoHE--7lU6JHJ9c5goy2s9ia02MLcAYgwgWHu47hkPRwEmMMnA5wns1pKO9bMcZ_HuBfA88SeKahUCr4KPTM7F849bVFXe8d0CLi3tBM0YSkXQIcgO-FQ7Ibg5N0_yoIr3B00i8GBIhh5QfbE8EnXGzTev-s7uazOL4VktDz71Cq7Ey2BYk');"></div>
+<!-- Dark Overlay for focus -->
+<div class="absolute inset-0 bg-black/60"></div>
+<!-- Viewfinder Bracket -->
+<div class="relative w-[280px] h-[280px] z-10">
+<!-- Corners -->
+<div class="viewfinder-corner top-0 left-0 border-t-4 border-l-4 rounded-tl-lg"></div>
+<div class="viewfinder-corner top-0 right-0 border-t-4 border-r-4 rounded-tr-lg"></div>
+<div class="viewfinder-corner bottom-0 left-0 border-b-4 border-l-4 rounded-bl-lg"></div>
+<div class="viewfinder-corner bottom-0 right-0 border-b-4 border-r-4 rounded-br-lg"></div>
+<!-- Animated Scan Line -->
+<div class="absolute left-4 right-4 scan-line z-20"></div>
+<!-- Guidance Text -->
+<div class="absolute -bottom-12 left-0 right-0 text-center font-caption text-caption text-on-surface-variant">
+                    Position QR code within frame
+                </div>
+</div>
+<!-- Scan/Enter Toggle (Mobile overlays, Desktop bottom of frame) -->
+<div class="absolute bottom-margin_mobile md:bottom-xl left-1/2 -translate-x-1/2 flex bg-surface-container-low p-xs rounded-full border border-outline-variant z-20 shadow-lg">
+<button class="px-lg py-sm rounded-full font-label-caps text-label-caps bg-primary-container text-on-primary-container transition-colors flex items-center gap-xs">
+<span class="material-symbols-outlined text-[16px]" data-icon="qr_code_scanner">qr_code_scanner</span>
+                    Scan QR
+                </button>
+<button class="px-lg py-sm rounded-full font-label-caps text-label-caps text-on-surface-variant hover:text-on-surface transition-colors flex items-center gap-xs">
+<span class="material-symbols-outlined text-[16px]" data-icon="dialpad">dialpad</span>
+                    Enter Code
+                </button>
+</div>
+</section>
+<!-- Verification Result / Order Details Panel (Hidden by default, shown for 'success state' demo) -->
+<section class="flex-none md:w-[400px] bg-surface-container flex flex-col border-t md:border-t-0 md:border-l border-outline-variant z-30 shadow-[0_-10px_30px_rgba(0,0,0,0.5)] md:shadow-none transition-transform transform translate-y-0 relative pb-margin_mobile">
+<!-- Draggable indicator for mobile -->
+<div class="w-full flex justify-center py-sm md:hidden">
+<div class="w-12 h-1.5 bg-outline-variant rounded-full"></div>
+</div>
+<div class="p-md md:p-xl flex-1 overflow-y-auto">
+<!-- Success Badge -->
+<div class="flex flex-col items-center text-center mb-xl">
+<div class="w-16 h-16 bg-primary-container/20 rounded-full flex items-center justify-center mb-sm relative">
+<div class="absolute inset-0 rounded-full border-2 border-primary animate-ping opacity-20"></div>
+<span class="material-symbols-outlined text-[32px] text-primary" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<h2 class="font-h2 text-h2 text-primary font-bold">Order Verified</h2>
+<p class="font-caption text-caption text-on-surface-variant">Code matched successfully</p>
+</div>
+<!-- Customer Info Card -->
+<div class="bg-surface-container-high rounded-xl p-md border border-outline-variant mb-md flex items-center gap-md">
+<div class="w-12 h-12 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center font-h2 text-h2 font-bold">
+                        JD
+                    </div>
+<div>
+<h3 class="font-body text-body font-semibold text-on-surface">John Doe</h3>
+<p class="font-caption text-caption text-on-surface-variant">Order #CQ-8829</p>
+</div>
+<div class="ml-auto">
+<span class="px-sm py-xs rounded-full bg-surface-variant text-on-surface-variant font-label-caps text-label-caps">Flash Deal</span>
+</div>
+</div>
+<!-- Order Summary -->
+<div class="bg-surface-container-high rounded-xl p-md border border-outline-variant">
+<h4 class="font-label-caps text-label-caps text-on-surface-variant mb-md">ORDER SUMMARY</h4>
+<ul class="space-y-sm">
+<li class="flex justify-between items-start">
+<div class="flex gap-sm">
+<span class="font-body text-body font-semibold text-primary">2x</span>
+<span class="font-body text-body text-on-surface">Jollof Rice &amp; Chicken</span>
+</div>
+</li>
+<li class="flex justify-between items-start">
+<div class="flex gap-sm">
+<span class="font-body text-body font-semibold text-primary">1x</span>
+<span class="font-body text-body text-on-surface">Fried Plantain Portion</span>
+</div>
+</li>
+</ul>
+<div class="mt-md pt-md border-t border-outline-variant flex justify-between items-center">
+<span class="font-body text-body text-on-surface-variant">Status</span>
+<span class="font-body text-body font-bold text-tertiary">Ready for Pickup</span>
+</div>
+</div>
+</div>
+<!-- Action Button -->
+<div class="p-md pt-0 bg-surface-container">
+<button class="w-full py-md rounded-full bg-primary text-on-primary font-body text-body font-bold flex items-center justify-center gap-sm transition-all hover:bg-primary-fixed glow-primary">
+<span class="material-symbols-outlined" data-icon="shopping_bag">shopping_bag</span>
+                    Mark as Collected
+                </button>
+</div>
+</section>
+</main>
+</body></html>

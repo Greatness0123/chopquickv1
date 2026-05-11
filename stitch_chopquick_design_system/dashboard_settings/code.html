@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ChopQuick Partner - Settings</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-high": "#2b292f",
+                        "secondary": "#cdc0e9",
+                        "on-primary": "#381e72",
+                        "on-tertiary": "#3e2e00",
+                        "on-primary-container": "#e0d2ff",
+                        "primary-fixed": "#e9ddff",
+                        "outline": "#948e9c",
+                        "error": "#ffb4ab",
+                        "surface": "#141218",
+                        "on-secondary-fixed-variant": "#4b4263",
+                        "surface-tint": "#cfbcff",
+                        "surface-variant": "#36343a",
+                        "surface-bright": "#3b383e",
+                        "surface-container": "#211f24",
+                        "tertiary-fixed-dim": "#e7c365",
+                        "on-tertiary-fixed-variant": "#594400",
+                        "on-secondary-container": "#bfb2da",
+                        "primary-container": "#6750a4",
+                        "secondary-container": "#4d4465",
+                        "background": "#141218",
+                        "surface-container-lowest": "#0f0d13",
+                        "on-error": "#690005",
+                        "tertiary-container": "#c9a74d",
+                        "surface-dim": "#141218",
+                        "inverse-primary": "#6750a4",
+                        "secondary-fixed-dim": "#cdc0e9",
+                        "surface-container-highest": "#36343a",
+                        "on-tertiary-fixed": "#241a00",
+                        "inverse-surface": "#e6e0e9",
+                        "error-container": "#93000a",
+                        "on-primary-fixed": "#22005d",
+                        "inverse-on-surface": "#322f35",
+                        "surface-container-low": "#1d1b20",
+                        "on-error-container": "#ffdad6",
+                        "on-tertiary-container": "#503d00",
+                        "on-secondary-fixed": "#1f1635",
+                        "on-background": "#e6e0e9",
+                        "tertiary": "#e7c365",
+                        "on-secondary": "#342b4b",
+                        "on-surface-variant": "#cbc4d2",
+                        "outline-variant": "#494551",
+                        "tertiary-fixed": "#ffdf93",
+                        "on-surface": "#e6e0e9",
+                        "secondary-fixed": "#e9ddff",
+                        "primary-fixed-dim": "#cfbcff",
+                        "primary": "#cfbcff",
+                        "on-primary-fixed-variant": "#4f378a"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xxl": "3rem",
+                        "margin_mobile": "1rem",
+                        "xs": "0.25rem",
+                        "sm": "0.5rem",
+                        "lg": "1.5rem",
+                        "xl": "2rem",
+                        "gutter": "1rem",
+                        "margin_desktop": "2.5rem",
+                        "md": "1rem"
+                    },
+                    "fontFamily": {
+                        "h1": ["Inter"],
+                        "caption": ["Inter"],
+                        "display-mobile": ["Inter"],
+                        "body": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "h2": ["Inter"],
+                        "display": ["Inter"]
+                    },
+                    "fontSize": {
+                        "h1": ["24px", {"lineHeight": "1.3", "fontWeight": "700"}],
+                        "caption": ["13px", {"lineHeight": "1.4", "fontWeight": "400"}],
+                        "display-mobile": ["40px", {"lineHeight": "1.1", "fontWeight": "700"}],
+                        "body": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                        "label-caps": ["11px", {"lineHeight": "1.0", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                        "h2": ["20px", {"lineHeight": "1.4", "fontWeight": "600"}],
+                        "display": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .glow-orange {
+            box-shadow: 0 0 20px rgba(232,72,15,0.35);
+        }
+        .glow-orange-border {
+            border-color: #E8480F;
+        }
+        .primary-accent-bg {
+            background-color: #E8480F;
+        }
+        .primary-accent-text {
+            color: #E8480F;
+        }
+        /* Custom Toggle Switch Styles */
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: #cfbcff;
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: #cfbcff;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body min-h-screen flex flex-col md:flex-row">
+<!-- SideNavBar (Desktop) -->
+<nav class="hidden md:flex flex-col fixed left-0 top-0 h-full w-64 p-md border-r border-outline-variant bg-surface-container dark:bg-surface-container z-40">
+<div class="mb-xl flex items-center gap-sm">
+<div class="w-10 h-10 rounded-full bg-surface-variant flex items-center justify-center overflow-hidden">
+<img alt="Restaurant Logo" class="w-full h-full object-cover" data-alt="A stylized, modern geometric logo for a contemporary restaurant. The design features sharp, intersecting lines in a bold neon orange against a deep charcoal gray background. It exudes a premium, fast-paced culinary energy." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAwwPowoGNo1-P_3q1RkBwPKWOYg4SQC1G0o16ppSg-0lzgGc41rO8iz15_l2KmtSHSCrDTB1o2dsZ8J_KDN-ydgEDh5Gbjz35dBmjecd4_TqVV3kRFQJ7ROBqz6_LhhSmp38gi_LkpNCoYo8JG6M7iQYTVFISkdh62WR91RIbH_EHBwZ_5ikvsDSyeE1DZzUaWQrbBZ9L-Dh0Z_Ds962dYac3bEDTiGA1lf-tP91kfKxvEKBiWX9YVDW2B1tyGh30VWI5-0AKRxFE"/>
+</div>
+<div>
+<h2 class="text-h2 font-h2 text-on-surface line-clamp-1">Mama's Kitchen</h2>
+<p class="text-caption font-caption text-on-surface-variant line-clamp-1">Lagos Island Branch</p>
+</div>
+</div>
+<button class="w-full mb-xl py-sm px-md rounded-full primary-accent-bg text-on-primary font-body text-body glow-orange font-semibold hover:opacity-90 transition-opacity">
+            Create Flash Deal
+        </button>
+<div class="flex-1 flex flex-col gap-sm">
+<a class="flex items-center gap-md text-on-surface-variant hover:bg-surface-variant rounded-lg px-md py-sm hover:text-primary transition-all" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">dashboard</span>
+<span class="font-body text-body">Dashboard</span>
+</a>
+<a class="flex items-center gap-md text-on-surface-variant hover:bg-surface-variant rounded-lg px-md py-sm hover:text-primary transition-all" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">storefront</span>
+<span class="font-body text-body">Listings</span>
+</a>
+<a class="flex items-center gap-md text-on-surface-variant hover:bg-surface-variant rounded-lg px-md py-sm hover:text-primary transition-all" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">analytics</span>
+<span class="font-body text-body">Reports</span>
+</a>
+<a class="flex items-center gap-md bg-secondary-container text-on-secondary-container rounded-lg px-md py-sm scale-95 transition-all" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">settings</span>
+<span class="font-body text-body font-bold">Settings</span>
+</a>
+</div>
+<div class="mt-auto flex flex-col gap-sm pt-md border-t border-outline-variant">
+<a class="flex items-center gap-md text-on-surface-variant hover:bg-surface-variant rounded-lg px-md py-sm transition-all" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">help</span>
+<span class="font-body text-body">Help Center</span>
+</a>
+<a class="flex items-center gap-md text-error hover:bg-error-container/20 rounded-lg px-md py-sm transition-all" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">logout</span>
+<span class="font-body text-body">Logout</span>
+</a>
+</div>
+</nav>
+<!-- TopNavBar (Mobile) -->
+<header class="md:hidden sticky top-0 z-50 flex justify-between items-center w-full px-md h-16 bg-surface dark:bg-surface border-b border-outline-variant dark:border-outline-variant shadow-none">
+<h1 class="text-h1 font-h1 text-primary dark:text-primary">ChopQuick Partner</h1>
+<div class="flex items-center gap-sm">
+<button class="text-on-surface-variant hover:text-primary transition-colors p-xs rounded-full">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">notifications</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary transition-colors p-xs rounded-full">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">account_circle</span>
+</button>
+</div>
+</header>
+<!-- Main Canvas -->
+<main class="flex-1 md:ml-64 p-margin_mobile md:p-margin_desktop w-full max-w-7xl mx-auto overflow-y-auto">
+<header class="mb-xl flex flex-col md:flex-row md:items-end justify-between gap-md">
+<div>
+<h1 class="font-display text-display text-on-surface">Settings</h1>
+<p class="font-body text-body text-on-surface-variant mt-sm">Manage your restaurant profile, preferences, and security.</p>
+</div>
+<div class="flex gap-sm">
+<button class="px-lg py-sm rounded-full border border-outline text-on-surface hover:bg-surface-variant transition-colors font-body text-body">Discard</button>
+<button class="px-lg py-sm rounded-full bg-primary text-on-primary hover:opacity-90 transition-opacity font-body text-body font-semibold">Save Changes</button>
+</div>
+</header>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<!-- Left Column: Profile & Hours -->
+<div class="lg:col-span-8 flex flex-col gap-gutter">
+<!-- Restaurant Profile Card -->
+<section class="bg-surface-container rounded-xl border border-outline-variant p-lg md:p-xl">
+<h2 class="font-h2 text-h2 text-on-surface mb-lg flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary">store</span>
+                        Restaurant Profile
+                    </h2>
+<div class="flex flex-col md:flex-row gap-lg mb-lg">
+<div class="flex flex-col items-center gap-sm shrink-0">
+<div class="w-32 h-32 rounded-xl bg-surface-variant border border-outline-variant overflow-hidden relative group cursor-pointer">
+<img alt="Restaurant Profile Picture" class="w-full h-full object-cover" data-alt="A modern, high-contrast photograph of a sleek restaurant interior. Deep charcoal walls are accented by vibrant, neon orange lighting fixtures. The atmosphere is energetic and premium, suited for a fast-paced urban dining experience." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCXWyEjjM0CnEe1Dv7G5gKzFFBbmj4D-3fm79jUyK7Ea-mS-P2LXOIoFgzt3Ao7-1V5Ll5MLxAzYDktpnbm_mcHKxIDv-esxHmYyiLrslE1ANnENXKi0_P0iwc5RzdsX7X1kL0ucuLiyublOV6k5PaoC_Pp9FscTRKwF0z5hfCn0eVVsOUe0RsF_KZikIvZzxqEVgJOIjf-zzTCXhtKm8XvqAQAQxFBdJx5T3m732boWSuCIlDSs9klET0VILIjrDLeXckjTUvzOqI"/>
+<div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+<span class="material-symbols-outlined text-white">photo_camera</span>
+</div>
+</div>
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Update Logo</span>
+</div>
+<div class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-md">
+<div class="md:col-span-2">
+<label class="block font-caption text-caption text-on-surface-variant mb-xs">Restaurant Name</label>
+<input class="w-full bg-surface-container-high border border-outline-variant rounded-lg p-sm text-on-surface focus:border-primary focus:ring-1 focus:ring-primary transition-all font-body text-body" type="text" value="Mama's Kitchen"/>
+</div>
+<div>
+<label class="block font-caption text-caption text-on-surface-variant mb-xs">Email Address</label>
+<input class="w-full bg-surface-container-high border border-outline-variant rounded-lg p-sm text-on-surface focus:border-primary focus:ring-1 focus:ring-primary transition-all font-body text-body" type="email" value="contact@mamaskitchen.com"/>
+</div>
+<div>
+<label class="block font-caption text-caption text-on-surface-variant mb-xs">Phone Number</label>
+<input class="w-full bg-surface-container-high border border-outline-variant rounded-lg p-sm text-on-surface focus:border-primary focus:ring-1 focus:ring-primary transition-all font-body text-body" type="tel" value="+234 800 123 4567"/>
+</div>
+<div class="md:col-span-2">
+<label class="block font-caption text-caption text-on-surface-variant mb-xs">Full Address</label>
+<input class="w-full bg-surface-container-high border border-outline-variant rounded-lg p-sm text-on-surface focus:border-primary focus:ring-1 focus:ring-primary transition-all font-body text-body" type="text" value="15 Marina Road, Lagos Island, Lagos"/>
+</div>
+</div>
+</div>
+</section>
+<!-- Opening Hours Card -->
+<section class="bg-surface-container rounded-xl border border-outline-variant p-lg md:p-xl">
+<h2 class="font-h2 text-h2 text-on-surface mb-lg flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary">schedule</span>
+                        Opening Hours
+                    </h2>
+<div class="flex flex-col gap-sm">
+<!-- Monday -->
+<div class="flex items-center justify-between p-sm rounded-lg hover:bg-surface-variant/50 transition-colors">
+<div class="flex items-center gap-md w-32">
+<div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+<input checked="" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-surface border-4 appearance-none cursor-pointer border-outline transition-all duration-300 z-10" id="toggle_mon" name="toggle_mon" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-5 rounded-full bg-outline-variant cursor-pointer transition-all duration-300" for="toggle_mon"></label>
+</div>
+<span class="font-body text-body text-on-surface">Mon</span>
+</div>
+<div class="flex items-center gap-sm flex-1 justify-end">
+<input class="bg-surface-container-high border border-outline-variant rounded-lg p-xs text-on-surface text-center focus:border-primary font-body text-body w-28" type="time" value="09:00"/>
+<span class="text-on-surface-variant">-</span>
+<input class="bg-surface-container-high border border-outline-variant rounded-lg p-xs text-on-surface text-center focus:border-primary font-body text-body w-28" type="time" value="22:00"/>
+</div>
+</div>
+<!-- Tuesday -->
+<div class="flex items-center justify-between p-sm rounded-lg hover:bg-surface-variant/50 transition-colors">
+<div class="flex items-center gap-md w-32">
+<div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+<input checked="" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-surface border-4 appearance-none cursor-pointer border-outline transition-all duration-300 z-10" id="toggle_tue" name="toggle_tue" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-5 rounded-full bg-outline-variant cursor-pointer transition-all duration-300" for="toggle_tue"></label>
+</div>
+<span class="font-body text-body text-on-surface">Tue</span>
+</div>
+<div class="flex items-center gap-sm flex-1 justify-end">
+<input class="bg-surface-container-high border border-outline-variant rounded-lg p-xs text-on-surface text-center focus:border-primary font-body text-body w-28" type="time" value="09:00"/>
+<span class="text-on-surface-variant">-</span>
+<input class="bg-surface-container-high border border-outline-variant rounded-lg p-xs text-on-surface text-center focus:border-primary font-body text-body w-28" type="time" value="22:00"/>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Right Column: Settings, Security & Danger -->
+<div class="lg:col-span-4 flex flex-col gap-gutter">
+<!-- Green Partner Badge -->
+<section class="bg-surface-container-highest rounded-xl border border-tertiary-fixed/30 p-lg relative overflow-hidden">
+<div class="absolute -right-4 -top-4 w-24 h-24 bg-tertiary blur-3xl opacity-20 rounded-full"></div>
+<div class="flex items-start gap-md relative z-10">
+<div class="p-sm bg-tertiary-container rounded-full text-on-tertiary-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">eco</span>
+</div>
+<div>
+<h3 class="font-h2 text-h2 text-tertiary-fixed">Green Partner</h3>
+<p class="font-caption text-caption text-on-surface-variant mt-xs">You are actively reducing food waste in Lagos. Displaying badge on customer app.</p>
+</div>
+</div>
+</section>
+<!-- Notifications -->
+<section class="bg-surface-container rounded-xl border border-outline-variant p-lg">
+<h2 class="font-h2 text-h2 text-on-surface mb-md flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary">notifications_active</span>
+                        Notifications
+                    </h2>
+<div class="flex flex-col gap-md">
+<div class="flex items-center justify-between">
+<div>
+<span class="font-body text-body text-on-surface block">WhatsApp Alerts</span>
+<span class="font-caption text-caption text-on-surface-variant">Instant order updates</span>
+</div>
+<div class="relative inline-block w-10 align-middle select-none transition duration-200 ease-in">
+<input checked="" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-surface border-4 appearance-none cursor-pointer border-outline transition-all duration-300 z-10" id="toggle_wa" name="toggle_wa" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-5 rounded-full bg-outline-variant cursor-pointer transition-all duration-300" for="toggle_wa"></label>
+</div>
+</div>
+<div class="flex items-center justify-between">
+<div>
+<span class="font-body text-body text-on-surface block">Email Reports</span>
+<span class="font-caption text-caption text-on-surface-variant">Weekly performance summary</span>
+</div>
+<div class="relative inline-block w-10 align-middle select-none transition duration-200 ease-in">
+<input class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-surface border-4 appearance-none cursor-pointer border-outline transition-all duration-300 z-10" id="toggle_email" name="toggle_email" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-5 rounded-full bg-outline-variant cursor-pointer transition-all duration-300" for="toggle_email"></label>
+</div>
+</div>
+</div>
+</section>
+<!-- Danger Zone -->
+<section class="bg-error-container/10 rounded-xl border border-error/30 p-lg mt-auto">
+<h2 class="font-h2 text-h2 text-error mb-sm flex items-center gap-sm">
+<span class="material-symbols-outlined text-error">warning</span>
+                        Danger Zone
+                    </h2>
+<p class="font-caption text-caption text-on-surface-variant mb-md">Permanently delete your restaurant account and all associated data. This action cannot be undone.</p>
+<button class="w-full py-sm rounded-full border border-error text-error hover:bg-error hover:text-on-error transition-colors font-body text-body font-semibold">
+                        Delete Account
+                    </button>
+</section>
+</div>
+</div>
+</main>
+<!-- BottomNavBar (Mobile) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full bg-surface-container-high border-t border-outline-variant z-50 px-md py-sm flex justify-around items-center pb-safe">
+<a class="flex flex-col items-center gap-1 text-on-surface-variant hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">dashboard</span>
+<span class="font-label-caps text-label-caps">Home</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-on-surface-variant hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">storefront</span>
+<span class="font-label-caps text-label-caps">Listings</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-primary" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">settings</span>
+<span class="font-label-caps text-label-caps font-bold">Settings</span>
+</a>
+</nav>
+</body></html>

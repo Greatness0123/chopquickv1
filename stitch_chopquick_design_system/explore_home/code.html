@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ChopQuick - Home</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-fixed-variant": "#594400",
+                        "on-primary": "#381e72",
+                        "tertiary-fixed": "#ffdf93",
+                        "outline-variant": "#494551",
+                        "tertiary-container": "#c9a74d",
+                        "on-background": "#e6e0e9",
+                        "primary-fixed-dim": "#cfbcff",
+                        "on-secondary-fixed": "#1f1635",
+                        "inverse-surface": "#e6e0e9",
+                        "on-secondary-container": "#bfb2da",
+                        "primary-fixed": "#e9ddff",
+                        "surface-dim": "#141218",
+                        "surface": "#141218",
+                        "on-secondary": "#342b4b",
+                        "error": "#ffb4ab",
+                        "primary-container": "#6750a4",
+                        "surface-variant": "#36343a",
+                        "error-container": "#93000a",
+                        "on-tertiary": "#3e2e00",
+                        "on-tertiary-container": "#503d00",
+                        "surface-container-highest": "#36343a",
+                        "on-primary-fixed-variant": "#4f378a",
+                        "primary": "#cfbcff",
+                        "background": "#141218",
+                        "surface-container-high": "#2b292f",
+                        "tertiary-fixed-dim": "#e7c365",
+                        "on-surface-variant": "#cbc4d2",
+                        "on-primary-fixed": "#22005d",
+                        "surface-container-low": "#1d1b20",
+                        "surface-container-lowest": "#0f0d13",
+                        "surface-container": "#211f24",
+                        "on-surface": "#e6e0e9",
+                        "surface-tint": "#cfbcff",
+                        "secondary-fixed": "#e9ddff",
+                        "on-error": "#690005",
+                        "on-tertiary-fixed": "#241a00",
+                        "on-primary-container": "#e0d2ff",
+                        "secondary-fixed-dim": "#cdc0e9",
+                        "surface-bright": "#3b383e",
+                        "tertiary": "#e7c365",
+                        "outline": "#948e9c",
+                        "secondary": "#cdc0e9",
+                        "secondary-container": "#4d4465",
+                        "inverse-on-surface": "#322f35",
+                        "on-secondary-fixed-variant": "#4b4263",
+                        "inverse-primary": "#6750a4",
+                        "on-error-container": "#ffdad6"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "lg": "1.5rem",
+                        "margin_mobile": "1rem",
+                        "sm": "0.5rem",
+                        "margin_desktop": "2.5rem",
+                        "xxl": "3rem",
+                        "xl": "2rem",
+                        "gutter": "1rem",
+                        "xs": "0.25rem",
+                        "md": "1rem"
+                    },
+                    "fontFamily": {
+                        "caption": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "display": ["Inter"],
+                        "h1": ["Inter"],
+                        "h2": ["Inter"],
+                        "body": ["Inter"],
+                        "display-mobile": ["Inter"]
+                    },
+                    "fontSize": {
+                        "caption": ["13px", {"lineHeight": "1.4", "fontWeight": "400"}],
+                        "label-caps": ["11px", {"lineHeight": "1.0", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                        "display": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "h1": ["24px", {"lineHeight": "1.3", "fontWeight": "700"}],
+                        "h2": ["20px", {"lineHeight": "1.4", "fontWeight": "600"}],
+                        "body": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                        "display-mobile": ["40px", {"lineHeight": "1.1", "fontWeight": "700"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .glow-accent {
+            box-shadow: 0 0 20px rgba(232,72,15,0.35);
+        }
+        .text-glow {
+            text-shadow: 0 0 10px rgba(232,72,15,0.5);
+        }
+        .urgent-border {
+            border-color: #E8480F; /* ChopQuick Orange approximate fallback if not in config, but using closest primary if needed. Let's use custom class for the signature orange since it's not in the strict color palette but mentioned in style guidance. Actually, the prompt says "Always use the named colors from the config". I will use primary/tertiary colors from config for accents. */
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body min-h-screen flex flex-col antialiased">
+<!-- Top App Bar (Sticky) -->
+<header class="sticky top-0 w-full z-50 bg-surface dark:bg-surface flex justify-between items-center px-margin_mobile h-16 transition-opacity duration-200">
+<div class="flex items-center gap-xs cursor-pointer hover:opacity-80">
+<span class="material-symbols-outlined text-primary dark:text-primary">location_on</span>
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Delivering to</span>
+<div class="flex items-center gap-xs">
+<span class="font-h2 text-h2 font-bold text-primary dark:text-primary">Ikeja, Lagos</span>
+<span class="material-symbols-outlined text-primary dark:text-primary">expand_more</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:opacity-80">search</span>
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:opacity-80">notifications</span>
+</div>
+</header>
+<!-- Main Content -->
+<main class="flex-grow px-margin_mobile md:px-margin_desktop pb-24 pt-md space-y-xl">
+<!-- Search Bar (Mobile only, hidden on desktop if part of top bar there) -->
+<div class="w-full h-10 bg-surface-container rounded-lg flex items-center px-md border border-outline-variant focus-within:border-primary transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant mr-sm">search</span>
+<input class="bg-transparent border-none focus:ring-0 w-full text-on-surface font-body text-body placeholder-on-surface-variant outline-none" placeholder="Search for restaurants, dishes..." type="text"/>
+</div>
+<!-- Deals Section -->
+<section class="space-y-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-sm">
+<h2 class="font-h1 text-h1 text-on-surface">Deals ending soon</h2>
+<span class="bg-error-container text-on-error-container font-label-caps text-label-caps px-sm py-xs rounded-full flex items-center gap-xs animate-pulse">
+<span class="w-2 h-2 rounded-full bg-error"></span>
+                        LIVE
+                    </span>
+</div>
+<span class="text-primary font-caption text-caption cursor-pointer hover:underline">View all</span>
+</div>
+<!-- Bento Grid for Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-md">
+<!-- Deal Card 1 (Urgent Flash Deal) -->
+<div class="bg-surface-container-high rounded-xl overflow-hidden border border-tertiary glow-accent flex flex-col">
+<div class="relative h-40 w-full">
+<img alt="Jollof Rice" class="w-full h-full object-cover" data-alt="A high-quality, appetizing close-up of traditional Nigerian Jollof rice with grilled chicken, served in a sleek, modern dark slate bowl. The lighting is dramatic and warm, highlighting the rich red and orange hues of the dish against a moody, deep black background. The overall aesthetic is premium, high-contrast, and deeply aligned with a dark-mode food delivery interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCQTU5kf3kYjAV-PNnIkN--Mi4bdQlTJY6Ihp03TvpyBJUEBMM7zqFizSeSpDHhe99CTpb7Gzr1lO1DsEkIpYQQ92v4IV1mmlldaTOh7qZUbthTRjhUZO87m2fu223-7hW-9LpWRxyg6gkGyUKBRu3jaHfwlrER6BjPwY8z-UW_TBHWJpURwO0r6WWo0IqrXZ4ap0PLO3AU6iUZPQzbntIMxH9bivDv7wfK3b7RKS1sY1ehR0C5yG3dDmEk2aK7un2pOeefvyfaQPc"/>
+<div class="absolute top-sm right-sm bg-tertiary text-on-tertiary font-h2 text-h2 px-sm py-xs rounded-lg font-bold">
+                            60% OFF
+                        </div>
+</div>
+<div class="p-md flex-grow flex flex-col gap-sm">
+<div class="flex justify-between items-start">
+<div>
+<h3 class="font-h2 text-h2 text-on-surface">Mama Cass - Jollof Combo</h3>
+<div class="flex items-center gap-xs text-on-surface-variant font-caption text-caption mt-xs">
+<span class="material-symbols-outlined" style="font-size: 16px;">directions_bike</span>
+<span>2.5 km away</span>
+</div>
+</div>
+</div>
+<div class="mt-auto space-y-sm">
+<div class="flex items-center justify-between font-caption text-caption">
+<span class="text-error font-medium flex items-center gap-xs">
+<span class="material-symbols-outlined" style="font-size: 14px;">local_fire_department</span>
+                                    Only 4 left!
+                                </span>
+</div>
+<div class="w-full bg-surface-container-highest rounded-full h-1.5">
+<div class="bg-tertiary h-1.5 rounded-full" style="width: 20%"></div>
+</div>
+<div class="flex items-center justify-between pt-sm">
+<div class="flex flex-col">
+<span class="text-on-surface-variant line-through font-caption text-caption">₦2,800</span>
+<span class="text-tertiary font-h2 text-h2 font-bold">₦1,120</span>
+</div>
+<button class="bg-tertiary text-on-tertiary font-body text-body font-semibold px-md py-sm rounded-full hover:bg-tertiary-container transition-colors">
+                                    ORDER NOW
+                                </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Deal Card 2 -->
+<div class="bg-surface-container rounded-xl overflow-hidden border border-outline-variant flex flex-col">
+<div class="relative h-40 w-full">
+<img alt="Suya" class="w-full h-full object-cover" data-alt="A mouth-watering shot of freshly grilled beef suya on a dark wooden platter, garnished with sliced red onions and cabbage. A small pile of vibrant yaji spice sits next to the meat. The lighting is moody and focused, emphasizing the charred textures and deep colors. The composition fits perfectly within a sleek, dark-themed culinary app design." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAwAFGORjZRGQuOMVCWfhldclU2JTsMO1mLt6k8CrMft-MVKTcJUj9HCO2C0rovhe7K7NuicroZZY9vmo7j1Fgv7unJrfEVRe-_OFKenL-K95VOn4W0Uf-z8lqHMZInwJU3X2mu3p5mI2ajB7b5EG1empQklBDYtKH6F1hbxpuRtwdH2Fh_svkCZvPsMix0hyINtpw0eOoKN5M5GUkF7mJcZkFiRBPUkPGyVM9cTDKY0aD823Glq40A0SGswA45_c7LFLt06pxBm_c"/>
+<div class="absolute top-sm right-sm bg-primary text-on-primary font-h2 text-h2 px-sm py-xs rounded-lg font-bold">
+                            40% OFF
+                        </div>
+</div>
+<div class="p-md flex-grow flex flex-col gap-sm">
+<div class="flex justify-between items-start">
+<div>
+<h3 class="font-h2 text-h2 text-on-surface">University Suya Spot</h3>
+<div class="flex items-center gap-xs text-on-surface-variant font-caption text-caption mt-xs">
+<span class="material-symbols-outlined" style="font-size: 16px;">directions_bike</span>
+<span>1.2 km away</span>
+</div>
+</div>
+</div>
+<div class="mt-auto space-y-sm">
+<div class="flex items-center justify-between font-caption text-caption">
+<span class="text-on-surface-variant font-medium">
+                                    12 portions left
+                                </span>
+</div>
+<div class="w-full bg-surface-container-highest rounded-full h-1.5">
+<div class="bg-primary h-1.5 rounded-full" style="width: 60%"></div>
+</div>
+<div class="flex items-center justify-between pt-sm">
+<div class="flex flex-col">
+<span class="text-on-surface-variant line-through font-caption text-caption">₦1,500</span>
+<span class="text-primary font-h2 text-h2 font-bold">₦900</span>
+</div>
+<button class="border border-outline-variant text-on-surface font-body text-body font-semibold px-md py-sm rounded-full hover:bg-surface-variant transition-colors">
+                                    Add to cart
+                                </button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Bottom Nav Bar (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 w-full z-50 rounded-t-xl bg-surface-container dark:bg-surface-container shadow-lg border-t border-outline-variant dark:border-outline-variant flex justify-around items-center px-4 py-2">
+<a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full px-4 py-1 active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined">explore</span>
+<span class="font-caption text-caption mt-1">Explore</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-variant transition-colors active:scale-95 duration-150 rounded-lg p-1" href="#">
+<span class="material-symbols-outlined">receipt_long</span>
+<span class="font-caption text-caption mt-1">Orders</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-variant transition-colors active:scale-95 duration-150 rounded-lg p-1" href="#">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+<span class="font-caption text-caption mt-1">Wallet</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-variant transition-colors active:scale-95 duration-150 rounded-lg p-1" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="font-caption text-caption mt-1">Profile</span>
+</a>
+</nav>
+</body></html>

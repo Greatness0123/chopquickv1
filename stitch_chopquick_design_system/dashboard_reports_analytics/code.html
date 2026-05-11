@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ChopQuick Partner - Reports &amp; Analytics</title>
+<!-- Fonts & Icons -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-high": "#2b292f",
+                        "secondary": "#cdc0e9",
+                        "on-primary": "#381e72",
+                        "on-tertiary": "#3e2e00",
+                        "on-primary-container": "#e0d2ff",
+                        "primary-fixed": "#e9ddff",
+                        "outline": "#948e9c",
+                        "error": "#ffb4ab",
+                        "surface": "#141218",
+                        "on-secondary-fixed-variant": "#4b4263",
+                        "surface-tint": "#cfbcff",
+                        "surface-variant": "#36343a",
+                        "surface-bright": "#3b383e",
+                        "surface-container": "#211f24",
+                        "tertiary-fixed-dim": "#e7c365",
+                        "on-tertiary-fixed-variant": "#594400",
+                        "on-secondary-container": "#bfb2da",
+                        "primary-container": "#6750a4",
+                        "secondary-container": "#4d4465",
+                        "background": "#141218",
+                        "surface-container-lowest": "#0f0d13",
+                        "on-error": "#690005",
+                        "tertiary-container": "#c9a74d",
+                        "surface-dim": "#141218",
+                        "inverse-primary": "#6750a4",
+                        "secondary-fixed-dim": "#cdc0e9",
+                        "surface-container-highest": "#36343a",
+                        "on-tertiary-fixed": "#241a00",
+                        "inverse-surface": "#e6e0e9",
+                        "error-container": "#93000a",
+                        "on-primary-fixed": "#22005d",
+                        "inverse-on-surface": "#322f35",
+                        "surface-container-low": "#1d1b20",
+                        "on-error-container": "#ffdad6",
+                        "on-tertiary-container": "#503d00",
+                        "on-secondary-fixed": "#1f1635",
+                        "on-background": "#e6e0e9",
+                        "tertiary": "#e7c365",
+                        "on-secondary": "#342b4b",
+                        "on-surface-variant": "#cbc4d2",
+                        "outline-variant": "#494551",
+                        "tertiary-fixed": "#ffdf93",
+                        "on-surface": "#e6e0e9",
+                        "secondary-fixed": "#e9ddff",
+                        "primary-fixed-dim": "#cfbcff",
+                        "primary": "#cfbcff",
+                        "on-primary-fixed-variant": "#4f378a"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xxl": "3rem",
+                        "margin_mobile": "1rem",
+                        "xs": "0.25rem",
+                        "sm": "0.5rem",
+                        "lg": "1.5rem",
+                        "xl": "2rem",
+                        "gutter": "1rem",
+                        "margin_desktop": "2.5rem",
+                        "md": "1rem"
+                    },
+                    "fontFamily": {
+                        "h1": ["Inter"],
+                        "caption": ["Inter"],
+                        "display-mobile": ["Inter"],
+                        "body": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "h2": ["Inter"],
+                        "display": ["Inter"]
+                    },
+                    "fontSize": {
+                        "h1": ["24px", { "lineHeight": "1.3", "fontWeight": "700" }],
+                        "caption": ["13px", { "lineHeight": "1.4", "fontWeight": "400" }],
+                        "display-mobile": ["40px", { "lineHeight": "1.1", "fontWeight": "700" }],
+                        "body": ["16px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "label-caps": ["11px", { "lineHeight": "1.0", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "h2": ["20px", { "lineHeight": "1.4", "fontWeight": "600" }],
+                        "display": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background text-on-surface font-body text-body antialiased flex">
+<!-- SideNavBar (Desktop Shell) -->
+<nav class="hidden md:flex flex-col fixed left-0 top-0 h-full w-64 p-md border-r border-outline-variant bg-surface-container z-40">
+<!-- Brand & Context -->
+<div class="flex items-center gap-sm mb-xl">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container overflow-hidden">
+<img alt="Mama's Kitchen" class="w-full h-full object-cover" data-alt="A highly detailed, vibrant photograph of a rustic, modern restaurant facade with warm glowing neon signage against a dark moody street setting, emphasizing deep blacks and rich urban textures." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCDj4xEXd0UYFzsw8hA5jNO86prPAmzTBYkUA8chugUTuISwad3-gSU_DJ48URmUw4JI_pEF5W5ikFHzEzbMO_mMCFaAsdItQpzCHYsY5WunpcTsuy-UkpOeqx83R_Ld5oV--ValCUXkyre3i5-phyEfkH8x-hX1SOWkxiJeqBg7McRyhpfGCsCtPiQTBve1Z4UBh4n-4ncqBiDsZybiwpaN5zFno8WIwZuBdPK8puvPM4MVnb92NzZKpNdurLJVfSqmVqLkzSix-E"/>
+</div>
+<div>
+<h2 class="font-h2 text-h2 text-on-surface leading-tight">Mama's Kitchen</h2>
+<span class="font-caption text-caption text-on-surface-variant block">Lagos Island Branch</span>
+</div>
+</div>
+<!-- Primary Navigation -->
+<div class="flex flex-col gap-sm flex-grow">
+<!-- Dashboard (Inactive) -->
+<a class="flex items-center gap-md text-on-surface-variant hover:bg-surface-variant rounded-lg px-md py-sm transition-all group" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span>Dashboard</span>
+</a>
+<!-- Listings (Inactive) -->
+<a class="flex items-center gap-md text-on-surface-variant hover:bg-surface-variant rounded-lg px-md py-sm transition-all group" href="#">
+<span class="material-symbols-outlined" data-icon="storefront">storefront</span>
+<span>Listings</span>
+</a>
+<!-- Reports (Active) -->
+<a aria-current="page" class="flex items-center gap-md bg-secondary-container text-on-secondary-container rounded-lg px-md py-sm transition-all scale-95 opacity-80" href="#">
+<span class="material-symbols-outlined" data-icon="analytics" style="font-variation-settings: 'FILL' 1;">analytics</span>
+<span class="font-bold">Reports</span>
+</a>
+<!-- Settings (Inactive) -->
+<a class="flex items-center gap-md text-on-surface-variant hover:bg-surface-variant rounded-lg px-md py-sm transition-all group" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span>Settings</span>
+</a>
+</div>
+<!-- Footer Navigation & CTA -->
+<div class="flex flex-col gap-md mt-auto pt-md border-t border-outline-variant">
+<button class="w-full bg-primary text-on-primary font-bold rounded-full py-sm px-md flex items-center justify-center gap-xs hover:bg-primary-fixed transition-colors shadow-[0_0_20px_rgba(207,188,255,0.2)]">
+<span class="material-symbols-outlined text-[20px]" data-icon="bolt">bolt</span>
+                Create Flash Deal
+            </button>
+<a class="flex items-center gap-md text-on-surface-variant hover:bg-surface-variant rounded-lg px-md py-sm transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+<span>Help Center</span>
+</a>
+<a class="flex items-center gap-md text-error hover:bg-error-container/20 rounded-lg px-md py-sm transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+<span>Logout</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Canvas Wrapper -->
+<div class="flex-1 flex flex-col min-h-screen md:ml-64 w-full">
+<!-- TopNavBar -->
+<header class="sticky top-0 z-50 flex justify-between items-center w-full px-md h-16 bg-surface border-b border-outline-variant">
+<div class="flex items-center gap-md">
+<!-- Mobile menu toggle (omitted logic, visually present) -->
+<button class="md:hidden text-on-surface-variant p-sm rounded-full hover:bg-surface-variant">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<h1 class="font-h1 text-h1 text-primary hidden sm:block tracking-tight">ChopQuick Partner</h1>
+</div>
+<div class="flex items-center gap-md">
+<div class="hidden lg:flex items-center gap-sm">
+<span class="relative flex h-3 w-3">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-tertiary opacity-75"></span>
+<span class="relative inline-flex rounded-full h-3 w-3 bg-tertiary"></span>
+</span>
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Live</span>
+</div>
+<button class="hidden sm:flex text-on-surface-variant hover:text-primary transition-colors border border-outline-variant rounded-full px-sm py-xs items-center gap-xs text-sm font-medium">
+<span class="material-symbols-outlined text-[18px]">swap_horiz</span>
+                    Switch Branch
+                </button>
+<div class="flex items-center gap-sm border-l border-outline-variant pl-md ml-sm">
+<button class="text-on-surface-variant hover:text-primary transition-colors relative">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="absolute top-0 right-0 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+</button>
+</div>
+</div>
+</header>
+<!-- Page Content -->
+<main class="flex-1 p-md md:p-xl flex flex-col gap-xl overflow-y-auto">
+<!-- Page Header Controls -->
+<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-md">
+<div>
+<h2 class="font-display text-[32px] font-bold text-on-surface leading-tight tracking-tight">Performance Overview</h2>
+<p class="font-caption text-caption text-on-surface-variant mt-1">Track your impact and revenue recovery across listings.</p>
+</div>
+<div class="flex flex-wrap items-center gap-sm w-full sm:w-auto">
+<!-- Date Picker -->
+<button class="flex-1 sm:flex-none flex items-center justify-between gap-md bg-surface-container-high border border-outline-variant hover:border-outline rounded-full px-lg py-sm transition-colors text-sm font-medium">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-[18px] text-on-surface-variant">calendar_today</span>
+<span>Last 30 Days</span>
+</div>
+<span class="material-symbols-outlined text-[18px] text-on-surface-variant">arrow_drop_down</span>
+</button>
+<!-- Actions -->
+<button class="flex items-center gap-xs border border-outline-variant text-on-surface hover:bg-surface-variant rounded-full px-md py-sm transition-colors text-sm font-medium">
+<span class="material-symbols-outlined text-[18px]">download</span>
+<span class="hidden sm:inline">Export PDF</span>
+</button>
+<button class="flex items-center gap-xs bg-primary text-on-primary rounded-full px-md py-sm font-semibold transition-transform hover:scale-[1.02] active:scale-95 shadow-[0_0_15px_rgba(207,188,255,0.25)] text-sm">
+<span class="material-symbols-outlined text-[18px]">share</span>
+                        Share Impact Card
+                    </button>
+</div>
+</div>
+<!-- Stats Grid (Bento Style) -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-md md:gap-lg">
+<!-- Stat: Total Revenue Recovered -->
+<div class="bg-surface-container rounded-xl p-lg border border-outline-variant flex flex-col justify-between relative overflow-hidden group hover:border-outline transition-colors">
+<div class="absolute -right-6 -top-6 w-24 h-24 bg-primary/5 rounded-full blur-xl group-hover:bg-primary/10 transition-colors"></div>
+<div>
+<div class="flex justify-between items-start mb-md">
+<span class="font-caption text-caption text-on-surface-variant uppercase tracking-wider">Revenue Recovered</span>
+<span class="material-symbols-outlined text-primary bg-primary/10 p-sm rounded-full">account_balance_wallet</span>
+</div>
+<h3 class="font-display text-[36px] font-bold text-on-surface tracking-tight">₦145.5k</h3>
+</div>
+<div class="flex items-center gap-xs mt-sm bg-surface-container-highest w-max px-sm py-1 rounded-full border border-outline-variant/50">
+<span class="material-symbols-outlined text-[16px] text-tertiary">trending_up</span>
+<span class="font-label-caps text-label-caps text-tertiary">+12.4% vs last month</span>
+</div>
+</div>
+<!-- Stat: Total Meals Saved -->
+<div class="bg-surface-container rounded-xl p-lg border border-outline-variant flex flex-col justify-between relative overflow-hidden hover:border-outline transition-colors">
+<div class="absolute -left-8 -bottom-8 w-32 h-32 bg-secondary/5 rounded-full blur-2xl"></div>
+<div>
+<div class="flex justify-between items-start mb-md">
+<span class="font-caption text-caption text-on-surface-variant uppercase tracking-wider">Total Meals Saved</span>
+<span class="material-symbols-outlined text-secondary bg-secondary/10 p-sm rounded-full" data-icon="eco" style="font-variation-settings: 'FILL' 1;">eco</span>
+</div>
+<h3 class="font-display text-[36px] font-bold text-on-surface tracking-tight">342</h3>
+</div>
+<p class="font-caption text-caption text-on-surface-variant mt-sm">Equivalents of 185kg CO₂ prevented</p>
+</div>
+<!-- Stat: Portions Sold vs Listed -->
+<div class="bg-surface-container rounded-xl p-lg border border-outline-variant flex flex-col justify-between hover:border-outline transition-colors">
+<div class="flex justify-between items-start mb-md">
+<span class="font-caption text-caption text-on-surface-variant uppercase tracking-wider">Sell-Through Rate</span>
+<span class="material-symbols-outlined text-on-surface-variant">pie_chart</span>
+</div>
+<div class="flex items-center justify-between mt-auto">
+<div>
+<h3 class="font-display text-[32px] font-bold text-on-surface tracking-tight">88%</h3>
+<p class="font-caption text-caption text-on-surface-variant">342 sold / 388 listed</p>
+</div>
+<!-- Donut Chart Vis -->
+<div class="w-16 h-16 relative">
+<svg class="w-full h-full transform -rotate-90" viewbox="0 0 36 36">
+<path class="text-surface-container-highest stroke-current" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-width="4"></path>
+<path class="text-primary stroke-current" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-dasharray="88, 100" stroke-linecap="round" stroke-width="4"></path>
+</svg>
+</div>
+</div>
+</div>
+<!-- Stat: Average Discount -->
+<div class="bg-surface-container rounded-xl p-lg border border-outline-variant flex flex-col justify-between hover:border-outline transition-colors">
+<div class="flex justify-between items-start mb-md">
+<span class="font-caption text-caption text-on-surface-variant uppercase tracking-wider">Avg. Discount applied</span>
+<span class="material-symbols-outlined text-on-surface-variant">sell</span>
+</div>
+<div>
+<h3 class="font-display text-[36px] font-bold text-on-surface tracking-tight">45%</h3>
+<div class="w-full bg-surface-container-highest h-2 rounded-full mt-sm overflow-hidden">
+<div class="bg-outline h-full rounded-full" style="width: 45%"></div>
+</div>
+<p class="font-caption text-caption text-on-surface-variant mt-xs text-right">Optimal range: 40-60%</p>
+</div>
+</div>
+</div>
+<!-- Charts Section -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-md md:gap-lg mb-xl">
+<!-- Line Chart: 30-Day Revenue Recovery -->
+<div class="lg:col-span-2 bg-surface-container border border-outline-variant rounded-xl p-lg flex flex-col">
+<div class="flex justify-between items-center mb-lg">
+<div>
+<h3 class="font-h2 text-h2 text-on-surface">Revenue Recovery</h3>
+<p class="font-caption text-caption text-on-surface-variant">Daily recovered value over the selected period</p>
+</div>
+<button class="text-on-surface-variant hover:text-on-surface p-xs">
+<span class="material-symbols-outlined">more_horiz</span>
+</button>
+</div>
+<!-- Simulated Chart Canvas -->
+<div class="flex-1 w-full relative min-h-[250px] border-l border-b border-outline-variant/50 flex items-end pt-md pb-xs pl-xs">
+<!-- Y-Axis Labels (Simulated) -->
+<div class="absolute -left-10 top-0 bottom-0 flex flex-col justify-between font-caption text-[10px] text-on-surface-variant pb-6 h-full items-end pr-2">
+<span>10k</span>
+<span>7.5k</span>
+<span>5k</span>
+<span>2.5k</span>
+<span>0</span>
+</div>
+<!-- Grid Lines -->
+<div class="absolute inset-0 flex flex-col justify-between pointer-events-none pb-6 pl-2">
+<div class="w-full h-[1px] bg-outline-variant/20"></div>
+<div class="w-full h-[1px] bg-outline-variant/20"></div>
+<div class="w-full h-[1px] bg-outline-variant/20"></div>
+<div class="w-full h-[1px] bg-outline-variant/20"></div>
+<div class="w-full h-[1px] bg-transparent"></div>
+</div>
+<!-- SVG Line Area Chart -->
+<svg class="w-full h-[calc(100%-24px)] overflow-visible" preserveaspectratio="none" viewbox="0 0 100 100">
+<!-- Gradient Def -->
+<defs>
+<lineargradient id="lineGrad" x1="0%" x2="0%" y1="0%" y2="100%">
+<stop offset="0%" stop-color="#cfbcff" stop-opacity="0.3"></stop>
+<stop offset="100%" stop-color="#cfbcff" stop-opacity="0"></stop>
+</lineargradient>
+</defs>
+<!-- Area -->
+<path d="M0,80 L10,65 L20,70 L30,40 L40,45 L50,20 L60,35 L70,10 L80,25 L90,15 L100,5 L100,100 L0,100 Z" fill="url(#lineGrad)"></path>
+<!-- Line -->
+<path d="M0,80 L10,65 L20,70 L30,40 L40,45 L50,20 L60,35 L70,10 L80,25 L90,15 L100,5" fill="none" stroke="#cfbcff" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+<!-- Data Points (Highlighting a peak) -->
+<circle cx="70" cy="10" fill="#141218" r="2.5" stroke="#cfbcff" stroke-width="1.5"></circle>
+</svg>
+<!-- X-Axis Labels -->
+<div class="absolute bottom-0 left-0 w-full flex justify-between font-caption text-[10px] text-on-surface-variant px-2 pt-2">
+<span>01 Oct</span>
+<span>08 Oct</span>
+<span>15 Oct</span>
+<span>22 Oct</span>
+<span>30 Oct</span>
+</div>
+</div>
+</div>
+<!-- Bar Chart: Sale Time Distribution -->
+<div class="bg-surface-container border border-outline-variant rounded-xl p-lg flex flex-col">
+<div class="mb-lg">
+<h3 class="font-h2 text-h2 text-on-surface">Sale Time Distribution</h3>
+<p class="font-caption text-caption text-on-surface-variant">When your deals are claimed</p>
+</div>
+<!-- Simulated Bar Chart -->
+<div class="flex-1 w-full flex items-end justify-between gap-2 h-[200px] mt-auto border-b border-outline-variant/50 pb-2 relative">
+<!-- Tooltip anchor simulation -->
+<div class="absolute right-0 top-10 bg-surface-container-highest border border-outline-variant rounded p-2 shadow-lg z-10 hidden md:block opacity-0 hover:opacity-100 transition-opacity" style="right: 25%;">
+<p class="font-label-caps text-label-caps text-on-surface-variant">8 PM - 10 PM</p>
+<p class="font-body text-sm font-bold text-primary">145 claims</p>
+</div>
+<!-- Bars -->
+<div class="flex flex-col items-center flex-1 group">
+<div class="w-full max-w-[32px] bg-surface-container-highest group-hover:bg-outline-variant transition-colors rounded-t-sm" style="height: 15%;"></div>
+<span class="font-caption text-[10px] text-on-surface-variant mt-2 rotate-45 md:rotate-0">12p</span>
+</div>
+<div class="flex flex-col items-center flex-1 group">
+<div class="w-full max-w-[32px] bg-surface-container-highest group-hover:bg-outline-variant transition-colors rounded-t-sm" style="height: 30%;"></div>
+<span class="font-caption text-[10px] text-on-surface-variant mt-2 rotate-45 md:rotate-0">2p</span>
+</div>
+<div class="flex flex-col items-center flex-1 group">
+<div class="w-full max-w-[32px] bg-surface-container-highest group-hover:bg-outline-variant transition-colors rounded-t-sm" style="height: 25%;"></div>
+<span class="font-caption text-[10px] text-on-surface-variant mt-2 rotate-45 md:rotate-0">4p</span>
+</div>
+<div class="flex flex-col items-center flex-1 group">
+<div class="w-full max-w-[32px] bg-secondary/70 group-hover:bg-secondary transition-colors rounded-t-sm" style="height: 60%;"></div>
+<span class="font-caption text-[10px] text-on-surface-variant mt-2 rotate-45 md:rotate-0">6p</span>
+</div>
+<div class="flex flex-col items-center flex-1 group relative">
+<div class="w-full max-w-[32px] bg-primary group-hover:bg-primary-fixed transition-colors rounded-t-sm shadow-[0_0_10px_rgba(207,188,255,0.4)]" style="height: 95%;"></div>
+<span class="font-caption text-[10px] text-on-surface mt-2 font-bold rotate-45 md:rotate-0">8p</span>
+</div>
+<div class="flex flex-col items-center flex-1 group">
+<div class="w-full max-w-[32px] bg-surface-container-highest group-hover:bg-outline-variant transition-colors rounded-t-sm" style="height: 45%;"></div>
+<span class="font-caption text-[10px] text-on-surface-variant mt-2 rotate-45 md:rotate-0">10p</span>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ChopQuick - Login</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-fixed-variant": "#594400",
+                        "surface": "#141218",
+                        "on-surface": "#e6e0e9",
+                        "outline-variant": "#494551",
+                        "on-primary-container": "#e0d2ff",
+                        "on-secondary": "#342b4b",
+                        "inverse-on-surface": "#322f35",
+                        "error-container": "#93000a",
+                        "error": "#ffb4ab",
+                        "surface-container-highest": "#36343a",
+                        "on-secondary-fixed": "#1f1635",
+                        "on-error": "#690005",
+                        "secondary": "#cdc0e9",
+                        "on-background": "#e6e0e9",
+                        "inverse-surface": "#e6e0e9",
+                        "primary-fixed-dim": "#cfbcff",
+                        "on-secondary-container": "#bfb2da",
+                        "surface-container": "#211f24",
+                        "outline": "#948e9c",
+                        "primary-fixed": "#e9ddff",
+                        "background": "#141218",
+                        "surface-tint": "#cfbcff",
+                        "primary": "#cfbcff",
+                        "surface-container-low": "#1d1b20",
+                        "surface-container-high": "#2b292f",
+                        "secondary-fixed-dim": "#cdc0e9",
+                        "on-primary-fixed": "#22005d",
+                        "on-primary": "#381e72",
+                        "surface-dim": "#141218",
+                        "tertiary-fixed-dim": "#e7c365",
+                        "tertiary-container": "#c9a74d",
+                        "secondary-container": "#4d4465",
+                        "surface-container-lowest": "#0f0d13",
+                        "surface-bright": "#3b383e",
+                        "on-secondary-fixed-variant": "#4b4263",
+                        "on-tertiary-container": "#503d00",
+                        "on-tertiary-fixed": "#241a00",
+                        "tertiary-fixed": "#ffdf93",
+                        "secondary-fixed": "#e9ddff",
+                        "on-primary-fixed-variant": "#4f378a",
+                        "on-error-container": "#ffdad6",
+                        "tertiary": "#e7c365",
+                        "inverse-primary": "#6750a4",
+                        "surface-variant": "#36343a",
+                        "primary-container": "#6750a4",
+                        "on-tertiary": "#3e2e00",
+                        "on-surface-variant": "#cbc4d2"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "md": "1rem",
+                        "sm": "0.5rem",
+                        "gutter": "1rem",
+                        "xs": "0.25rem",
+                        "lg": "1.5rem",
+                        "margin_desktop": "2.5rem",
+                        "xl": "2rem",
+                        "margin_mobile": "1rem",
+                        "xxl": "3rem"
+                    },
+                    "fontFamily": {
+                        "h2": ["Inter"],
+                        "display": ["Inter"],
+                        "caption": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "h1": ["Inter"],
+                        "display-mobile": ["Inter"],
+                        "body": ["Inter"]
+                    },
+                    "fontSize": {
+                        "h2": ["20px", { "lineHeight": "1.4", "fontWeight": "600" }],
+                        "display": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "caption": ["13px", { "lineHeight": "1.4", "fontWeight": "400" }],
+                        "label-caps": ["11px", { "lineHeight": "1.0", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "h1": ["24px", { "lineHeight": "1.3", "fontWeight": "700" }],
+                        "display-mobile": ["40px", { "lineHeight": "1.1", "fontWeight": "700" }],
+                        "body": ["16px", { "lineHeight": "1.5", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .glow-effect {
+            box-shadow: 0 0 20px rgba(232, 72, 15, 0.35);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface min-h-screen flex flex-col items-center justify-center p-margin_mobile">
+<!-- Container for max width on desktop, full width on mobile -->
+<div class="w-full max-w-md w-full">
+<!-- Logo Area -->
+<div class="flex justify-center mb-xl">
+<span class="font-h1 text-h1 font-bold text-primary">ChopQuick</span>
+</div>
+<!-- Main Card Container -->
+<div class="bg-surface-container rounded-xl p-xl border border-outline-variant shadow-lg w-full">
+<!-- Heading -->
+<div class="text-center mb-xl">
+<h1 class="font-display-mobile text-display-mobile text-on-surface mb-sm">Welcome back</h1>
+<p class="font-body text-body text-on-surface-variant">Log in to continue saving food.</p>
+</div>
+<!-- Form -->
+<form class="space-y-md">
+<!-- Email/Phone Field -->
+<div>
+<label class="block font-caption text-caption text-on-surface mb-xs" for="email">Email or Phone Number</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-sm top-1/2 transform -translate-y-1/2 text-on-surface-variant">mail</span>
+<input class="w-full bg-surface-container-highest border border-outline-variant rounded-lg py-sm pl-[36px] pr-sm text-on-surface focus:border-primary focus:ring-1 focus:ring-primary transition-colors placeholder-on-surface-variant" id="email" placeholder="Enter your email or phone" type="text"/>
+</div>
+</div>
+<!-- Password Field -->
+<div>
+<div class="flex justify-between items-center mb-xs">
+<label class="block font-caption text-caption text-on-surface" for="password">Password</label>
+<a class="font-caption text-caption text-primary hover:text-primary-fixed transition-colors" href="#">Forgot password?</a>
+</div>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-sm top-1/2 transform -translate-y-1/2 text-on-surface-variant">lock</span>
+<input class="w-full bg-surface-container-highest border border-outline-variant rounded-lg py-sm pl-[36px] pr-[36px] text-on-surface focus:border-primary focus:ring-1 focus:ring-primary transition-colors placeholder-on-surface-variant" id="password" placeholder="Enter your password" type="password"/>
+<button class="absolute right-sm top-1/2 transform -translate-y-1/2 text-on-surface-variant hover:text-on-surface transition-colors focus:outline-none" type="button">
+<span class="material-symbols-outlined">visibility_off</span>
+</button>
+</div>
+</div>
+<!-- Login Button -->
+<button class="w-full bg-primary text-on-primary rounded-full py-sm px-md font-body text-body font-semibold hover:bg-primary-fixed hover:glow-effect transition-all duration-200 mt-lg flex items-center justify-center gap-sm" type="submit">
+                    Log In
+                    <span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+</button>
+</form>
+<!-- Divider -->
+<div class="flex items-center my-lg">
+<div class="flex-grow border-t border-outline-variant"></div>
+<span class="px-sm font-caption text-caption text-on-surface-variant bg-surface-container">or continue with</span>
+<div class="flex-grow border-t border-outline-variant"></div>
+</div>
+<!-- Social Login -->
+<button class="w-full bg-transparent border border-outline-variant text-on-surface rounded-full py-sm px-md font-body text-body hover:bg-surface-variant transition-colors flex items-center justify-center gap-sm" type="button">
+<img alt="Google Logo" class="w-[20px] h-[20px]" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBrC08f5YW7_asq6qyCt3NmYcGLho_GChNpxJRunkx6gZloJrL9CenUfoK-KK84FD8l9wA-HPb5EKUmtRA-o0Jxr7-Z2RCR1cG6yZNQ14p-vIltcDAHMuub6lKnClEwiDiLhJwrh0ym0AgfVuw1ZifBJEBMcoQEV8_BMcRLShe0O7s9W_80vQExUOYJnMaif_nWyxQdYJrMm_QI87LUxHBWUjqlca-Z6qUd0ArVFyfhAImttSoQ1ugEdjuBkyYPJ4wLrnf-K2If2wE"/>
+                Google
+            </button>
+</div>
+<!-- Sign Up Link -->
+<div class="text-center mt-lg">
+<p class="font-body text-body text-on-surface-variant">
+                Don't have an account? 
+                <a class="text-primary hover:text-primary-fixed font-semibold transition-colors" href="#">Create account</a>
+</p>
+</div>
+</div>
+</body></html>

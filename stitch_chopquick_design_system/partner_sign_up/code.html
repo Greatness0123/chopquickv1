@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ChopQuick Partner Sign Up</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-high": "#2b292f",
+                        "secondary": "#cdc0e9",
+                        "on-primary": "#381e72",
+                        "on-tertiary": "#3e2e00",
+                        "on-primary-container": "#e0d2ff",
+                        "primary-fixed": "#e9ddff",
+                        "outline": "#948e9c",
+                        "error": "#ffb4ab",
+                        "surface": "#141218",
+                        "on-secondary-fixed-variant": "#4b4263",
+                        "surface-tint": "#cfbcff",
+                        "surface-variant": "#36343a",
+                        "surface-bright": "#3b383e",
+                        "surface-container": "#211f24",
+                        "tertiary-fixed-dim": "#e7c365",
+                        "on-tertiary-fixed-variant": "#594400",
+                        "on-secondary-container": "#bfb2da",
+                        "primary-container": "#6750a4",
+                        "secondary-container": "#4d4465",
+                        "background": "#141218",
+                        "surface-container-lowest": "#0f0d13",
+                        "on-error": "#690005",
+                        "tertiary-container": "#c9a74d",
+                        "surface-dim": "#141218",
+                        "inverse-primary": "#6750a4",
+                        "secondary-fixed-dim": "#cdc0e9",
+                        "surface-container-highest": "#36343a",
+                        "on-tertiary-fixed": "#241a00",
+                        "inverse-surface": "#e6e0e9",
+                        "error-container": "#93000a",
+                        "on-primary-fixed": "#22005d",
+                        "inverse-on-surface": "#322f35",
+                        "surface-container-low": "#1d1b20",
+                        "on-error-container": "#ffdad6",
+                        "on-tertiary-container": "#503d00",
+                        "on-secondary-fixed": "#1f1635",
+                        "on-background": "#e6e0e9",
+                        "tertiary": "#e7c365",
+                        "on-secondary": "#342b4b",
+                        "on-surface-variant": "#cbc4d2",
+                        "outline-variant": "#494551",
+                        "tertiary-fixed": "#ffdf93",
+                        "on-surface": "#e6e0e9",
+                        "secondary-fixed": "#e9ddff",
+                        "primary-fixed-dim": "#cfbcff",
+                        "primary": "#cfbcff",
+                        "on-primary-fixed-variant": "#4f378a",
+                        "chopquick-orange": "#E8480F",
+                        "chopquick-orange-hover": "#FF6B35"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xxl": "3rem",
+                        "margin_mobile": "1rem",
+                        "xs": "0.25rem",
+                        "sm": "0.5rem",
+                        "lg": "1.5rem",
+                        "xl": "2rem",
+                        "gutter": "1rem",
+                        "margin_desktop": "2.5rem",
+                        "md": "1rem"
+                    },
+                    "fontFamily": {
+                        "h1": ["Inter"],
+                        "caption": ["Inter"],
+                        "display-mobile": ["Inter"],
+                        "body": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "h2": ["Inter"],
+                        "display": ["Inter"]
+                    },
+                    "fontSize": {
+                        "h1": ["24px", {"lineHeight": "1.3", "fontWeight": "700"}],
+                        "caption": ["13px", {"lineHeight": "1.4", "fontWeight": "400"}],
+                        "display-mobile": ["40px", {"lineHeight": "1.1", "fontWeight": "700"}],
+                        "body": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                        "label-caps": ["11px", {"lineHeight": "1.0", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                        "h2": ["20px", {"lineHeight": "1.4", "fontWeight": "600"}],
+                        "display": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glow-orange {
+            box-shadow: 0 0 20px rgba(232, 72, 15, 0.35);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen font-body text-body selection:bg-chopquick-orange selection:text-white flex items-center justify-center p-md md:p-margin_desktop">
+<div class="max-w-[1200px] w-full grid grid-cols-1 md:grid-cols-2 gap-xl md:gap-0 rounded-xl overflow-hidden bg-surface-container-lowest border border-outline-variant shadow-2xl relative">
+<!-- Background Pattern / Glow for Left Column -->
+<div class="hidden md:block absolute top-0 left-0 w-1/2 h-full bg-gradient-to-br from-surface to-surface-container-low pointer-events-none z-0"></div>
+<!-- Left Column: Branding & Benefits -->
+<div class="relative z-10 p-xl md:p-xxl flex flex-col justify-between h-full min-h-[400px] bg-surface md:bg-transparent rounded-t-xl md:rounded-l-xl md:rounded-tr-none border-b md:border-b-0 md:border-r border-outline-variant">
+<div class="mb-xxl">
+<div class="flex items-center gap-sm mb-xl">
+<span class="material-symbols-outlined text-chopquick-orange text-[32px]" style="font-variation-settings: 'FILL' 1;">restaurant_menu</span>
+<h1 class="font-display-mobile text-display-mobile md:font-display md:text-display text-on-surface m-0 tracking-tight">ChopQuick <span class="text-chopquick-orange">Partner</span></h1>
+</div>
+<h2 class="font-h2 text-h2 text-on-surface-variant mb-md max-w-[400px]">Join the movement to reduce food waste and boost your revenue in Lagos.</h2>
+<p class="font-body text-body text-on-surface-variant/80 max-w-[400px]">We connect your unsold, high-quality meals with hungry customers eager for a deal. Fast, efficient, and profitable.</p>
+</div>
+<div class="space-y-lg mt-auto">
+<h3 class="font-label-caps text-label-caps uppercase text-on-surface-variant tracking-wider">Partner Benefits</h3>
+<ul class="space-y-md">
+<li class="flex items-start gap-md">
+<div class="w-8 h-8 rounded-full bg-surface-container-high border border-outline-variant flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-chopquick-orange text-[18px]">payments</span>
+</div>
+<div>
+<p class="font-body text-body font-medium text-on-surface">Turn waste into revenue</p>
+<p class="font-caption text-caption text-on-surface-variant">Monetize surplus food before the end of the day.</p>
+</div>
+</li>
+<li class="flex items-start gap-md">
+<div class="w-8 h-8 rounded-full bg-surface-container-high border border-outline-variant flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-chopquick-orange text-[18px]">percent</span>
+</div>
+<div>
+<p class="font-body text-body font-medium text-on-surface">Zero commission for 3 months</p>
+<p class="font-caption text-caption text-on-surface-variant">Keep 100% of your earnings to start.</p>
+</div>
+</li>
+<li class="flex items-start gap-md">
+<div class="w-8 h-8 rounded-full bg-surface-container-high border border-outline-variant flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-chopquick-orange text-[18px]">devices</span>
+</div>
+<div>
+<p class="font-body text-body font-medium text-on-surface">Dashboard runs on any browser</p>
+<p class="font-caption text-caption text-on-surface-variant">Manage listings easily from any device.</p>
+</div>
+</li>
+</ul>
+</div>
+<div class="mt-xxl hidden md:block">
+<img alt="Restaurant kitchen" class="w-full h-48 object-cover rounded-lg border border-outline-variant opacity-80 mix-blend-luminosity hover:mix-blend-normal transition-all duration-500" data-alt="A bustling, high-end restaurant kitchen captured in dramatic, moody lighting. Chefs are busy preparing meals, focused and energetic. The scene uses a deep cinematic color palette, emphasizing rich dark tones and warm, vibrant orange highlights from the cooking flames. The atmosphere is fast-paced, professional, and visually intense, aligning with a premium, high-contrast dark mode aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDK60fEEVmFF300kRRDEVIdBK-qIMsn7uFqCv9qeGNFuKgSAezBoUwyAxLgBRi1U8QdylnUl2zrdlhDH3056VGk_ZRE_y7p2cUpEq0FdR3M7WMNeMHvMAWJfBdhOvSTLJ22qTQIRimo1x2l2OoT6ADZ5PtQXWe4PNshrQ9paYQwNl3jaUZqt505XYqTz37GUJMq21tQRD4FI-jvDdA-NUqsdVuNZ8FHHVLWrqofBUYWMEtzVciN8mlXuLLseQ1YovRt697ln-o7QKg"/>
+</div>
+</div>
+<!-- Right Column: Sign-up Form -->
+<div class="relative z-10 p-xl md:p-xxl bg-surface-container-lowest flex flex-col justify-center">
+<div class="mb-xl">
+<h2 class="font-h1 text-h1 text-on-surface mb-xs">Create your Partner Account</h2>
+<p class="font-body text-body text-on-surface-variant">Fill in your details to get started.</p>
+</div>
+<form class="space-y-lg">
+<div class="space-y-xs">
+<label class="block font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider" for="businessName">Business Name</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-md top-1/2 -translate-y-1/2 text-on-surface-variant">storefront</span>
+<input class="w-full bg-surface-container-high border border-outline-variant text-on-surface rounded-[10px] pl-[44px] pr-md py-[12px] font-body text-body focus:border-chopquick-orange focus:ring-1 focus:ring-chopquick-orange outline-none transition-colors placeholder:text-outline" id="businessName" name="businessName" placeholder="e.g., Mama's Kitchen" type="text"/>
+</div>
+</div>
+<div class="space-y-xs">
+<label class="block font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider" for="ownerName">Owner Name</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-md top-1/2 -translate-y-1/2 text-on-surface-variant">person</span>
+<input class="w-full bg-surface-container-high border border-outline-variant text-on-surface rounded-[10px] pl-[44px] pr-md py-[12px] font-body text-body focus:border-chopquick-orange focus:ring-1 focus:ring-chopquick-orange outline-none transition-colors placeholder:text-outline" id="ownerName" name="ownerName" placeholder="Full Name" type="text"/>
+</div>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-lg">
+<div class="space-y-xs">
+<label class="block font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider" for="whatsappNumber">WhatsApp Number</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-md top-1/2 -translate-y-1/2 text-on-surface-variant">phone_iphone</span>
+<input class="w-full bg-surface-container-high border border-outline-variant text-on-surface rounded-[10px] pl-[44px] pr-md py-[12px] font-body text-body focus:border-chopquick-orange focus:ring-1 focus:ring-chopquick-orange outline-none transition-colors placeholder:text-outline" id="whatsappNumber" name="whatsappNumber" placeholder="+234..." type="tel"/>
+</div>
+</div>
+<div class="space-y-xs">
+<label class="block font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider" for="email">Email Address</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-md top-1/2 -translate-y-1/2 text-on-surface-variant">mail</span>
+<input class="w-full bg-surface-container-high border border-outline-variant text-on-surface rounded-[10px] pl-[44px] pr-md py-[12px] font-body text-body focus:border-chopquick-orange focus:ring-1 focus:ring-chopquick-orange outline-none transition-colors placeholder:text-outline" id="email" name="email" placeholder="hello@restaurant.com" type="email"/>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-lg">
+<div class="space-y-xs">
+<label class="block font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider" for="restaurantArea">Restaurant Area</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-md top-1/2 -translate-y-1/2 text-on-surface-variant">location_on</span>
+<select class="w-full bg-surface-container-high border border-outline-variant text-on-surface rounded-[10px] pl-[44px] pr-md py-[12px] font-body text-body focus:border-chopquick-orange focus:ring-1 focus:ring-chopquick-orange outline-none transition-colors appearance-none" id="restaurantArea" name="restaurantArea">
+<option disabled="" selected="" value="">Select Area</option>
+<option value="victoria_island">Victoria Island</option>
+<option value="lekki">Lekki Phase 1</option>
+<option value="ikoyi">Ikoyi</option>
+<option value="ikeja">Ikeja</option>
+<option value="surulere">Surulere</option>
+</select>
+<span class="material-symbols-outlined absolute right-md top-1/2 -translate-y-1/2 text-outline pointer-events-none">expand_more</span>
+</div>
+</div>
+<div class="space-y-xs">
+<label class="block font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider" for="restaurantType">Restaurant Type</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-md top-1/2 -translate-y-1/2 text-on-surface-variant">local_dining</span>
+<select class="w-full bg-surface-container-high border border-outline-variant text-on-surface rounded-[10px] pl-[44px] pr-md py-[12px] font-body text-body focus:border-chopquick-orange focus:ring-1 focus:ring-chopquick-orange outline-none transition-colors appearance-none" id="restaurantType" name="restaurantType">
+<option disabled="" selected="" value="">Select Type</option>
+<option value="buka">Local Buka</option>
+<option value="fast_food">Fast Food</option>
+<option value="casual">Casual Dining</option>
+<option value="bakery">Bakery / Cafe</option>
+<option value="cloud">Cloud Kitchen</option>
+</select>
+<span class="material-symbols-outlined absolute right-md top-1/2 -translate-y-1/2 text-outline pointer-events-none">expand_more</span>
+</div>
+</div>
+</div>
+<div class="pt-md">
+<button class="w-full bg-[#E8480F] hover:bg-[#FF6B35] text-white font-h2 text-h2 py-3 px-6 rounded-full transition-all duration-300 flex items-center justify-center gap-sm glow-orange" type="submit">
+                        Get Started — It's Free
+                        <span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+</button>
+<p class="font-caption text-caption text-on-surface-variant text-center mt-md">
+                        By clicking "Get Started", you agree to our <a class="text-primary hover:text-chopquick-orange underline decoration-outline-variant underline-offset-2 transition-colors" href="#">Terms of Service</a> and <a class="text-primary hover:text-chopquick-orange underline decoration-outline-variant underline-offset-2 transition-colors" href="#">Privacy Policy</a>.
+                    </p>
+</div>
+</form>
+<div class="mt-xl text-center border-t border-outline-variant pt-lg">
+<p class="font-body text-body text-on-surface-variant">
+                    Already a partner? <a class="text-primary hover:text-chopquick-orange font-medium transition-colors" href="#">Sign in here</a>
+</p>
+</div>
+</div>
+</div>
+</body></html>

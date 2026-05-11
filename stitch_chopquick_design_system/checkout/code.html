@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Checkout - ChopQuick</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-fixed-variant": "#594400",
+                        "surface": "#141218",
+                        "on-surface": "#e6e0e9",
+                        "outline-variant": "#494551",
+                        "on-primary-container": "#e0d2ff",
+                        "on-secondary": "#342b4b",
+                        "inverse-on-surface": "#322f35",
+                        "error-container": "#93000a",
+                        "error": "#ffb4ab",
+                        "surface-container-highest": "#36343a",
+                        "on-secondary-fixed": "#1f1635",
+                        "on-error": "#690005",
+                        "secondary": "#cdc0e9",
+                        "on-background": "#e6e0e9",
+                        "inverse-surface": "#e6e0e9",
+                        "primary-fixed-dim": "#cfbcff",
+                        "on-secondary-container": "#bfb2da",
+                        "surface-container": "#211f24",
+                        "outline": "#948e9c",
+                        "primary-fixed": "#e9ddff",
+                        "background": "#141218",
+                        "surface-tint": "#cfbcff",
+                        "primary": "#cfbcff",
+                        "surface-container-low": "#1d1b20",
+                        "surface-container-high": "#2b292f",
+                        "secondary-fixed-dim": "#cdc0e9",
+                        "on-primary-fixed": "#22005d",
+                        "on-primary": "#381e72",
+                        "surface-dim": "#141218",
+                        "tertiary-fixed-dim": "#e7c365",
+                        "tertiary-container": "#c9a74d",
+                        "secondary-container": "#4d4465",
+                        "surface-container-lowest": "#0f0d13",
+                        "surface-bright": "#3b383e",
+                        "on-secondary-fixed-variant": "#4b4263",
+                        "on-tertiary-container": "#503d00",
+                        "on-tertiary-fixed": "#241a00",
+                        "tertiary-fixed": "#ffdf93",
+                        "secondary-fixed": "#e9ddff",
+                        "on-primary-fixed-variant": "#4f378a",
+                        "on-error-container": "#ffdad6",
+                        "tertiary": "#e7c365",
+                        "inverse-primary": "#6750a4",
+                        "surface-variant": "#36343a",
+                        "primary-container": "#6750a4",
+                        "on-tertiary": "#3e2e00",
+                        "on-surface-variant": "#cbc4d2"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "md": "1rem",
+                        "sm": "0.5rem",
+                        "gutter": "1rem",
+                        "xs": "0.25rem",
+                        "lg": "1.5rem",
+                        "margin_desktop": "2.5rem",
+                        "xl": "2rem",
+                        "margin_mobile": "1rem",
+                        "xxl": "3rem"
+                    },
+                    "fontFamily": {
+                        "h2": ["Inter"],
+                        "display": ["Inter"],
+                        "caption": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "h1": ["Inter"],
+                        "display-mobile": ["Inter"],
+                        "body": ["Inter"]
+                    },
+                    "fontSize": {
+                        "h2": ["20px", { "lineHeight": "1.4", "fontWeight": "600" }],
+                        "display": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "caption": ["13px", { "lineHeight": "1.4", "fontWeight": "400" }],
+                        "label-caps": ["11px", { "lineHeight": "1.0", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "h1": ["24px", { "lineHeight": "1.3", "fontWeight": "700" }],
+                        "display-mobile": ["40px", { "lineHeight": "1.1", "fontWeight": "700" }],
+                        "body": ["16px", { "lineHeight": "1.5", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .icon-fill {
+            font-variation-settings: 'FILL' 1;
+        }
+        /* Custom glow matching the brand request but using strict theme color structure where possible */
+        .primary-glow {
+            box-shadow: 0 0 20px rgba(207, 188, 255, 0.35); /* Using primary hex #cfbcff */
+        }
+        /* Hide scrollbar for clean look */
+        ::-webkit-scrollbar { display: none; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface font-body min-h-screen flex flex-col antialiased">
+<!-- Top App Bar (Transactional variant) -->
+<header class="sticky top-0 z-50 bg-surface w-full h-16 flex justify-between items-center px-margin_mobile">
+<button class="text-on-surface-variant hover:opacity-80 transition-opacity p-xs rounded-full">
+<span class="material-symbols-outlined text-[24px]">arrow_back</span>
+</button>
+<h1 class="font-h1 text-h1 text-primary">Checkout</h1>
+<div class="w-8"></div> <!-- Spacer to balance header -->
+</header>
+<!-- Main Content -->
+<main class="flex-1 px-margin_mobile pb-32 flex flex-col gap-lg mt-sm">
+<!-- Pickup Details Card -->
+<section class="bg-surface-container rounded-xl border border-outline-variant p-md flex flex-col gap-sm">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary text-[20px]">storefront</span>
+<h2 class="font-h2 text-h2 text-on-surface">Pickup Details</h2>
+</div>
+<div class="flex flex-col gap-xs pl-[28px]">
+<p class="font-body text-body text-on-surface">Mama Cass Restaurant</p>
+<div class="flex items-center gap-xs text-on-surface-variant bg-surface-container-high w-fit px-sm py-xs rounded-full mt-xs border border-outline-variant">
+<span class="material-symbols-outlined text-[16px]">schedule</span>
+<span class="font-caption text-caption">Window: 8:00pm - 9:30pm</span>
+</div>
+</div>
+</section>
+<!-- Order Summary Card -->
+<section class="bg-surface-container rounded-xl border border-outline-variant p-md flex flex-col gap-md">
+<h2 class="font-h2 text-h2 text-on-surface">Order Summary</h2>
+<ul class="flex flex-col gap-sm">
+<li class="flex justify-between items-start">
+<div class="flex items-center gap-sm">
+<div class="bg-surface-container-high rounded flex items-center justify-center w-8 h-8 font-label-caps text-label-caps text-on-surface border border-outline-variant">2x</div>
+<span class="font-body text-body text-on-surface">Jollof Rice &amp; Plantain</span>
+</div>
+<span class="font-body text-body text-on-surface">₦4,500</span>
+</li>
+<li class="flex justify-between items-start">
+<div class="flex items-center gap-sm">
+<div class="bg-surface-container-high rounded flex items-center justify-center w-8 h-8 font-label-caps text-label-caps text-on-surface border border-outline-variant">1x</div>
+<span class="font-body text-body text-on-surface">Assorted Meat Portion</span>
+</div>
+<span class="font-body text-body text-on-surface">₦2,000</span>
+</li>
+</ul>
+</section>
+<!-- Payment Methods -->
+<section class="flex flex-col gap-sm">
+<h2 class="font-h2 text-h2 text-on-surface">Payment Method</h2>
+<div class="grid grid-cols-1 gap-sm">
+<!-- Wallet Option (Active) -->
+<label class="flex items-center justify-between p-md rounded-xl bg-surface-container-high border-2 border-primary cursor-pointer relative overflow-hidden group">
+<div class="absolute inset-0 bg-primary opacity-5"></div>
+<div class="flex items-center gap-md z-10">
+<span class="material-symbols-outlined text-primary text-[24px] icon-fill">account_balance_wallet</span>
+<div class="flex flex-col">
+<span class="font-body text-body text-on-surface">ChopQuick Wallet</span>
+<span class="font-caption text-caption text-primary">Balance: ₦3,200</span>
+</div>
+</div>
+<div class="w-5 h-5 rounded-full border-2 border-primary flex items-center justify-center z-10">
+<div class="w-2.5 h-2.5 bg-primary rounded-full"></div>
+</div>
+</label>
+<!-- Card Option -->
+<label class="flex items-center justify-between p-md rounded-xl bg-surface-container border border-outline-variant cursor-pointer hover:bg-surface-container-high transition-colors">
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined text-on-surface-variant text-[24px]">credit_card</span>
+<span class="font-body text-body text-on-surface">Credit / Debit Card</span>
+</div>
+<div class="w-5 h-5 rounded-full border-2 border-outline-variant"></div>
+</label>
+<!-- Bank Transfer -->
+<label class="flex items-center justify-between p-md rounded-xl bg-surface-container border border-outline-variant cursor-pointer hover:bg-surface-container-high transition-colors">
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined text-on-surface-variant text-[24px]">account_balance</span>
+<span class="font-body text-body text-on-surface">Bank Transfer</span>
+</div>
+<div class="w-5 h-5 rounded-full border-2 border-outline-variant"></div>
+</label>
+<!-- USSD -->
+<label class="flex items-center justify-between p-md rounded-xl bg-surface-container border border-outline-variant cursor-pointer hover:bg-surface-container-high transition-colors">
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined text-on-surface-variant text-[24px]">dialpad</span>
+<span class="font-body text-body text-on-surface">USSD</span>
+</div>
+<div class="w-5 h-5 rounded-full border-2 border-outline-variant"></div>
+</label>
+</div>
+</section>
+<!-- Promo Code -->
+<section class="flex flex-col gap-sm">
+<div class="flex gap-sm">
+<div class="relative flex-1">
+<span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">local_activity</span>
+<input class="w-full bg-surface-container border border-outline-variant rounded-[10px] py-sm pl-10 pr-sm font-body text-body text-on-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none placeholder:text-on-surface-variant transition-colors" placeholder="Add promo code" type="text"/>
+</div>
+<button class="bg-surface-container-high border border-outline-variant text-on-surface px-md py-sm rounded-full font-label-caps text-label-caps uppercase tracking-wider hover:bg-surface-variant transition-colors">Apply</button>
+</div>
+</section>
+<!-- Total Breakdown -->
+<section class="bg-surface-container rounded-xl border border-outline-variant p-md flex flex-col gap-sm">
+<div class="flex justify-between items-center text-on-surface-variant">
+<span class="font-body text-body">Subtotal</span>
+<span class="font-body text-body">₦6,500</span>
+</div>
+<div class="flex justify-between items-center text-on-surface-variant">
+<span class="font-body text-body">Service Fee</span>
+<span class="font-body text-body">₦250</span>
+</div>
+<div class="h-px bg-outline-variant my-xs w-full"></div>
+<div class="flex justify-between items-center text-primary font-h2 text-h2">
+<span>Total</span>
+<span>₦6,750</span>
+</div>
+<!-- Warning block since wallet balance is less than total -->
+<div class="mt-sm bg-error-container/20 border border-error/30 rounded-lg p-sm flex gap-sm items-start">
+<span class="material-symbols-outlined text-error text-[18px] mt-0.5">info</span>
+<p class="font-caption text-caption text-error">Your wallet balance (₦3,200) is insufficient. The remaining ₦3,550 will be charged via your alternative method.</p>
+</div>
+</section>
+</main>
+<!-- Sticky Bottom CTA -->
+<div class="fixed bottom-0 w-full z-50 bg-surface-container border-t border-outline-variant p-margin_mobile pb-[env(safe-area-inset-bottom,1rem)] shadow-[0_-4px_20px_rgba(0,0,0,0.5)]">
+<button class="w-full bg-primary text-on-primary font-h2 text-h2 py-3 rounded-full flex items-center justify-center gap-sm active:scale-[0.98] transition-transform primary-glow hover:opacity-90">
+<span>Place Order</span>
+<span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+</button>
+</div>
+</body></html>
