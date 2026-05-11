@@ -14,11 +14,11 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { Button } from '../../../components/ui/Button';
-import { spacing, typography } from '../../../constants/colors';
-import { MOCK_ORDERS } from '../../../constants/mockData';
-import { useColors } from '../../../hooks/useColors';
-import type { Order } from '../../../types';
+import { Button } from '@/components/ui/Button';
+import { spacing, typography } from '@/constants/colors';
+import { MOCK_ORDERS } from '@/constants/mockData';
+import { useColors } from '@/hooks/useColors';
+import type { Order } from '@/types';
 
 function formatNGN(n: number) {
   return `₦${n.toLocaleString('en-NG')}`;
@@ -136,7 +136,7 @@ export default function VerifyScreen() {
         <View style={styles.manualContainer}>
           <View style={[styles.manualCard, { backgroundColor: colors.surface }]}>
             <Feather name="hash" size={32} color={colors.primary} />
-            <Text style={[typography.h1, { color: colors.foreground }]}>enter Collection Code</Text>
+            <Text style={[typography.ho, { color: colors.foreground }]}>enter Collection Code</Text>
             <Text style={[typography.body, { color: colors.textSecondary, textAlign: 'center' }]}>
               ask the customer for their 5-digit pickup code
             </Text>
@@ -151,8 +151,7 @@ export default function VerifyScreen() {
                   backgroundColor: colors.elevated,
                   color: colors.foreground,
                   borderColor: colors.border,
-                },
-                { ...typography.h2,
+                  ...typography.hi,
                 },
               ]}
               autoCapitalize="characters"
@@ -174,7 +173,7 @@ export default function VerifyScreen() {
             <View style={[styles.successIcon, { backgroundColor: colors.successDim }]}>
               <Feather name="check-circle" size={32} color={colors.success} />
             </View>
-            <Text style={[typography.h1, { color: colors.foreground }]}>order Found</Text>
+            <Text style={[typography.hi, { color: colors.foreground }]}>order Found</Text>
 
             {foundOrder && (
               <View style={[styles.orderDetails, { backgroundColor: colors.elevated }]}>
@@ -220,7 +219,7 @@ function DetailRow({
 }: {
   label: string;
   value: string;
-  colors: ReturnType<typeof import('../../../hooks/useColors').useColors>;
+  colors: ReturnType<typeof import('@/hooks/useColors').useColors>;
   highlight?: boolean;
 }) {
   return (

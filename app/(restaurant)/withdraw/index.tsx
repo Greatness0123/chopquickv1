@@ -1,4 +1,4 @@
-// Withdraw — request payout of earnings
+// Withdraw funds screen — restaurant owners can withdraw to bank
 import { Feather } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
@@ -12,266 +12,137 @@ import {
   Text,
   View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Button } from '../../../components/ui/Button';
 import { Input } from '../../../components/ui/Input';
 import { spacing, typography } from '../../../constants/colors';
+import { useAuth } from '../../../context/AuthContext';
 import { useColors } from '../../../hooks/useColors';
-
-const NIGERIAN_BANKS = [
-  'First Bank', 'GTBank', 'access Bank', 'Zenith Bank', 'UBa', 'uBa',
-  'Sterbling Bank', 'Kuda', 'Opay', 'Fluttwave',
-];
-
-const AMOUNT_PRESETS = [5000, 10000, 20000, 50000];
+import { supabase } from '../../../lib/supabase';
 
 export default function WithdrawScreen() {
   const colors = useColors();
   const router = useRouter();
-
-  const availableBalance = 101175;
+  const insets = useSafeAreaInsets();
+  const { restaurant, refreshUser } = useAuth();
 
   const [amount, setAmount] = useState('');
-  const [bankName, setBankName] = useState('');
-  const [accountNumber, setAccountNumber] = useState('');
-  const [accountName, setAccountName] = useState('');
   const [loading, setLoading] = useState(false);
-  const [showBankPicker, setShowBankPicker] = useState(false);
-
-  const parsedAmount = parseFloat(amount.replace(/,/g, ''));
-
-  const validate = () => {
-    if (!parsedAmount || parsedAmount < 500) return 'Minimum withdrawal is ₦500';
-    if (parsedAmount > availableBalance) return 'insufficient balance';
-    if (!bankName) return 'Select your bank';
-    if (accountNumber.length !== 10) return 'account number must be 10 digits';
-    if (!accountName.trim()) return 'account name is required';
-    return null;
-  };
 
   const handleWithdraw = async () => {
-    const err = validate();
-    if (err) {
-      Alert.alert('Validation error', err);
+    const withdrawAmount = parseFloat(amount);
+
+    if (isNaN(withdrawAmount) || withdrawAmount < 1000) {
+      Alert.alert('Error', 'Minimum withdrawal is ₦1,000');
       return;
     }
+
+    if (withdrawAmount > (restaurant?.restaurant_wallet_balance || 0)) {
+      Alert.alert('Insufficient Funds', 'You do not have enough balance');
+      return;
+    }
+
+    if (!restaurant?.bank_account_number) {
+      Alert.alert('Missing Details', 'Please update your bank details in settings first');
+      return;
+    }
+
     setLoading(true);
-    // Stub — will process via Fluttwave when keys are provided
-    await new Promise((r) => setTimeout(r, 1500));
-    setLoading(false);
-    Alert.alert(
-      'Withdrawal Submitted',
-      `₦${parsedAmount.toLocaleString('en-NG')} will be sent to ${accountName} at ${bankName} within 24 hours.`,
-      [{ text: 'OK', onPress: () => router.back() }]
-    );
+    try {
+      const { error } = await supabase.from('withdrawals').insert({
+        restaurant_id: restaurant.id,
+        amount: withdrawAmount,
+        bank_name: restaurant.bank_name,
+        bank_account_number: restaurant.bank_account_number,
+        bank_account_name: restaurant.bank_account_name,
+        status: 'pending',
+      });
+
+      if (error) throw error;
+
+      await refreshUser();
+      Alert.alert('Request Sent', 'Your withdrawal request has been submitted and will be processed within 24 hours.');
+      router.back();
+    } catch (err: any) {
+      Alert.alert('Error', err.message || 'Could not process withdrawal');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <SafeAreaView style={[styles.safe, { backgroundColor: colors.background }]}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={{ flex: 1 }}
-      >
-        {/* Header */}
-        <View style={[styles.header, { borderBottomColor: colors.border }]}>
-          <Pressable onPress={() => router.back()} style={styles.backBtn}>
-            <Feather name="arrow-left" size={22} color={colors.foreground} />
+    <KeyboardAvoidingView
+      style={[styles.container, { backgroundColor: colors.background, paddingTop: insets.top }]}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    >
+      <ScrollView contentContainerStyle={styles.scroll}>
+        <View style={styles.header}>
+          <Pressable onPress={() => router.back()} style={[styles.back, { backgroundColor: colors.surface }]}>
+            <Feather name="arrow-left" size={20} color={colors.foreground} />
           </Pressable>
-          <Text style={[typography.h4, { color: colors.foreground }]}>Withdraw earnings</Text>
+          <Text style={[typography.h3, { color: colors.foreground }]}>Withdraw Funds</Text>
           <View style={{ width: 40 }} />
         </View>
 
-        <ScrollView
-          contentContainerStyle={styles.scroll}
-          keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={false}
-        >
-          {/* available balance */}
-          <View style={[styles.balanceCard, { backgroundColor: colors.surface }]}>
-            <Text style={[typography.label, { color: colors.textMuted, letterSpacing: 1 }]}>
-              Available Balance
-            </Text>
-            <Text style={[typography.hero, { color: colors.success }]}>
-              ₦{availableBalance.toLocaleString('en-NG')}
-            </Text>
-            <Text style={[typography.caption, { color: colors.textSecondary }]}>
-              after 5% platform fee deduction
-            </Text>
-          </View>
+        <View style={styles.balanceInfo}>
+          <Text style={[typography.caption, { color: colors.textSecondary }]}>Available for Withdrawal</Text>
+          <Text style={[typography.h2, { color: colors.success }]}>₦{restaurant?.restaurant_wallet_balance?.toLocaleString() ?? '0'}</Text>
+        </View>
 
-          {/* amount selection */}
-          <View style={styles.section}>
-            <Text style={[typography.h4, { color: colors.foreground }]}>Withdrawal amount</Text>
-            <View style={styles.presets}>
-              {AMOUNT_PRESETS.map((preset) => (
-                <Pressable
-                  key={preset}
-                  onPress={() => setAmount(preset.toLocaleString('en-NG'))}
-                  style={[
-                    styles.presetBtn,
-                    {
-                      backgroundColor:
-                        amount === preset.toLocaleString('en-NG')
-                          ? colors.primaryDim
-                          : colors.elevated,
-                      borderColor:
-                        amount === preset.toLocaleString('en-NG')
-                          ? colors.primary
-                          : colors.border,
-                    },
-                  ]}
-                >
-                  <Text
-                    style={[
-                      typography.captionMedium,
-                      {
-                        color:
-                          amount === preset.toLocaleString('en-NG')
-                            ? colors.primary
-                            : colors.textSecondary,
-                      },
-                    ]}
-                  >
-                    ₦{preset.toLocaleString('en-NG')}
-                  </Text>
-                </Pressable>
-              ))}
+        <View style={styles.form}>
+          <View style={[styles.bankCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+            <Feather name="home" size={20} color={colors.primary} />
+            <View>
+              <Text style={[typography.bodySemiBold, { color: colors.foreground }]}>{restaurant?.bank_name ?? 'No Bank Set'}</Text>
+              <Text style={[typography.caption, { color: colors.textSecondary }]}>{restaurant?.bank_account_number ?? '****'}</Text>
             </View>
-            <Input
-              value={amount}
-              onChangeText={setAmount}
-              placeholder="enter amount"
-              keyboardType="numeric"
-              leftIcon={<Text style={[typography.bodyMedium, { color: colors.textSecondary }]}>₦</Text>}
-            />
-            {parsedAmount > 0 && parsedAmount <= availableBalance && (
-              <Text style={[typography.caption, { color: colors.textMuted }]}>
-                Remaining: ₦{(availableBalance - parsedAmount).toLocaleString('en-NG')}
-              </Text>
-            )}
           </View>
 
-          {/* Bank details */}
-          <View style={styles.section}>
-            <Text style={[typography.h4, { color: colors.foreground }]}>Bank Details</Text>
-
-            {/* Bank selector */}
-            <Pressable
-              onPress={() => setShowBankPicker((v) => !v)}
-              style={[styles.bankSelector, { backgroundColor: colors.elevated, borderColor: colors.inputBorder }]}
-            >
-              <Text style={[typography.body, { color: bankName ? colors.foreground : colors.placeholder }]}>
-                {bankName || 'Select Bank'}
-              </Text>
-              <Feather name="chevron-down" size={18} color={colors.textMuted} />
-            </Pressable>
-
-            {showBankPicker && (
-              <View style={[styles.bankList, { backgroundColor: colors.elevated, borderColor: colors.border }]}>
-                {NIGERIAN_BANKS.map((bank) => (
-                  <Pressable
-                    key={bank}
-                    onPress={() => { setBankName(bank); setShowBankPicker(false); }}
-                    style={[styles.bankOption, { borderBottomColor: colors.border }]}
-                  >
-                    <Text style={[typography.body, { color: colors.foreground }]}>{bank}</Text>
-                    {bankName === bank && <Feather name="check" size={16} color={colors.primary} />}
-                  </Pressable>
-                ))}
-              </View>
-            )}
-
-            <Input
-              label="account Number"
-              value={accountNumber}
-              onChangeText={setAccountNumber}
-              placeholder="0123456789"
-              keyboardType="numeric"
-              maxLength={10}
-            />
-            <Input
-              label="account Name"
-              value={accountName}
-              onChangeText={setAccountName}
-              placeholder="as on your bank account"
-              autoCapitalize="words"
-            />
-          </View>
-
-          {/* Fee info */}
-          <View style={[styles.feeInfo, { backgroundColor: colors.elevated, borderColor: colors.border }]}>
-            <Feather name="info" size={14} color={colors.textMuted} />
-            <Text style={[typography.caption, { color: colors.textMuted, flex: 1 }]}>
-              Transfer fee: Free for all restaurants. Payment processed within 24 business hours.
-            </Text>
-          </View>
+          <Input
+            label="Amount (₦)"
+            value={amount}
+            onChangeText={setAmount}
+            keyboardType="numeric"
+            placeholder="1000"
+            leftIcon={<Feather name="credit-card" size={18} color={colors.placeholder} />}
+          />
 
           <Button
-            label={parsedAmount > 0 ? `Withdraw ₦${parsedAmount.toLocaleString('en-NG')}` : 'Withdraw'}
+            label="Confirm Withdrawal"
             onPress={handleWithdraw}
             loading={loading}
+            size="lg"
+            style={{ marginTop: spacing.lg }}
           />
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1 },
+  container: { flex: 1, width: '100%', maxWidth: 600, alignSelf: 'center' },
+  scroll: { paddingBottom: spacing.xl },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.md,
-    borderBottomWidth: 1,
   },
-  backBtn: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center' },
-  scroll: { padding: spacing.lg, gap: spacing.xl, paddingBottom: 40 },
-  balanceCard: {
-    borderRadius: 20,
-    padding: spacing.xl,
-    alignItems: 'center',
-    gap: spacing.sm,
+  back: {
+    width: 40, height: 40, borderRadius: 20,
+    alignItems: 'center', justifyContent: 'center',
   },
-  section: { gap: spacing.md },
-  presets: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
-  presetBtn: {
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.sm,
-    borderRadius: 10,
-    borderWidth: 1,
-  },
-  bankSelector: {
+  balanceInfo: { alignItems: 'center', marginVertical: spacing.xl },
+  form: { paddingHorizontal: spacing.lg, gap: spacing.lg },
+  bankCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    padding: spacing.lg,
+    borderRadius: 12,
     borderWidth: 1,
-    borderRadius: 10,
-    height: 50,
-    paddingHorizontal: spacing.md,
-  },
-  bankList: {
-    borderRadius: 10,
-    borderWidth: 1,
-    maxHeight: 240,
-    overflow: 'hidden',
-  },
-  bankOption: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: spacing.md,
-    borderBottomWidth: 1,
-  },
-  feeInfo: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: 8,
-    padding: spacing.md,
-    borderRadius: 10,
-    borderWidth: 1,
+    gap: spacing.md,
   },
 });

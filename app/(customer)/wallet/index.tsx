@@ -89,11 +89,6 @@ export default function WalletScreen() {
     }
   };
 
-  const onRefresh = () => {
-    setRefreshing(true);
-    fetchWalletData();
-  };
-
   React.useEffect(() => {
     fetchWalletData();
   }, [user?.id]);
@@ -134,7 +129,7 @@ export default function WalletScreen() {
               Wallet Balance
             </Text>
             <Text style={[typography.hero, { color: '#FFFFFF', fontSize: 40, lineHeight: 48, fontFamily: 'Inter_700Bold' }]}>
-              ₦{balance.toLocaleString()}
+              ₦{user?.wallet_balance?.toLocaleString() ?? '0'}
             </Text>
             <Text style={[typography.caption, { color: 'rgba(255,255,255,0.6)' }]}>
               available for purchases
@@ -153,7 +148,7 @@ export default function WalletScreen() {
               <Text style={[typography.captionMedium, { color: colors.foreground }]}>Add Funds</Text>
             </Pressable>
             <Pressable
-              onPress={() => {}}
+              onPress={() => router.push('/(customer)/wallet/transfer')}
               style={[styles.actionBtn, { backgroundColor: colors.surface }]}
             >
               <View style={[styles.actionIcon, { backgroundColor: colors.elevated }]}>

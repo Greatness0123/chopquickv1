@@ -1,0 +1,257 @@
+-- CHOPQUICK DATABASE SCHEMA
+-- This script creates all necessary tables, enums, and triggers for the ChopQuick application.
+
+-- 1. ENUMS
+CREATE TYPE user_role AS ENUM ('customer', 'restaurant_owner', 'admin');
+CREATE TYPE food_category AS ENUM ('rice', 'chicken', 'pasta', 'soup', 'snacks', 'drinks', 'other');
+CREATE TYPE order_status AS ENUM ('pending_payment', 'confirmed', 'collected', 'uncollected', 'disputed', 'refunded');
+CREATE TYPE payment_status AS ENUM ('pending', 'paid', 'failed', 'refunded');
+CREATE TYPE listing_status AS ENUM ('draft', 'scheduled', 'live', 'sold_out', 'expired', 'removed');
+CREATE TYPE transaction_type AS ENUM ('wallet_credit', 'wallet_debit', 'order_payment', 'refund', 'withdrawal', 'commission', 'referral_bonus', 'user_transfer');
+
+-- 2. TABLES
+
+-- PROFILES
+CREATE TABLE public.profiles (
+  id UUID REFERENCES auth.users ON DELETE CASCADE NOT NULL PRIMARY KEY,
+  full_name TEXT,
+  email TEXT UNIQUE,
+  phone TEXT,
+  avatar_url TEXT,
+  wallet_balance DECIMAL(12,2) DEFAULT 0.00,
+  role user_role DEFAULT 'customer',
+  referral_code TEXT UNIQUE,
+  referred_by UUID REFERENCES public.profiles(id),
+  push_token TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- RESTAURANTS
+CREATE TABLE public.restaurants (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  owner_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
+  name TEXT NOT NULL,
+  description TEXT,
+  address TEXT NOT NULL,
+  area TEXT NOT NULL,
+  city TEXT DEFAULT 'Lagos',
+  latitude DOUBLE PRECISION,
+  longitude DOUBLE PRECISION,
+  phone TEXT,
+  logo_url TEXT,
+  is_verified BOOLEAN DEFAULT FALSE,
+  is_active BOOLEAN DEFAULT TRUE,
+  is_live_tonight BOOLEAN DEFAULT FALSE,
+  total_meals_saved INTEGER DEFAULT 0,
+  total_revenue_recovered DECIMAL(15,2) DEFAULT 0.00,
+  total_co2_diverted_kg DECIMAL(10,2) DEFAULT 0.00,
+  rating DECIMAL(3,2) DEFAULT 0.00,
+  rating_count INTEGER DEFAULT 0,
+  restaurant_type TEXT,
+  bank_name TEXT,
+  bank_account_number TEXT,
+  bank_account_name TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- LISTINGS
+CREATE TABLE public.listings (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  restaurant_id UUID REFERENCES public.restaurants(id) ON DELETE CASCADE NOT NULL,
+  food_name TEXT NOT NULL,
+  food_category food_category NOT NULL,
+  description TEXT,
+  original_price DECIMAL(10,2) NOT NULL,
+  current_price DECIMAL(10,2) NOT NULL,
+  discount_percent INTEGER,
+  portions_total INTEGER NOT NULL,
+  portions_remaining INTEGER NOT NULL,
+  image_url TEXT,
+  allergen_note TEXT,
+  is_last_one BOOLEAN DEFAULT FALSE,
+  status listing_status DEFAULT 'live',
+  goes_live_at TIMESTAMPTZ DEFAULT NOW(),
+  expires_at TIMESTAMPTZ NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- ORDERS
+CREATE TABLE public.orders (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  customer_id UUID REFERENCES public.profiles(id) NOT NULL,
+  listing_id UUID REFERENCES public.listings(id) NOT NULL,
+  restaurant_id UUID REFERENCES public.restaurants(id) NOT NULL,
+  quantity INTEGER DEFAULT 1,
+  unit_price DECIMAL(10,2) NOT NULL,
+  total_amount DECIMAL(10,2) NOT NULL,
+  payment_method TEXT DEFAULT 'wallet',
+  payment_status payment_status DEFAULT 'pending',
+  payment_reference TEXT,
+  qr_payload TEXT,
+  collection_code TEXT,
+  order_status order_status DEFAULT 'confirmed',
+  collected_at TIMESTAMPTZ,
+  expires_at TIMESTAMPTZ NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- TRANSACTIONS
+CREATE TABLE public.transactions (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID REFERENCES public.profiles(id) NOT NULL,
+  recipient_id UUID REFERENCES public.profiles(id), -- For user transfers
+  type transaction_type NOT NULL,
+  amount DECIMAL(12,2) NOT NULL, -- Negative for debits
+  balance_after DECIMAL(12,2) NOT NULL,
+  description TEXT,
+  reference TEXT,
+  status TEXT DEFAULT 'success',
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- ADDRESSES
+CREATE TABLE public.addresses (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
+  label TEXT DEFAULT 'Home',
+  address_line TEXT NOT NULL,
+  city TEXT DEFAULT 'Lagos',
+  state TEXT DEFAULT 'Lagos',
+  is_default BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- WITHDRAWALS
+CREATE TABLE public.withdrawals (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  restaurant_id UUID REFERENCES public.restaurants(id) NOT NULL,
+  amount DECIMAL(12,2) NOT NULL,
+  bank_name TEXT NOT NULL,
+  bank_account_number TEXT NOT NULL,
+  bank_account_name TEXT NOT NULL,
+  status TEXT DEFAULT 'pending',
+  reference TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 3. RLS POLICIES (Row Level Security)
+
+ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.restaurants ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.listings ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.orders ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.transactions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.addresses ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.withdrawals ENABLE ROW LEVEL SECURITY;
+
+-- Profiles: Users can view all profiles, but only update their own
+CREATE POLICY "Public profiles are viewable by everyone." ON public.profiles FOR SELECT USING (true);
+CREATE POLICY "Users can update own profile." ON public.profiles FOR UPDATE USING (auth.uid() = id);
+
+-- Restaurants: Viewable by everyone, update by owner
+CREATE POLICY "Restaurants are viewable by everyone." ON public.restaurants FOR SELECT USING (true);
+CREATE POLICY "Owners can update their restaurant." ON public.restaurants FOR UPDATE USING (auth.uid() = owner_id);
+
+-- Listings: Viewable by everyone, update by restaurant owner
+CREATE POLICY "Listings are viewable by everyone." ON public.listings FOR SELECT USING (true);
+CREATE POLICY "Owners can manage listings." ON public.listings FOR ALL USING (
+  EXISTS (SELECT 1 FROM public.restaurants WHERE id = restaurant_id AND owner_id = auth.uid())
+);
+
+-- Orders: Customer can view their own, Restaurant can view orders for them
+CREATE POLICY "Customers can view their own orders." ON public.orders FOR SELECT USING (auth.uid() = customer_id);
+CREATE POLICY "Restaurants can view their own orders." ON public.orders FOR SELECT USING (
+  EXISTS (SELECT 1 FROM public.restaurants WHERE id = restaurant_id AND owner_id = auth.uid())
+);
+
+-- Transactions: Only own transactions
+CREATE POLICY "Users can view their own transactions." ON public.transactions FOR SELECT USING (auth.uid() = user_id);
+
+-- Addresses: Only own addresses
+CREATE POLICY "Users can manage their own addresses." ON public.addresses FOR ALL USING (auth.uid() = user_id);
+
+-- Withdrawals: Restaurant owner can view/create their own
+CREATE POLICY "Owners can view their withdrawals." ON public.withdrawals FOR SELECT USING (
+  EXISTS (SELECT 1 FROM public.restaurants WHERE id = restaurant_id AND owner_id = auth.uid())
+);
+
+-- 4. FUNCTIONS & TRIGGERS
+
+-- Automatically update updated_at
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = NOW();
+    RETURN NEW;
+END;
+$$ language 'plpgsql';
+
+CREATE TRIGGER update_profiles_updated_at BEFORE UPDATE ON public.profiles FOR EACH ROW EXECUTE PROCEDURE update_updated_at_column();
+CREATE TRIGGER update_restaurants_updated_at BEFORE UPDATE ON public.restaurants FOR EACH ROW EXECUTE PROCEDURE update_updated_at_column();
+
+-- Function to handle new user signup
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS TRIGGER AS $$
+BEGIN
+  INSERT INTO public.profiles (id, full_name, email, referral_code, role)
+  VALUES (
+    NEW.id,
+    NEW.raw_user_meta_data->>'full_name',
+    NEW.email,
+    UPPER(SUBSTR(NEW.id::text, 1, 6)),
+    (CASE WHEN NEW.raw_user_meta_data->>'role' = 'restaurant_owner' THEN 'restaurant_owner'::user_role ELSE 'customer'::user_role END)
+  );
+
+  IF NEW.raw_user_meta_data->>'role' = 'restaurant_owner' THEN
+    INSERT INTO public.restaurants (owner_id, name, address, area, restaurant_type)
+    VALUES (
+      NEW.id,
+      COALESCE(NEW.raw_user_meta_data->>'restaurant_name', 'My Restaurant'),
+      COALESCE(NEW.raw_user_meta_data->>'restaurant_area', 'Lagos'),
+      COALESCE(NEW.raw_user_meta_data->>'restaurant_area', 'Lagos'),
+      COALESCE(NEW.raw_user_meta_data->>'restaurant_type', 'Local Buka')
+    );
+  END IF;
+
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Trigger for new user signup
+CREATE TRIGGER on_auth_user_created
+  AFTER INSERT ON auth.users
+  FOR EACH ROW EXECUTE PROCEDURE public.handle_new_user();
+
+-- RPC Function for atomic transfers
+CREATE OR REPLACE FUNCTION public.transfer_funds(
+  sender_id UUID,
+  recipient_id UUID,
+  amount DECIMAL(12,2),
+  memo TEXT
+)
+RETURNS void AS $$
+DECLARE
+  sender_balance DECIMAL(12,2);
+BEGIN
+  -- 1. Check sender balance
+  SELECT wallet_balance INTO sender_balance FROM public.profiles WHERE id = sender_id;
+  IF sender_balance < amount THEN
+    RAISE EXCEPTION 'Insufficient funds';
+  END IF;
+
+  -- 2. Debit sender
+  UPDATE public.profiles SET wallet_balance = wallet_balance - amount WHERE id = sender_id;
+
+  -- 3. Credit recipient
+  UPDATE public.profiles SET wallet_balance = wallet_balance + amount WHERE id = recipient_id;
+
+  -- 4. Log transactions
+  INSERT INTO public.transactions (user_id, recipient_id, type, amount, balance_after, description)
+  VALUES (sender_id, recipient_id, 'user_transfer', -amount, sender_balance - amount, memo);
+
+  INSERT INTO public.transactions (user_id, recipient_id, type, amount, balance_after, description)
+  VALUES (recipient_id, sender_id, 'user_transfer', amount, (SELECT wallet_balance FROM public.profiles WHERE id = recipient_id), 'Received from ' || (SELECT full_name FROM public.profiles WHERE id = sender_id));
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
