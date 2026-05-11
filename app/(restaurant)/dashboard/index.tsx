@@ -16,9 +16,9 @@ import { ListingCard } from '../../../components/restaurant/ListingCard';
 import { StatsCard } from '../../../components/restaurant/StatsCard';
 import { Badge } from '../../../components/ui/Badge';
 import { spacing, typography } from '../../../constants/colors';
-import { MOCK_LISTINGS, MOCK_ORDERS } from '../../../constants/mockData';
 import { useAuth } from '../../../context/AuthContext';
 import { useColors } from '../../../hooks/useColors';
+import { supabase } from '../../../lib/supabase';
 
 function formatNGN(n: number) {
   return `₦${n.toLocaleString('en-NG')}`;
@@ -33,28 +33,45 @@ export default function DashboardScreen() {
   const router = useRouter();
   const { restaurant, user } = useAuth();
   const [refreshing, setRefreshing] = React.useState(false);
+  const [listings, setListings] = React.useState<any[]>([]);
+  const [orders, setOrders] = React.useState<any[]>([]);
 
-  // Filter mock data for this restaurant
-  const myListings = useMemo(
-    () => MOCK_LISTINGS.filter((l) => l.restaurant_id === (restaurant?.id ?? 'rest-001')),
-    [restaurant]
-  );
+  const fetchDashboardData = async () => {
+    if (!restaurant?.id) return;
+    try {
+      const { data: listingsData } = await supabase
+        .from('listings')
+        .select('*')
+        .eq('restaurant_id', restaurant.id);
 
-  const myOrders = useMemo(
-    () => MOCK_ORDERS.filter((o) => o.restaurant_id === (restaurant?.id ?? 'rest-001')),
-    [restaurant]
-  );
+      const { data: ordersData } = await supabase
+        .from('orders')
+        .select('*, listing:listings(*)')
+        .eq('restaurant_id', restaurant.id);
 
-  const activeListings = myListings.filter((l) => l.status === 'live');
-  const pendingOrders = myOrders.filter((o) => o.order_status === 'confirmed');
-  const todayRevenue = myOrders
+      setListings(listingsData || []);
+      setOrders(ordersData || []);
+    } catch (err) {
+      console.error('Error fetching dashboard data:', err);
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
+  React.useEffect(() => {
+    fetchDashboardData();
+  }, [restaurant?.id]);
+
+  const activeListings = listings.filter((l) => l.status === 'live');
+  const pendingOrders = orders.filter((o) => o.order_status === 'confirmed');
+  const todayRevenue = orders
     .filter((o) => o.order_status === 'collected')
     .reduce((sum, o) => sum + o.total_amount, 0);
-  const totalMealsSaved = myOrders.filter((o) => o.order_status === 'collected').length;
+  const totalMealsSaved = orders.filter((o) => o.order_status === 'collected').length;
 
   const onRefresh = () => {
     setRefreshing(true);
-    setTimeout(() => setRefreshing(false), 1000);
+    fetchDashboardData();
   };
 
   return (
@@ -144,10 +161,10 @@ export default function DashboardScreen() {
               <Text style={[typography.captionMedium, { color: colors.primary }]}>See all</Text>
             </Pressable>
           </View>
-          {(activeListings.length > 0 ? activeListings : myListings).slice(0, 3).map((listing) => (
+          {(activeListings.length > 0 ? activeListings : listings).slice(0, 3).map((listing) => (
             <ListingCard key={listing.id} listing={listing} />
           ))}
-          {myListings.length === 0 && (
+          {listings.length === 0 && (
             <View style={[styles.emptyBox, { backgroundColor: colors.surface }]}>
               <Feather name="package" size={28} color={colors.textMuted} />
               <Text style={[typography.bodyMedium, { color: colors.textSecondary }]}>
@@ -165,7 +182,7 @@ export default function DashboardScreen() {
           <Text style={[typography.h4, { color: colors.foreground, marginBottom: spacing.sm }]}>
             Pending Pickups
           </Text>
-          {(pendingOrders.length > 0 ? pendingOrders : myOrders).slice(0, 4).map((order) => (
+          {(pendingOrders.length > 0 ? pendingOrders : orders).slice(0, 4).map((order) => (
             <View
               key={order.id}
               style={[styles.orderRow, { backgroundColor: colors.surface }]}
@@ -186,7 +203,7 @@ export default function DashboardScreen() {
               </View>
             </View>
           ))}
-          {myOrders.length === 0 && (
+          {orders.length === 0 && (
             <Text style={[typography.body, { color: colors.textMuted, textAlign: 'center', padding: spacing.lg }]}>
               No pending pickups
             </Text>
@@ -198,7 +215,7 @@ export default function DashboardScreen() {
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1 },
+  safe: { flex: 1, width: '100%', maxWidth: 1280, alignSelf: 'center' },
   scroll: { padding: spacing.lg, gap: spacing.lg, paddingBottom: 100 },
   header: {
     flexDirection: 'row',

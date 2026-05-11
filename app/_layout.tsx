@@ -35,7 +35,7 @@ function RootContent() {
 
 function RootLayoutNav() {
   return (
-    <GestureHandlerRootView style={{ flex: 1, backgroundColor: '#0A0A0A' }}>
+    <GestureHandlerRootView style={{ flex: 1, backgroundColor: '#141218' }}>
       <KeyboardProvider>
         <RootContent />
       </KeyboardProvider>

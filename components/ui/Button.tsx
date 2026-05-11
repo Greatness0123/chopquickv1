@@ -73,6 +73,7 @@ export function Button({
           alignSelf: fullWidth ? 'stretch' : 'flex-start',
           paddingHorizontal: fullWidth ? 0 : spacing.xl,
         },
+        variant === 'primary' && styles.primaryGlow,
         style,
       ]}
     >
@@ -89,10 +90,26 @@ export function Button({
 
 const styles = StyleSheet.create({
   base: {
-    borderRadius: 12,
+    borderRadius: 999, // Pill-shaped as per DESIGN.md
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'row',
     gap: 8,
+  },
+  primaryGlow: {
+    ...Platform.select({
+      ios: {
+        shadowColor: '#E8480F',
+        shadowOffset: { width: 0, height: 0 },
+        shadowOpacity: 0.35,
+        shadowRadius: 10,
+      },
+      android: {
+        elevation: 10,
+      },
+      web: {
+        boxShadow: '0 0 20px rgba(232, 72, 15, 0.35)',
+      } as any,
+    }),
   },
 });

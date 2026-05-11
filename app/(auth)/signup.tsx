@@ -108,26 +108,22 @@ export default function SignupScreen() {
           </Text>
         </View>
 
-        {/* Role selection */}
-        <View style={[styles.roleRow, { justifyContent: 'space-between' }]}> 
+        {/* Role Switch */}
+        <View style={[styles.switchContainer, { backgroundColor: colors.surface }]}>
           {ROLES.map((r) => (
             <Pressable
               key={r.id}
               onPress={() => setRole(r.id)}
               style={[
-                styles.roleCard,
-                {
-                  backgroundColor: role === r.id ? colors.primaryDim : colors.surface,
-                  borderColor: role === r.id ? colors.primary : colors.border,
-                },
+                styles.switchButton,
+                role === r.id && { backgroundColor: colors.primary }
               ]}
             >
-              <Feather name={r.icon} size={22} color={role === r.id ? colors.primary : colors.textSecondary} />
-              <Text style={[typography.bodyMedium, { color: role === r.id ? colors.primary : colors.foreground }]}>
+              <Text style={[
+                typography.bodySemiBold,
+                { color: role === r.id ? colors.background : colors.textSecondary }
+              ]}>
                 {r.label}
-              </Text>
-              <Text style={[typography.caption, { color: colors.textMuted, textAlign: 'center' }]}>
-                {r.desc}
               </Text>
             </Pressable>
           ))}
@@ -241,14 +237,17 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
   },
   header: { gap: spacing.sm },
-  roleRow: { flexDirection: 'row', gap: spacing.md, flexWrap: 'wrap' },
-  roleCard: {
+  switchContainer: {
+    flexDirection: 'row',
+    padding: 4,
+    borderRadius: 999,
+    gap: 4,
+  },
+  switchButton: {
     flex: 1,
-    borderRadius: 14,
-    borderWidth: 1.5,
-    padding: spacing.md,
+    paddingVertical: 12,
     alignItems: 'center',
-    gap: 6,
+    borderRadius: 999,
   },
   form: { gap: spacing.lg },
   restaurantFields: { gap: spacing.lg },
