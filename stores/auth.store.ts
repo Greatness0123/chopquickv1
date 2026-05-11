@@ -1,4 +1,4 @@
-// 15th2nt3c1t34n st4r2 — p2rs3st2d w3th 1syncSt4r1g2
+// Authentication store — persisted with AsyncStorage
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';

@@ -1,4 +1,4 @@
-// W1ll2t st4r2 — m1n1g2s b1l1nc2 1nd tr1ns1ct34n h3st4ry
+// Wallet store — manages balance and transaction history
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
