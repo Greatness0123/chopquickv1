@@ -17,6 +17,8 @@ import { spacing, typography } from '../../../constants/colors';
 import { useColors } from '../../../hooks/useColors';
 import { useWalletStore } from '../../../stores/wallet.store';
 import type { Transaction } from '../../../types';
+import { supabase } from '../../../lib/supabase';
+import { useAuth } from '../../../context/AuthContext';
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString('en-NG', {
@@ -58,17 +60,50 @@ export default function WalletScreen() {
   const colors = useColors();
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { balance, transactions } = useWalletStore();
+  const { user } = useAuth();
+  const [balance, setBalance] = React.useState(0);
+  const [transactions, setTransactions] = React.useState<Transaction[]>([]);
+  const [refreshing, setRefreshing] = React.useState(false);
+
+  const fetchWalletData = async () => {
+    if (!user?.id) return;
+    try {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('wallet_balance')
+        .eq('id', user.id)
+        .single();
+
+      const { data: txns } = await supabase
+        .from('transactions')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
+
+      if (profile) setBalance(profile.wallet_balance);
+      if (txns) setTransactions(txns);
+    } catch (err) {
+      console.error('Error fetching wallet data:', err);
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
+  React.useEffect(() => {
+    fetchWalletData();
+  }, [user?.id]);
 
   const topPad = Platform.OS === 'web' ? 67 : insets.top;
   const bottomPad = Platform.OS === 'web' ? 34 : insets.bottom;
 
   return (
     <FlatList
-      style={{ backgroundColor: colors.background }}
+      style={{ backgroundColor: colors.background, width: '100%', maxWidth: 1280, alignSelf: 'center' }}
       data={transactions}
       keyExtractor={(t) => t.id}
       renderItem={({ item }) => <TransactionRow txn={item} />}
+      refreshing={refreshing}
+      onRefresh={onRefresh}
       ListEmptyComponent={
         <EmptyState
           icon="credit-card"

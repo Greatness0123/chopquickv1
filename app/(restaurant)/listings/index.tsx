@@ -15,9 +15,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { ListingCard } from '../../../components/restaurant/ListingCard';
 import { EmptyState } from '../../../components/ui/EmptyState';
 import { spacing, typography } from '../../../constants/colors';
-import { MOCK_LISTINGS } from '../../../constants/mockData';
 import { useAuth } from '../../../context/AuthContext';
 import { useColors } from '../../../hooks/useColors';
+import { supabase } from '../../../lib/supabase';
 import type { Listing } from '../../../types';
 
 type FilterTab = 'all' | 'live' | 'sold_out';
@@ -28,27 +28,43 @@ export default function ListingsScreen() {
   const { restaurant } = useAuth();
   const [filter, setFilter] = useState<FilterTab>('all');
   const [refreshing, setRefreshing] = useState(false);
+  const [listings, setListings] = useState<Listing[]>([]);
 
-  // use mock data filtered by restaurant
-  const myListings = useMemo<Listing[]>(
-    () => MOCK_LISTINGS.filter((l) => l.restaurant_id === (restaurant?.id ?? 'rest-001')),
-    [restaurant]
-  );
+  const fetchListings = async () => {
+    if (!restaurant?.id) return;
+    try {
+      const { data, error } = await supabase
+        .from('listings')
+        .select('*')
+        .eq('restaurant_id', restaurant.id);
+
+      if (error) throw error;
+      setListings(data || []);
+    } catch (err) {
+      console.error('Error fetching listings:', err);
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
+  React.useEffect(() => {
+    fetchListings();
+  }, [restaurant?.id]);
 
   const filtered = useMemo(() => {
-    if (filter === 'all') return myListings;
-    return myListings.filter((l) => l.status === filter);
-  }, [myListings, filter]);
+    if (filter === 'all') return listings;
+    return listings.filter((l) => l.status === filter);
+  }, [listings, filter]);
 
   const onRefresh = () => {
     setRefreshing(true);
-    setTimeout(() => setRefreshing(false), 800);
+    fetchListings();
   };
 
   const tabs: { key: FilterTab; label: string; count: number }[] = [
-    { key: 'all', label: 'all', count: myListings.length },
-    { key: 'live', label: 'Live', count: myListings.filter((l) => l.status === 'live').length },
-    { key: 'sold_out', label: 'Sold out', count: myListings.filter((l) => l.status === 'sold_out').length },
+    { key: 'all', label: 'all', count: listings.length },
+    { key: 'live', label: 'Live', count: listings.filter((l) => l.status === 'live').length },
+    { key: 'sold_out', label: 'Sold out', count: listings.filter((l) => l.status === 'sold_out').length },
   ];
 
   return (
@@ -134,7 +150,7 @@ export default function ListingsScreen() {
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1 },
+  safe: { flex: 1, width: '100%', maxWidth: 1280, alignSelf: 'center' },
   header: {
     flexDirection: 'row',
     alignItems: 'center',

@@ -100,7 +100,7 @@ export default function ProfileScreen() {
   }
 
   return (
-    <SafeAreaView style={[styles.safe, { backgroundColor: colors.background }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       <View style={[styles.header, { borderBottomColor: colors.border }]}>
         <Text style={[typography.h3, { color: colors.foreground }]}>Profile</Text>
       </View>
@@ -226,7 +226,7 @@ export default function ProfileScreen() {
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1 },
+  container: { flex: 1, width: '100%', maxWidth: 1280, alignSelf: 'center' },
   header: {
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.md,

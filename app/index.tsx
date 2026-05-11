@@ -10,14 +10,14 @@ export default function RootIndex() {
 
   if (isLoading) {
     return (
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#0A0A0A' }}>
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#141218' }}>
         <ActivityIndicator color="#E8800F" size="large" />
       </View>
     );
   }
 
   if (!isAuthenticated) {
-    return <Redirect href="/(auth)/onboarding" />;
+    return <Redirect href="/(auth)/login" />;
   }
 
   if (userRole === 'restaurant_owner') {

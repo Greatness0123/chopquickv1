@@ -81,9 +81,27 @@ const buildProfile = (user: User): Profile => {
   };
 };
 
-const buildRestaurant = (user: User) => {
-  const role = (user.user_metadata as Record<string, any> | undefined)?.role as UserRole | undefined;
-  return role === 'restaurant_owner' ? MOCK_RESTAURANTS[0] : null;
+const buildRestaurant = (user: User): Restaurant => {
+  const meta = user.user_metadata as Record<string, any> | undefined;
+  return {
+    id: `rest-${user.id.slice(0, 8)}`,
+    owner_id: user.id,
+    name: String(meta?.restaurant_name ?? 'My Restaurant'),
+    description: '',
+    address: String(meta?.restaurant_area ?? 'Lagos, Nigeria'),
+    area: String(meta?.restaurant_area ?? 'Lagos'),
+    city: 'Lagos',
+    is_verified: false,
+    is_active: true,
+    is_live_tonight: false,
+    restaurant_wallet_balance: 0,
+    total_meals_saved: 0,
+    total_revenue_recovered: 0,
+    total_co2_diverted_kg: 0,
+    rating_count: 0,
+    restaurant_type: String(meta?.restaurant_type ?? 'Local Buka'),
+    created_at: new Date().toISOString(),
+  };
 };
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -97,9 +115,73 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return;
     }
 
-    const profile = buildProfile(user);
-    setUser(profile);
-    setRestaurant(buildRestaurant(user));
+    if (IS_MOCK_MODE) {
+      const profile = buildProfile(user);
+      setUser(profile);
+      const role = (user.user_metadata as any)?.role;
+      if (role === 'restaurant_owner') {
+        setRestaurant(MOCK_RESTAURANTS[0]);
+      } else {
+        setRestaurant(null);
+      }
+      return;
+    }
+
+    try {
+      // 1. Fetch Profile
+      const { data: profileData, error: profileError } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+
+      let profile: Profile;
+      if (profileData && !profileError) {
+        profile = profileData;
+      } else {
+        profile = buildProfile(user);
+        // Sync to DB if missing
+        await supabase.from('profiles').upsert({
+          id: profile.id,
+          full_name: profile.full_name,
+          phone: profile.phone,
+          email: profile.email,
+          role: profile.role,
+          referral_code: profile.referral_code,
+        });
+      }
+      setUser(profile);
+
+      // 2. Fetch Restaurant if owner
+      if (profile.role === 'restaurant_owner') {
+        const { data: restData, error: restError } = await supabase
+          .from('restaurants')
+          .select('*')
+          .eq('owner_id', user.id)
+          .single();
+
+        if (restData && !restError) {
+          setRestaurant(restData);
+        } else {
+          const newRest = buildRestaurant(user);
+          await supabase.from('restaurants').upsert({
+            owner_id: user.id,
+            name: newRest.name,
+            address: newRest.address,
+            area: newRest.area,
+            city: newRest.city,
+            restaurant_type: newRest.restaurant_type,
+          });
+          setRestaurant(newRest);
+        }
+      } else {
+        setRestaurant(null);
+      }
+    } catch (err) {
+      console.error('Error hydrating user:', err);
+      // Fallback
+      setUser(buildProfile(user));
+    }
   }, [setUser, setRestaurant]);
 
   useEffect(() => {
@@ -186,14 +268,40 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             full_name: data.full_name,
             phone: data.phone,
             role: data.role,
-            restaurant_name: (data as any).restaurant_name,
-            restaurant_area: (data as any).restaurant_area,
-            restaurant_type: (data as any).restaurant_type,
+            restaurant_name: data.restaurant_name,
+            restaurant_area: data.restaurant_area,
+            restaurant_type: data.restaurant_type,
           },
         },
       });
 
       if (error) throw error;
+
+      const user = signUpData.user;
+      if (user) {
+        // Create profile immediately
+        await supabase.from('profiles').insert({
+          id: user.id,
+          full_name: data.full_name,
+          phone: data.phone,
+          email: data.email,
+          role: data.role,
+          referral_code: `CQ${user.id.slice(0, 6)}`.toUpperCase(),
+        });
+
+        // Create restaurant entry if owner
+        if (data.role === 'restaurant_owner') {
+          await supabase.from('restaurants').insert({
+            owner_id: user.id,
+            name: data.restaurant_name ?? 'My Restaurant',
+            address: data.restaurant_area ?? 'Lagos',
+            area: data.restaurant_area ?? 'Lagos',
+            city: 'Lagos',
+            restaurant_type: data.restaurant_type ?? 'Local Buka',
+          });
+        }
+      }
+
       return { phone: String(signUpData.user?.user_metadata?.phone ?? data.phone) };
     } finally {
       setLoading(false);
@@ -222,7 +330,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const logout = useCallback(async () => {
     if (!IS_MOCK_MODE) {
-      await supabase.auth.signOut();
+      try {
+        await supabase.auth.signOut();
+      } catch (err) {
+        console.error('Logout error:', err);
+      }
     }
     storeLogout();
     resetWallet();

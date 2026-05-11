@@ -16,9 +16,10 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { DealCard } from '../../../components/customer/DealCard';
 import { DealCardSkeleton } from '../../../components/ui/SkeletonLoader';
 import { EmptyState } from '../../../components/ui/EmptyState';
-import { MOCK_LISTINGS } from '../../../constants/mockData';
 import { spacing, typography } from '../../../constants/colors';
+import { supabase } from '../../../lib/supabase';
 import { useColors } from '../../../hooks/useColors';
+import * as Location from 'expo-location';
 import type { FoodCategory } from '../../../types';
 
 const CATEGORIES: { id: FoodCategory | 'all'; label: string }[] = [
@@ -36,24 +37,68 @@ export default function ExploreScreen() {
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState<FoodCategory | 'all'>('all');
   const [refreshing, setRefreshing] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [listings, setListings] = useState<any[]>([]);
+  const [location, setLocation] = useState<Location.LocationObject | null>(null);
 
   const topPad = Platform.OS === 'web' ? 67 : insets.top;
 
+  const requestLocation = async () => {
+    try {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') return;
+      const loc = await Location.getCurrentPositionAsync({});
+      setLocation(loc);
+    } catch (err) {
+      console.error('Error getting location:', err);
+    }
+  };
+
+  React.useEffect(() => {
+    requestLocation();
+  }, []);
+
+  const fetchListings = async () => {
+    try {
+      let query = supabase
+        .from('listings')
+        .select(`
+          *,
+          restaurant:restaurants(*)
+        `)
+        .eq('status', 'live');
+
+      if (category !== 'all') {
+        query = query.eq('food_category', category);
+      }
+
+      const { data, error } = await query;
+      if (error) throw error;
+      setListings(data || []);
+    } catch (err) {
+      console.error('Error fetching listings:', err);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  };
+
+  React.useEffect(() => {
+    fetchListings();
+  }, [category]);
+
   const filtered = useMemo(() => {
-    return MOCK_LISTINGS.filter((l) => {
-      const matchesCat = category === 'all' || l.food_category === category;
+    return listings.filter((l) => {
       const matchesSearch = !search ||
         l.food_name.toLowerCase().includes(search.toLowerCase()) ||
         (l.restaurant?.name ?? '').toLowerCase().includes(search.toLowerCase());
-      return matchesCat && matchesSearch;
+      return matchesSearch;
     });
-  }, [category, search]);
+  }, [listings, search]);
 
   const onRefresh = async () => {
     setRefreshing(true);
-    await new Promise((r) => setTimeout(r, 1000));
-    setRefreshing(false);
+    fetchListings();
   };
 
   const ListHeader = () => (
@@ -168,7 +213,7 @@ export default function ExploreScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1 },
+  container: { flex: 1, width: '100%', maxWidth: 1280, alignSelf: 'center' },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
