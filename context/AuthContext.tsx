@@ -4,6 +4,7 @@ import React, { createContext, useCallback, useContext, useEffect } from 'react'
 import type { User } from '@supabase/supabase-js';
 
 import { MOCK_RESTAURANTS } from '../constants/mockData';
+import { registerForPushNotificationsAsync } from '../lib/notifications';
 import { IS_MOCK_MODE, supabase } from '../lib/supabase';
 import { useAuthStore } from '../stores/auth.store';
 import { useWalletStore } from '../stores/wallet.store';
@@ -178,6 +179,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       } else {
         setRestaurant(null);
       }
+
+      // Register for push notifications
+      registerForPushNotificationsAsync(user.id);
     } catch (err) {
       console.error('Error hydrating user:', err);
       // Fallback
@@ -278,30 +282,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       if (error) throw error;
 
-      const user = signUpData.user;
-      if (user) {
-        // Create profile immediately
-        await supabase.from('profiles').insert({
-          id: user.id,
-          full_name: data.full_name,
-          phone: data.phone,
-          email: data.email,
-          role: data.role,
-          referral_code: `CQ${user.id.slice(0, 6)}`.toUpperCase(),
-        });
-
-        // Create restaurant entry if owner
-        if (data.role === 'restaurant_owner') {
-          await supabase.from('restaurants').insert({
-            owner_id: user.id,
-            name: data.restaurant_name ?? 'My Restaurant',
-            address: data.restaurant_area ?? 'Lagos',
-            area: data.restaurant_area ?? 'Lagos',
-            city: 'Lagos',
-            restaurant_type: data.restaurant_type ?? 'Local Buka',
-          });
-        }
-      }
+      // Note: Database profile/restaurant creation is handled by the Supabase trigger
+      // 'on_auth_user_created' defined in database.sql.
 
       return { phone: String(signUpData.user?.user_metadata?.phone ?? data.phone) };
     } finally {

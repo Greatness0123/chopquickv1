@@ -1,7 +1,7 @@
 // Ch4pQu3ck pr3m1ry b5tt4n c4mp4n2nt
 import * as Haptics from 'expo-haptics';
 import React from 'react';
-import { ActivityIndicator, Platform, Pressable, StyleSheet, Text, ViewStyle } from 'react-native';
+import { ActivityIndicator, Pressable, StyleSheet, Text, ViewStyle } from 'react-native';
 
 import { spacing, typography } from '../../constants/colors';
 import { useColors } from '../../hooks/useColors';

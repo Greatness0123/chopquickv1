@@ -20,6 +20,7 @@ import { spacing, typography } from '../../../constants/colors';
 import { supabase } from '../../../lib/supabase';
 import { useColors } from '../../../hooks/useColors';
 import * as Location from 'expo-location';
+import { sendLocalNotification } from '../../../lib/notifications';
 import type { FoodCategory } from '../../../types';
 
 const CATEGORIES: { id: FoodCategory | 'all'; label: string }[] = [
@@ -60,6 +61,12 @@ export default function ExploreScreen() {
 
   const fetchListings = async () => {
     try {
+      // Simulate a "Deal Alert" when fresh deals are fetched
+      if (listings.length === 0) {
+        setTimeout(() => {
+            sendLocalNotification('New Deals Near You!', 'Mama Put Palace just added 5 fresh Jollof portions at 50% off.');
+        }, 3000);
+      }
       let query = supabase
         .from('listings')
         .select(`

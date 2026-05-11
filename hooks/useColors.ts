@@ -7,7 +7,7 @@ export function useColors() {
  
   const palette =
     scheme === "dark" && "dark" in colors
-      ? colors.dark
+      ? (colors as Record<string, typeof colors.light>).dark
       : colors.light;
 
   return { 
