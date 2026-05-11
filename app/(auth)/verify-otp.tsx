@@ -13,14 +13,14 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-type VerifyOtpParams = {
-  phone?: string;
-};
-
 import { Button } from '../../components/ui/Button';
 import { spacing, typography } from '../../constants/colors';
 import { useAuth } from '../../context/AuthContext';
 import { useColors } from '../../hooks/useColors';
+
+type VerifyOtpParams = {
+  phone?: string;
+};
 
 export default function VerifyOTPScreen() {
   const colors = useColors();
