@@ -1,6 +1,7 @@
 // Customer profile — account info, stats, referral code
 import { Feather } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import { Image } from 'expo-image';
 import React from 'react';
 import {
   Alert,

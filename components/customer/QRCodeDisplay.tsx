@@ -77,7 +77,7 @@ export function QRCodeDisplay({ order, onExpire }: QRCodeDisplayProps) {
 }
 
 function Row({ label, value, colors, highlight }: {
-  label: string; value: string; colors: ReturnType<typeof import('@/hooks/useColors').useColors>; highlight?: boolean;
+  label: string; value: string; colors: ReturnType<typeof import('../../hooks/useColors').useColors>; highlight?: boolean;
 }) {
   return (
     <View style={styles.detailRow}>
