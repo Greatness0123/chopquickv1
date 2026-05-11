@@ -89,6 +89,11 @@ export default function WalletScreen() {
     }
   };
 
+  const onRefresh = () => {
+    setRefreshing(true);
+    fetchWalletData();
+  };
+
   React.useEffect(() => {
     fetchWalletData();
   }, [user?.id]);

@@ -8,6 +8,7 @@ import { IS_MOCK_MODE, supabase } from '../lib/supabase';
 import { useAuthStore } from '../stores/auth.store';
 import { useWalletStore } from '../stores/wallet.store';
 import type { Profile, Restaurant, UserRole } from '../types';
+import type { Profile, UserRole, Restaurant } from '../types';
 
 interface SignupData {
   full_name: string;
