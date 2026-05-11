@@ -255,3 +255,19 @@ BEGIN
   VALUES (recipient_id, sender_id, 'user_transfer', amount, (SELECT wallet_balance FROM public.profiles WHERE id = recipient_id), 'Received from ' || (SELECT full_name FROM public.profiles WHERE id = sender_id));
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- RPC Function to increment restaurant stats on order collection
+CREATE OR REPLACE FUNCTION public.increment_restaurant_stats(
+  rest_id UUID,
+  revenue DECIMAL(15,2)
+)
+RETURNS void AS $$
+BEGIN
+  UPDATE public.restaurants
+  SET
+    total_meals_saved = total_meals_saved + 1,
+    total_revenue_recovered = total_revenue_recovered + revenue,
+    total_co2_diverted_kg = total_co2_diverted_kg + 0.5 -- Estimated CO2 per meal
+  WHERE id = rest_id;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;

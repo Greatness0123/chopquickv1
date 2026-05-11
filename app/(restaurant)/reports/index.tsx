@@ -13,9 +13,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { StatsCard } from '../../../components/restaurant/StatsCard';
 import { spacing, typography } from '../../../constants/colors';
-import { MOCK_LISTINGS, MOCK_ORDERS } from '../../../constants/mockData';
 import { useAuth } from '../../../context/AuthContext';
 import { useColors } from '../../../hooks/useColors';
+import { supabase } from '../../../lib/supabase';
 
 type Period = '7d' | '30d' | 'all';
 
@@ -48,22 +48,41 @@ export default function ReportsScreen() {
   const router = useRouter();
   const { restaurant } = useAuth();
   const [period, setPeriod] = useState<Period>('7d');
+  const [orders, setOrders] = useState<any[]>([]);
+  const [listings, setListings] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const myOrders = useMemo(
-    () => MOCK_ORDERS.filter((o) => o.restaurant_id === (restaurant?.id ?? 'rest-001')),
-    [restaurant]
-  );
+  const fetchReportsData = async () => {
+    if (!restaurant?.id) return;
+    try {
+      const { data: ordersData } = await supabase
+        .from('orders')
+        .select('*')
+        .eq('restaurant_id', restaurant.id);
 
-  const myListings = useMemo(
-    () => MOCK_LISTINGS.filter((l) => l.restaurant_id === (restaurant?.id ?? 'rest-001')),
-    [restaurant]
-  );
+      const { data: listingsData } = await supabase
+        .from('listings')
+        .select('*')
+        .eq('restaurant_id', restaurant.id);
 
-  const collectedOrders = myOrders.filter((o) => o.order_status === 'collected');
-  const totalRevenue = collectedOrders.reduce((s, o) => s + o.total_amount, 0) || 106500;
-  const totalOrders = collectedOrders.length || 40;
-  const avgOrderValue = totalOrders > 0 ? Math.round(totalRevenue / totalOrders) : 2663;
-  const cancelRate = 4;
+      setOrders(ordersData || []);
+      setListings(listingsData || []);
+    } catch (err) {
+      console.error('Error fetching reports data:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  React.useEffect(() => {
+    fetchReportsData();
+  }, [restaurant?.id]);
+
+  const collectedOrders = orders.filter((o) => o.order_status === 'collected');
+  const totalRevenue = collectedOrders.reduce((s, o) => s + o.total_amount, 0);
+  const totalOrders = collectedOrders.length;
+  const avgOrderValue = totalOrders > 0 ? Math.round(totalRevenue / totalOrders) : 0;
+  const cancelRate = orders.length > 0 ? Math.round((orders.filter(o => o.order_status === 'uncollected').length / orders.length) * 100) : 0;
 
   return (
     <SafeAreaView style={[styles.safe, { backgroundColor: colors.background }]}>
@@ -178,7 +197,7 @@ export default function ReportsScreen() {
           <Text style={[typography.h4, { color: colors.foreground, marginBottom: spacing.md }]}>
             Top Selling items
           </Text>
-          {(myListings.length > 0 ? myListings : MOCK_LISTINGS).slice(0, 4).map((listing, idx) => (
+          {listings.slice(0, 4).map((listing, idx) => (
             <View
               key={listing.id}
               style={[styles.topItemRow, { borderBottomColor: colors.border }]}

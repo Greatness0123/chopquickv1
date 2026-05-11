@@ -1,7 +1,7 @@
+// ChopQuick design tokens — dark-only brand palette
+import { Platform, TextStyle } from 'react-native';
 
-import { TextStyle } from 'react-native';
-
-const brandPalette = {
+export const colors = {
   background: '#0A0A0A',
   foreground: '#FFFFFF',
   surface: '#141414',
@@ -31,15 +31,7 @@ const brandPalette = {
   tint: '#E8480F',
 };
 
-
-export const radius = {
-  xs: 4,
-  sm: 8,
-  md: 12,
-  lg: 16,
-  full: 999,
-};
-
+// Spacing scale — consistent layout units
 export const spacing = {
   xs: 4,
   sm: 8,
@@ -50,6 +42,7 @@ export const spacing = {
   hg: 48,
 };
 
+// Typography — Preset TextStyle objects
 export const typography = {
   hero: { fontSize: 40, lineHeight: 48, fontFamily: 'Inter_700Bold' } as TextStyle,
   h1: { fontSize: 32, lineHeight: 40, fontFamily: 'Inter_700Bold' } as TextStyle,
@@ -66,9 +59,4 @@ export const typography = {
   priceLg: { fontSize: 28, lineHeight: 34, fontFamily: 'Inter_700Bold' } as TextStyle,
 };
 
-
-export default {
-  light: brandPalette,
-  dark: brandPalette,  
-  radius: radius,
-};
+export default colors;
