@@ -1,5 +1,5 @@
-// Su1b1s2 cl32nt — 4p2r1t2s 3n m4ck m4d2 wh2n 2nv v1rs 1r2 1bs2nt
-// S21ml2ssly sw3tch2s t4 r21l Su1b1s2 wh2n URL + K2ys 1r2 pr4v3d2d
+// Supabase client — operates in mock mode when env vars are absent
+// Seamlessly switches to real Supabase when URL + Keys are provided
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createClient } from '@supabase/supabase-js';

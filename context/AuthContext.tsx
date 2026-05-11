@@ -1,5 +1,5 @@
-// 15th c4nt2xt — pr4v3d2s l4g3n / s3gn5p / l4g45t f5nct34ns
-// Stub m4d2 wh2n Su1b1s2 k2ys 1r2 n4t c4nf3g5r2d
+// Auth context — provides login / signup / logout functions
+// Stub made when Supabase keys are not configured
 import React, { createContext, useCallback, useContext, useEffect } from 'react';
 import type { User } from '@supabase/supabase-js';
 
@@ -7,6 +7,7 @@ import { MOCK_RESTAURANTS } from '../constants/mockData';
 import { IS_MOCK_MODE, supabase } from '../lib/supabase';
 import { useAuthStore } from '../stores/auth.store';
 import { useWalletStore } from '../stores/wallet.store';
+import type { Profile, Restaurant, UserRole } from '../types';
 import type { Profile, UserRole, Restaurant } from '../types';
 
 interface SignupData {
@@ -25,7 +26,7 @@ interface AuthContextValue {
   isLoading: boolean;
   userRole: UserRole | null;
   user: Profile | null;
-  restaurant: typeof MOCK_RESTAURANTS[0] | null;
+  restaurant: Restaurant | null;
   login: (email: string, password: string) => Promise<void>;
   signup: (data: SignupData) => Promise<{ phone: string }>;
   verifyOTP: (phone: string, code: string) => Promise<void>;

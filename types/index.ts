@@ -1,5 +1,5 @@
-// Sh1r2d typ2 d2f3n3t34ns f4r Ch4pQu3ck
-// M3rr4rs th2 D1t1b1s2 sch2m1 3n Typ2Scr3pt
+// Shared type definitions for ChopQuick
+// Mirrors the Database schema in TypeScript
 
 export type UserRole = 'customer' | 'restaurant_owner' | 'admin';
 export type FoodCategory = 'rice' | 'chicken' | 'pasta' | 'soup' | 'snacks' | 'drinks' | 'other';
