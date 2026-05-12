@@ -301,7 +301,7 @@ export default function VerifyScreen() {
                   label={confirming ? 'Confirming...' : 'Mark Collected'}
                   onPress={handleMarkCollected}
                   loading={confirming}
-                  disabled={foundOrder?.order_status === 'collected'}
+                 disabled={(foundOrder?.order_status as string) === 'collected'}
                   fullWidth={false}
                   style={{ flex: 1 }}
                 />
