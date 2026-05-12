@@ -136,7 +136,7 @@ export default function ReportsScreen() {
           <StatsCard
             label="Total Revenue"
             value={`₦${totalRevenue.toLocaleString('en-NG')}`}
-            subValue="+18% vs last period"
+            // subValue="+18% vs last period"
             color={colors.success}
             style={{ flex: 1 }}
           />

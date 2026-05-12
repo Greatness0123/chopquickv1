@@ -38,7 +38,7 @@ export default function WithdrawScreen() {
       return;
     }
 
-    if (withdrawAmount > (restaurant?.restaurant_wallet_balance || 0)) {
+    if (withdrawAmount > (restaurant?.total_revenue_recovered || 0)) {
       Alert.alert('Insufficient Funds', 'You do not have enough balance');
       return;
     }
@@ -87,7 +87,7 @@ export default function WithdrawScreen() {
 
         <View style={styles.balanceInfo}>
           <Text style={[typography.caption, { color: colors.textSecondary }]}>Available for Withdrawal</Text>
-          <Text style={[typography.h2, { color: colors.success }]}>₦{restaurant?.restaurant_wallet_balance?.toLocaleString() ?? '0'}</Text>
+          <Text style={[typography.h2, { color: colors.success }]}>₦{restaurant?.total_revenue_recovered?.toLocaleString() ?? '0'}</Text>
         </View>
 
         <View style={styles.form}>

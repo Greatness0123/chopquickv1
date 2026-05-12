@@ -120,6 +120,12 @@ export default function VerifyScreen() {
 
       if (error) throw error;
 
+      setFoundOrder({
+        ...foundOrder,
+        order_status: 'collected',
+        collected_at: new Date().toISOString(),
+      });
+
       await supabase.rpc('increment_restaurant_stats', {
         rest_id: foundOrder.restaurant_id,
         revenue: foundOrder.total_amount,
