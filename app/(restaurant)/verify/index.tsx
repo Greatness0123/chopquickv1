@@ -14,11 +14,11 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { Button } from '@/components/ui/Button';
-import { spacing, typography } from '@/constants/colors';
-import { useColors } from '@/hooks/useColors';
-import type { Order } from '@/types';
-import { supabase } from '@/lib/supabase';
+import { Button } from '../../../components/ui/Button';
+import { spacing, typography } from '../../../constants/colors';
+import { MOCK_ORDERS } from '../../../constants/mockData';
+import { useColors } from '../../../hooks/useColors';
+import type { Order } from '../../../types';
 
 function formatNGN(n: number) {
   return `₦${n.toLocaleString('en-NG')}`;
@@ -161,7 +161,7 @@ export default function VerifyScreen() {
         <View style={styles.manualContainer}>
           <View style={[styles.manualCard, { backgroundColor: colors.surface }]}>
             <Feather name="hash" size={32} color={colors.primary} />
-            <Text style={[typography.h2, { color: colors.foreground }]}>Enter Collection Code</Text>
+            <Text style={[typography.h1, { color: colors.foreground }]}>enter Collection Code</Text>
             <Text style={[typography.body, { color: colors.textSecondary, textAlign: 'center' }]}>
               Ask the customer for their 5-digit pickup code
             </Text>
@@ -244,7 +244,7 @@ function DetailRow({
 }: {
   label: string;
   value: string;
-  colors: ReturnType<typeof import('@/hooks/useColors').useColors>;
+  colors: ReturnType<typeof import('../../../hooks/useColors').useColors>;
   highlight?: boolean;
 }) {
   return (
