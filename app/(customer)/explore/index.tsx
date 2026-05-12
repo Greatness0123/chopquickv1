@@ -67,8 +67,7 @@ export default function ExploreScreen() {
           *,
           restaurant:restaurants!fk_restaurant(*)
         `)
-        .eq('status', 'live')
-        .gt('expires_at', new Date().toISOString());
+        .eq('status', 'live');
 
       if (category !== 'all') {
         query = query.eq('food_category', category);
@@ -77,9 +76,11 @@ export default function ExploreScreen() {
       const { data, error } = await query;
       if (error) throw error;
 
-      // Filter by live time
+      // Filter by live time and expiry time client-side for better accuracy
       const now = new Date().toISOString();
-      const liveDeals = (data || []).filter(l => l.goes_live_at <= now);
+      const liveDeals = (data || []).filter(
+        (l) => l.goes_live_at <= now && l.expires_at > now
+      );
 
       setListings(liveDeals);
     } catch (err) {

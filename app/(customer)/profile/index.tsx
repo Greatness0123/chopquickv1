@@ -143,7 +143,7 @@ export default function ProfileScreen() {
           </View>
           <View style={[styles.statCard, { backgroundColor: colors.surface }]}>
             <Text style={[typography.h3, { color: colors.foreground }]}>
-              ₦{((user?.total_spent ?? 0) / 1000).toLocaleString('en-NG')}
+              ₦{(user?.total_spent ?? 0).toLocaleString('en-NG')}
             </Text>
             <Text style={[typography.label, { color: colors.textMuted }]}>Total Spent</Text>
           </View>

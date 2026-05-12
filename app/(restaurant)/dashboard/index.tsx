@@ -62,7 +62,10 @@ export default function DashboardScreen() {
     fetchDashboardData();
   }, [restaurant?.id]);
 
-  const activeListings = listings.filter((l) => l.status === 'live');
+  const now = new Date().toISOString();
+  const activeListings = listings.filter(
+    (l) => l.status === 'live' && l.expires_at > now
+  );
   const pendingOrders = orders.filter((o) => o.order_status === 'confirmed');
   const todayRevenue = orders
     .filter((o) => o.order_status === 'collected')
@@ -182,31 +185,38 @@ export default function DashboardScreen() {
           <Text style={[typography.h4, { color: colors.foreground, marginBottom: spacing.sm }]}>
             Pending Pickups
           </Text>
-          {(pendingOrders.length > 0 ? pendingOrders : orders).slice(0, 4).map((order) => (
-            <View
-              key={order.id}
-              style={[styles.orderRow, { backgroundColor: colors.surface }]}
-            >
-              <View style={styles.orderLeft}>
-                <Text style={[typography.bodyMedium, { color: colors.foreground }]}>
-                  {order.customer.full_name}
-                </Text>
-                <Text style={[typography.caption, { color: colors.textSecondary }]}>
-                  {order.listing?.food_name ?? 'Food item'} · {formatTime(order.created_at)}
-                </Text>
+          {pendingOrders.length > 0 ? (
+            pendingOrders.slice(0, 4).map((order) => (
+              <View
+                key={order.id}
+                style={[styles.orderRow, { backgroundColor: colors.surface }]}
+              >
+                <View style={styles.orderLeft}>
+                  <Text style={[typography.bodyMedium, { color: colors.foreground }]}>
+                    {order.customer.full_name}
+                  </Text>
+                  <Text style={[typography.caption, { color: colors.textSecondary }]}>
+                    {order.listing?.food_name ?? 'Food item'} · {formatTime(order.created_at)}
+                  </Text>
+                </View>
+                <View style={styles.orderRight}>
+                  <Badge variant="confirmed" />
+                  <Text style={[typography.captionMedium, { color: colors.primary }]}>
+                    ₦{order.total_amount.toLocaleString('en-NG')}
+                  </Text>
+                </View>
               </View>
-              <View style={styles.orderRight}>
-                <Badge variant="confirmed" />
-                <Text style={[typography.captionMedium, { color: colors.primary }]}>
-                  ₦{order.total_amount.toLocaleString('en-NG')}
-                </Text>
-              </View>
+            ))
+          ) : (
+            <View style={[styles.emptyBox, { backgroundColor: colors.surface, paddingVertical: spacing.xl }]}>
+              <Feather name="clock" size={28} color={colors.textMuted} />
+              <Text style={[typography.bodyMedium, { color: colors.textSecondary }]}>
+                No pending pickups
+              </Text>
+              <Text style={[typography.caption, { color: colors.textMuted }]}>
+                All orders have been collected or expired
+              </Text>
             </View>
-          ))}
-          {orders.length === 0 && (
-            <Text style={[typography.body, { color: colors.textMuted, textAlign: 'center', padding: spacing.lg }]}>
-              No pending pickups
-            </Text>
           )}
         </View>
       </ScrollView>

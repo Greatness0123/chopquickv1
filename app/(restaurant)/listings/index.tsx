@@ -52,8 +52,14 @@ export default function ListingsScreen() {
   }, [restaurant?.id]);
 
   const filtered = useMemo(() => {
-    if (filter === 'all') return listings;
-    return listings.filter((l) => l.status === filter);
+    const now = new Date().toISOString();
+    let base = listings;
+    if (filter === 'live') {
+      base = listings.filter((l) => l.status === 'live' && l.expires_at > now);
+    } else if (filter === 'sold_out') {
+      base = listings.filter((l) => l.status === 'sold_out');
+    }
+    return base;
   }, [listings, filter]);
 
   const onRefresh = () => {
@@ -78,10 +84,19 @@ export default function ListingsScreen() {
     }
   };
 
+  const now = new Date().toISOString();
   const tabs: { key: FilterTab; label: string; count: number }[] = [
     { key: 'all', label: 'all', count: listings.length },
-    { key: 'live', label: 'Live', count: listings.filter((l) => l.status === 'live').length },
-    { key: 'sold_out', label: 'Sold out', count: listings.filter((l) => l.status === 'sold_out').length },
+    {
+      key: 'live',
+      label: 'Live',
+      count: listings.filter((l) => l.status === 'live' && l.expires_at > now).length,
+    },
+    {
+      key: 'sold_out',
+      label: 'Sold out',
+      count: listings.filter((l) => l.status === 'sold_out').length,
+    },
   ];
 
   return (
