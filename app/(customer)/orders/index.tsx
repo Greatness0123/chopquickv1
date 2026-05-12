@@ -101,7 +101,7 @@ export default function OrdersScreen() {
       <ScrollView
         contentContainerStyle={[
           styles.list,
-          { paddingBottom: bottomPad + 80 },
+          { paddingBottom: bottomPad + 120 },
         ]}
         showsVerticalScrollIndicator={false}
       >

@@ -287,7 +287,7 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.md,
     borderBottomWidth: 1,
   },
-  scroll: { padding: spacing.lg, gap: spacing.sm, paddingBottom: 100 },
+  scroll: { padding: spacing.lg, gap: spacing.sm, paddingBottom: 120 },
   profileCard: {
     flexDirection: 'row',
     alignItems: 'center',

@@ -27,16 +27,19 @@ import { generatePaymentReference } from '../../../lib/paystack';
 import { useListingStore } from '../../../stores/listing.store';
 import { useWalletStore } from '../../../stores/wallet.store';
 import { useAuthStore } from '../../../stores/auth.store';
+import { useAuth } from '../../../context/AuthContext';
+import { supabase } from '../../../lib/supabase';
 import type { Order } from '../../../types';
 
 export default function ListingDetailScreen() {
   const colors = useColors();
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const { refreshUser } = useAuth();
 
   const listing = useListingStore((s) => s.selected);
   const clearListing = useListingStore((s) => s.clear);
-  const { syncFromDatabase,balance, debit } = useWalletStore();
+  const { syncFromDatabase, balance } = useWalletStore();
   const { user } = useAuthStore();
  
   const [quantity, setQuantity] = useState(1);
@@ -74,6 +77,11 @@ export default function ListingDetailScreen() {
   const maxQty = Math.min(listing.portions_remaining, 5);
 
   const handleCheckout = async () => {
+    if (!user?.id) {
+      Alert.alert('Error', 'User not authenticated');
+      return;
+    }
+
     if (paymentMethod === 'wallet' && balance < total) {
       Alert.alert(
         'Insufficient Balance',
@@ -86,25 +94,34 @@ export default function ListingDetailScreen() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
 
     try {
-      await new Promise((r) => setTimeout(r, 2000));
-
       const collectionCode = generateCollectionCode();
+      const paymentRef = generatePaymentReference();
       const qrPayload = encodeQRPayload({
-        order_id: `ord-${Date.now()}`,
+        order_id: 'pending', // Will be updated by RPC result if needed
         collection_code: collectionCode,
         restaurant_id: listing.restaurant_id,
-        customer_id: user?.id ?? 'user-001',
+        customer_id: user.id,
         amount: total,
         expires_at: listing.expires_at,
       });
 
-      if (paymentMethod === 'wallet') {
-        debit(total, `Order — ${listing.food_name} x${quantity}`);
-      }
+      const { data: orderId, error } = await supabase.rpc('process_order', {
+        p_customer_id: user.id,
+        p_listing_id: listing.id,
+        p_restaurant_id: listing.restaurant_id,
+        p_quantity: quantity,
+        p_payment_method: paymentMethod,
+        p_payment_reference: paymentRef,
+        p_collection_code: collectionCode,
+        p_qr_payload: qrPayload,
+        p_expires_at: listing.expires_at,
+      });
+
+      if (error) throw error;
 
       const order: Order = {
-        id: `ord-${Date.now()}`,
-        customer_id: user?.id ?? 'user-001',
+        id: orderId,
+        customer_id: user.id,
         listing_id: listing.id,
         restaurant_id: listing.restaurant_id,
         quantity,
@@ -112,7 +129,7 @@ export default function ListingDetailScreen() {
         total_amount: total,
         payment_method: paymentMethod,
         payment_status: 'paid',
-        payment_reference: generatePaymentReference(),
+        payment_reference: paymentRef,
         qr_payload: qrPayload,
         collection_code: collectionCode,
         order_status: 'confirmed',
@@ -122,8 +139,16 @@ export default function ListingDetailScreen() {
         restaurant: listing.restaurant,
       };
 
+      await Promise.all([
+        refreshUser(),
+        syncFromDatabase(user.id),
+      ]);
+
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       setCompletedOrder(order);
+    } catch (err: any) {
+      console.error('Checkout error:', err);
+      Alert.alert('Checkout Failed', err.message || 'Something went wrong');
     } finally {
       setPaying(false);
     }
@@ -223,6 +248,22 @@ export default function ListingDetailScreen() {
               {listing.description}
             </Text>
           )}
+
+          {/* Restaurant Details */}
+          <View style={[styles.section, { borderTopWidth: 1, borderTopColor: colors.border, pt: spacing.lg }]}>
+            <Text style={[typography.h4, { color: colors.foreground, marginBottom: spacing.sm }]}>Restaurant Information</Text>
+            <View style={styles.infoRow}>
+              <Feather name="map-pin" size={14} color={colors.textMuted} />
+              <Text style={[typography.body, { color: colors.textSecondary, flex: 1 }]}>
+                {listing.restaurant?.address}
+              </Text>
+            </View>
+            {listing.restaurant?.description && (
+              <Text style={[typography.body, { color: colors.textMuted, marginTop: spacing.sm, fontStyle: 'italic' }]}>
+                "{listing.restaurant.description}"
+              </Text>
+            )}
+          </View>
 
           {/* Allergen note */}
           {listing.allergen_note && (

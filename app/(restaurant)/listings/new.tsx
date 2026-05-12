@@ -1,8 +1,8 @@
 // New listing form — create surplus food item
 import { Feather } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
-import { useRouter } from 'expo-router';
-import React, { useState } from 'react';
+import { useRouter, useLocalSearchParams } from 'expo-router';
+import React, { useState, useEffect } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -42,6 +42,8 @@ function computeDiscount(original: string, current: string): number {
 export default function NewListingScreen() {
   const colors = useColors();
   const router = useRouter();
+  const { id } = useLocalSearchParams<{ id?: string }>();
+  const isEditing = !!id;
   const { restaurant } = useAuth();
 
   const [foodName, setFoodName] = useState('');
@@ -57,6 +59,42 @@ export default function NewListingScreen() {
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
   const discount = computeDiscount(originalPrice, currentPrice);
+
+  useEffect(() => {
+    if (isEditing) {
+      fetchListing();
+    }
+  }, [id]);
+
+  const fetchListing = async () => {
+    if (!id) return;
+    try {
+      const { data, error } = await supabase
+        .from('listings')
+        .select('*')
+        .eq('id', id)
+        .single();
+
+      if (error) throw error;
+      if (data) {
+        setFoodName(data.food_name);
+        setOriginalPrice(data.original_price.toString());
+        setCurrentPrice(data.current_price.toString());
+        setPortions(data.portions_total.toString());
+        setDescription(data.description || '');
+        setCategory(data.food_category);
+        setImageUri(data.image_url);
+
+        const liveAt = new Date(data.goes_live_at);
+        const expiresAt = new Date(data.expires_at);
+        setStartTime(`${liveAt.getHours().toString().padStart(2, '0')}:${liveAt.getMinutes().toString().padStart(2, '0')}`);
+        setEndTime(`${expiresAt.getHours().toString().padStart(2, '0')}:${expiresAt.getMinutes().toString().padStart(2, '0')}`);
+      }
+    } catch (err) {
+      console.error('Error fetching listing:', err);
+      Alert.alert('Error', 'Could not load listing details');
+    }
+  };
 
   const pickImage = async () => {
     Alert.alert('Upload Image', 'Choose a source', [
@@ -161,28 +199,45 @@ export default function NewListingScreen() {
       const expiresAt = new Date();
       expiresAt.setHours(endH, endM, 0, 0);
 
-      const { data: listing, error } = await supabase
-        .from('listings')
-        .insert({
-          restaurant_id: restaurant.id,
-          food_name: foodName.trim(),
-          food_category: category,
-          description: description.trim(),
-          original_price: parseFloat(originalPrice),
-          current_price: parseFloat(currentPrice),
-          discount_percent: discount,
-          portions_total: parseInt(portions),
-          portions_remaining: parseInt(portions),
-          goes_live_at: liveAt.toISOString(),
-          expires_at: expiresAt.toISOString(),
-          status: 'live',
-        })
-        .select()
-        .single();
+      const listingData: any = {
+        restaurant_id: restaurant.id,
+        food_name: foodName.trim(),
+        food_category: category,
+        description: description.trim(),
+        original_price: parseFloat(originalPrice),
+        current_price: parseFloat(currentPrice),
+        discount_percent: discount,
+        portions_total: parseInt(portions),
+        goes_live_at: liveAt.toISOString(),
+        expires_at: expiresAt.toISOString(),
+        status: 'live',
+      };
 
-      if (error) throw error;
+      if (!isEditing) {
+        listingData.portions_remaining = parseInt(portions);
+      }
 
-      if (imageUri && listing) {
+      let listing;
+      if (isEditing) {
+        const { data, error } = await supabase
+          .from('listings')
+          .update(listingData)
+          .eq('id', id)
+          .select()
+          .single();
+        if (error) throw error;
+        listing = data;
+      } else {
+        const { data, error } = await supabase
+          .from('listings')
+          .insert(listingData)
+          .select()
+          .single();
+        if (error) throw error;
+        listing = data;
+      }
+
+      if (imageUri && listing && !imageUri.startsWith('http')) {
         const imageUrl = await uploadImage(imageUri, listing.id);
         await supabase
           .from('listings')
@@ -191,9 +246,11 @@ export default function NewListingScreen() {
       }
 
       setLoading(false);
-      Alert.alert('Listing Created', 'Your surplus deal is now live!', [
-        { text: 'OK', onPress: () => router.back() },
-      ]);
+      Alert.alert(
+        isEditing ? 'Listing Updated' : 'Listing Created',
+        isEditing ? 'Your changes have been saved.' : 'Your surplus deal is now live!',
+        [{ text: 'OK', onPress: () => router.back() }]
+      );
     } catch (err: any) {
       setLoading(false);
       Alert.alert('Error', err.message || 'Could not create listing');
@@ -211,7 +268,9 @@ export default function NewListingScreen() {
           <Pressable onPress={() => router.back()} style={styles.backBtn}>
             <Feather name="arrow-left" size={22} color={colors.foreground} />
           </Pressable>
-          <Text style={[typography.h4, { color: colors.foreground }]}>New Listing</Text>
+          <Text style={[typography.h4, { color: colors.foreground }]}>
+            {isEditing ? 'Edit Listing' : 'New Listing'}
+          </Text>
           <View style={{ width: 40 }} />
         </View>
 
@@ -392,7 +451,11 @@ export default function NewListingScreen() {
             </Text>
           </View>
 
-          <Button label="Publish Listing" onPress={handleSubmit} loading={loading} />
+          <Button
+            label={isEditing ? 'Save Changes' : 'Publish Listing'}
+            onPress={handleSubmit}
+            loading={loading}
+          />
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>

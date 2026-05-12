@@ -76,7 +76,13 @@ export function ListingCard({ listing, onEdit, onToggle }: ListingCardProps) {
                 styles.progressFill,
                 {
                   backgroundColor: colors.primary,
-                  width: `${(1 - listing.portions_remaining / listing.portions_total) * 100}%`,
+                  width: `${(() => {
+                    const now = Date.now();
+                    const start = new Date(listing.goes_live_at).getTime();
+                    const end = new Date(listing.expires_at).getTime();
+                    if (end <= start) return 0;
+                    return Math.min(100, Math.max(0, ((now - start) / (end - start)) * 100));
+                  })()}%`,
                 },
               ]}
             />

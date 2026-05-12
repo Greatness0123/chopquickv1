@@ -61,6 +61,23 @@ export default function ListingsScreen() {
     fetchListings();
   };
 
+  const handleToggle = async (listing: Listing) => {
+    const newStatus = listing.status === 'live' ? 'scheduled' : 'live';
+    try {
+      const { error } = await supabase
+        .from('listings')
+        .update({ status: newStatus })
+        .eq('id', listing.id);
+
+      if (error) throw error;
+      setListings((prev) =>
+        prev.map((l) => (l.id === listing.id ? { ...l, status: newStatus } : l))
+      );
+    } catch (err) {
+      console.error('Error toggling listing:', err);
+    }
+  };
+
   const tabs: { key: FilterTab; label: string; count: number }[] = [
     { key: 'all', label: 'all', count: listings.length },
     { key: 'live', label: 'Live', count: listings.filter((l) => l.status === 'live').length },
@@ -139,8 +156,8 @@ export default function ListingsScreen() {
             <ListingCard
               key={listing.id}
               listing={listing}
-              onEdit={() => {}}
-              onToggle={() => {}}
+              onEdit={() => router.push(`/(restaurant)/listings/new?id=${listing.id}` as any)}
+              onToggle={() => handleToggle(listing)}
             />
           ))
         )}
@@ -184,5 +201,5 @@ const styles = StyleSheet.create({
     paddingVertical: 2,
     borderRadius: 999,
   },
-  scroll: { padding: spacing.lg, paddingBottom: 100 },
+  scroll: { padding: spacing.lg, paddingBottom: 120 },
 });

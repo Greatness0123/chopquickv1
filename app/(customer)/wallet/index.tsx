@@ -184,7 +184,7 @@ export default function WalletScreen() {
           </Text>
         </View>
       }
-      contentContainerStyle={{ paddingBottom: bottomPad + 80 }}
+      contentContainerStyle={{ paddingBottom: bottomPad + 120 }}
       showsVerticalScrollIndicator={false}
     />
   );

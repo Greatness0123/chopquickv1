@@ -280,7 +280,7 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderRadius: 10,
   },
-  scroll: { padding: spacing.lg, gap: spacing.lg, paddingBottom: 100 },
+  scroll: { padding: spacing.lg, gap: spacing.lg, paddingBottom: 120 },
   periodRow: {
     flexDirection: 'row',
     borderRadius: 12,
