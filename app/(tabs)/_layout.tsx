@@ -7,7 +7,7 @@ import { Feather } from "@expo/vector-icons";
 import React from "react";
 import { Platform, StyleSheet, View, useColorScheme } from "react-native";
 
-import { useColors } from "@/hooks/useColors";
+import { useColors } from "../../hooks/useColors";
 
 // IMPORTANT: iOS 26 uses NativeTabs for native tabs with liquid glass support.
 // NativeTabs intentionally does NOT use custom design tokens — liquid glass

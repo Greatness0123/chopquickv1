@@ -4,7 +4,7 @@ import React, { createContext, useCallback, useContext, useEffect } from 'react'
 import type { User } from '@supabase/supabase-js';
 
 import { MOCK_RESTAURANTS } from '../constants/mockData';
-import { registerForPushNotificationsAsync } from '../lib/notifications';
+// import { registerForPushNotificationsAsync } from '../lib/notifications';
 import { IS_MOCK_MODE, supabase } from '../lib/supabase';
 import { useAuthStore } from '../stores/auth.store';
 import { useWalletStore } from '../stores/wallet.store';
@@ -180,7 +180,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       // Register for push notifications
-      registerForPushNotificationsAsync(user.id);
+      // registerForPushNotificationsAsync(user.id);
     } catch (err) {
       console.error('Error hydrating user:', err);
       // Fallback
