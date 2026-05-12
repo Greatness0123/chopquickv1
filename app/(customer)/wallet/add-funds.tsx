@@ -43,32 +43,42 @@ export default function AddFundsScreen() {
     try {
       const reference = generatePaymentReference();
       const email = user?.email || 'customer@chopquick.com';
-      const koboAmount = toKobo(fundAmount);
 
-      // In a real Direct API integration, you would call your backend to initialize the transaction
-      // and get an authorization URL. For this demo, we'll simulate the flow.
+      // SECURITY & FUNCTIONAL NOTE:
+      // In production, you must call your backend to initialize a transaction
+      // and get a secure 'authorization_url' or 'access_code'.
+      // https://paystack.com/docs/payments/accept-payments/#initialize-transaction
 
-      const authUrl = `https://checkout.paystack.com/simulate?amount=${koboAmount}&email=${email}&reference=${reference}&key=${PAYSTACK_PUBLIC_KEY}`;
+      // For this demo, we'll use the simulation checkout if it's not configured,
+      // or explain how to proceed with the real integration.
+      const callbackUrl = 'https://standard.paystack.co/close';
+      const authUrl = `https://checkout.paystack.com/${PAYSTACK_PUBLIC_KEY}?amount=${toKobo(fundAmount)}&email=${email}&reference=${reference}&callback_url=${callbackUrl}`;
 
-      Alert.alert(
-        'Initialize Payment',
-        `You are about to fund your wallet with ₦${fundAmount.toLocaleString()}`,
-        [
-          { text: 'Cancel', style: 'cancel', onPress: () => setLoading(false) },
-          {
-            text: 'Pay Now',
-            onPress: async () => {
-              // Simulating WebBrowser opening for payment
-              // In production: await WebBrowser.openBrowserAsync(authUrl);
-              Alert.alert('Payment Simulated', 'In a real environment, this would open Paystack Checkout. Once successful, your balance will update via webhook.');
-              setLoading(false);
-            }
-          }
-        ]
-      );
+      // If PAYSTACK_PUBLIC_KEY is missing, show an alert
+      if (!PAYSTACK_PUBLIC_KEY) {
+        Alert.alert(
+          'Setup Required',
+          'Please configure EXPO_PUBLIC_PAYSTACK_PUBLIC_KEY to enable real payments.',
+          [
+            { text: 'Simulate Success', onPress: () => router.back() },
+            { text: 'Cancel', style: 'cancel' }
+          ]
+        );
+        return;
+      }
+
+      const result = await WebBrowser.openAuthSessionAsync(authUrl, callbackUrl);
+
+      if (result.type === 'success') {
+        // In production, you'd verify the transaction on the backend via webhook
+        // Here we'll simulate a successful update for the user experience
+        Alert.alert('Payment Initialized', 'Your payment is being processed. Your balance will update shortly.');
+        router.back();
+      }
     } catch (err) {
-      setLoading(false);
       Alert.alert('Error', 'Could not initialize payment');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -93,7 +103,7 @@ export default function AddFundsScreen() {
             onChangeText={setAmount}
             keyboardType="numeric"
             placeholder="1000"
-            style={[typography.h2, { textAlign: 'center', height: 60 }]}
+            style={{ textAlign: 'center', fontSize: 24, height: 60 }}
           />
 
           <View style={styles.presets}>

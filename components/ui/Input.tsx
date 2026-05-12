@@ -73,10 +73,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     borderRadius: 10,
-    height: 50,
+    minHeight: 50,
     paddingHorizontal: spacing.md,
+    overflow: 'hidden',
   },
-  field: { height: '100%' },
+  field: {
+    height: '100%',
+    minHeight: 50,
+    paddingVertical: 10,
+  },
   iconLeft: { marginRight: spacing.sm },
   iconRight: { marginLeft: spacing.sm, padding: 4 },
 });

@@ -147,34 +147,110 @@ ALTER TABLE public.addresses ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.withdrawals ENABLE ROW LEVEL SECURITY;
 
 -- Profiles: Users can view all profiles, but only update their own
+DROP POLICY IF EXISTS "Public profiles are viewable by everyone." ON public.profiles;
 CREATE POLICY "Public profiles are viewable by everyone." ON public.profiles FOR SELECT USING (true);
-CREATE POLICY "Users can update own profile." ON public.profiles FOR UPDATE USING (auth.uid() = id);
+DROP POLICY IF EXISTS "Users can update own profile." ON public.profiles;
+CREATE POLICY "Users can update own profile." ON public.profiles FOR UPDATE USING (auth.uid() = id) WITH CHECK (auth.uid() = id);
+DROP POLICY IF EXISTS "Users can insert own profile." ON public.profiles;
+CREATE POLICY "Users can insert own profile." ON public.profiles FOR INSERT WITH CHECK (auth.uid() = id);
 
 -- Restaurants: Viewable by everyone, update by owner
+DROP POLICY IF EXISTS "Restaurants are viewable by everyone." ON public.restaurants;
 CREATE POLICY "Restaurants are viewable by everyone." ON public.restaurants FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Owners can update their restaurant." ON public.restaurants;
 CREATE POLICY "Owners can update their restaurant." ON public.restaurants FOR UPDATE USING (auth.uid() = owner_id);
+DROP POLICY IF EXISTS "Owners can insert their restaurant." ON public.restaurants;
+CREATE POLICY "Owners can insert their restaurant." ON public.restaurants FOR INSERT WITH CHECK (auth.uid() = owner_id);
 
 -- Listings: Viewable by everyone, update by restaurant owner
+DROP POLICY IF EXISTS "Listings are viewable by everyone." ON public.listings;
 CREATE POLICY "Listings are viewable by everyone." ON public.listings FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Owners can manage listings." ON public.listings;
 CREATE POLICY "Owners can manage listings." ON public.listings FOR ALL USING (
+  EXISTS (SELECT 1 FROM public.restaurants WHERE id = restaurant_id AND owner_id = auth.uid())
+) WITH CHECK (
   EXISTS (SELECT 1 FROM public.restaurants WHERE id = restaurant_id AND owner_id = auth.uid())
 );
 
 -- Orders: Customer can view their own, Restaurant can view orders for them
+DROP POLICY IF EXISTS "Customers can view their own orders." ON public.orders;
 CREATE POLICY "Customers can view their own orders." ON public.orders FOR SELECT USING (auth.uid() = customer_id);
+DROP POLICY IF EXISTS "Restaurants can view their own orders." ON public.orders;
 CREATE POLICY "Restaurants can view their own orders." ON public.orders FOR SELECT USING (
   EXISTS (SELECT 1 FROM public.restaurants WHERE id = restaurant_id AND owner_id = auth.uid())
 );
+DROP POLICY IF EXISTS "Customers can create orders." ON public.orders;
+CREATE POLICY "Customers can create orders." ON public.orders FOR INSERT WITH CHECK (auth.uid() = customer_id);
 
 -- Transactions: Only own transactions
+DROP POLICY IF EXISTS "Users can view their own transactions." ON public.transactions;
 CREATE POLICY "Users can view their own transactions." ON public.transactions FOR SELECT USING (auth.uid() = user_id);
 
 -- Addresses: Only own addresses
+DROP POLICY IF EXISTS "Users can manage their own addresses." ON public.addresses;
 CREATE POLICY "Users can manage their own addresses." ON public.addresses FOR ALL USING (auth.uid() = user_id);
 
 -- Withdrawals: Restaurant owner can view/create their own
+DROP POLICY IF EXISTS "Owners can view their withdrawals." ON public.withdrawals;
 CREATE POLICY "Owners can view their withdrawals." ON public.withdrawals FOR SELECT USING (
   EXISTS (SELECT 1 FROM public.restaurants WHERE id = restaurant_id AND owner_id = auth.uid())
+);
+DROP POLICY IF EXISTS "Owners can create withdrawals." ON public.withdrawals;
+CREATE POLICY "Owners can create withdrawals." ON public.withdrawals FOR INSERT WITH CHECK (
+  EXISTS (SELECT 1 FROM public.restaurants WHERE id = restaurant_id AND owner_id = auth.uid())
+);
+
+-- STORAGE POLICIES
+-- Note: These policies assume buckets 'avatars' and 'listings' exist and are public for viewing.
+
+-- Avatars bucket policies
+-- 1. Anyone can view avatars
+-- (Usually set by making the bucket public, but here are the SQL policies)
+INSERT INTO storage.buckets (id, name, public) VALUES ('avatars', 'avatars', true) ON CONFLICT (id) DO NOTHING;
+
+DROP POLICY IF EXISTS "Avatar viewable by everyone" ON storage.objects;
+CREATE POLICY "Avatar viewable by everyone" ON storage.objects FOR SELECT USING (bucket_id = 'avatars');
+
+DROP POLICY IF EXISTS "Users can upload their own avatar" ON storage.objects;
+CREATE POLICY "Users can upload their own avatar" ON storage.objects FOR INSERT WITH CHECK (
+  bucket_id = 'avatars' AND (
+    (auth.uid()::text = (storage.foldername(name))[1])
+    OR
+    EXISTS (SELECT 1 FROM public.restaurants WHERE id::text = (storage.foldername(name))[1] AND owner_id = auth.uid())
+  )
+);
+
+DROP POLICY IF EXISTS "Users can update their own avatar" ON storage.objects;
+CREATE POLICY "Users can update their own avatar" ON storage.objects FOR UPDATE USING (
+  bucket_id = 'avatars' AND (
+    (auth.uid()::text = (storage.foldername(name))[1])
+    OR
+    EXISTS (SELECT 1 FROM public.restaurants WHERE id::text = (storage.foldername(name))[1] AND owner_id = auth.uid())
+  )
+);
+
+-- Listings bucket policies
+INSERT INTO storage.buckets (id, name, public) VALUES ('listings', 'listings', true) ON CONFLICT (id) DO NOTHING;
+
+DROP POLICY IF EXISTS "Listings viewable by everyone" ON storage.objects;
+CREATE POLICY "Listings viewable by everyone" ON storage.objects FOR SELECT USING (bucket_id = 'listings');
+
+DROP POLICY IF EXISTS "Owners can upload listing images" ON storage.objects;
+CREATE POLICY "Owners can upload listing images" ON storage.objects FOR INSERT WITH CHECK (
+  bucket_id = 'listings' AND EXISTS (
+    SELECT 1 FROM public.restaurants
+    WHERE id::text = (storage.foldername(name))[1]
+    AND owner_id = auth.uid()
+  )
+);
+
+DROP POLICY IF EXISTS "Owners can update listing images" ON storage.objects;
+CREATE POLICY "Owners can update listing images" ON storage.objects FOR UPDATE USING (
+  bucket_id = 'listings' AND EXISTS (
+    SELECT 1 FROM public.restaurants
+    WHERE id::text = (storage.foldername(name))[1]
+    AND owner_id = auth.uid()
+  )
 );
 
 -- 4. FUNCTIONS & TRIGGERS

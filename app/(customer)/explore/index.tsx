@@ -61,19 +61,14 @@ export default function ExploreScreen() {
 
   const fetchListings = async () => {
     try {
-      // Simulate a "Deal Alert" when fresh deals are fetched
-      if (listings.length === 0) {
-        setTimeout(() => {
-            // sendLocalNotification('New Deals Near You!', 'Mama Put Palace just added 5 fresh Jollof portions at 50% off.');
-        }, 3000);
-      }
       let query = supabase
         .from('listings')
         .select(`
           *,
           restaurant:restaurants(*)
         `)
-        .eq('status', 'live');
+        .eq('status', 'live')
+        .gt('expires_at', new Date().toISOString());
 
       if (category !== 'all') {
         query = query.eq('food_category', category);
@@ -81,7 +76,12 @@ export default function ExploreScreen() {
 
       const { data, error } = await query;
       if (error) throw error;
-      setListings(data || []);
+
+      // Filter by live time
+      const now = new Date().toISOString();
+      const liveDeals = (data || []).filter(l => l.goes_live_at <= now);
+
+      setListings(liveDeals);
     } catch (err) {
       console.error('Error fetching listings:', err);
     } finally {
@@ -108,14 +108,18 @@ export default function ExploreScreen() {
     fetchListings();
   };
 
-  const ListHeader = () => (
+  const ListHeader = () => {
+    const now = new Date();
+    const is8PM = now.getHours() >= 20;
+
+    return (
     <View>
       {/* Header */}
       <View style={[styles.header, { paddingTop: topPad + spacing.md }]}>
         <View>
           <Text style={[typography.h2, { color: colors.foreground }]}>Tonight's Deals</Text>
           <Text style={[typography.caption, { color: colors.textSecondary }]}>
-            8:00PM – 9:i0PM · Lagos
+            {is8PM ? 'Live Now' : 'Starts at 8:00PM'} · Lagos
           </Text>
         </View>
         <Pressable style={[styles.notifBtn, { backgroundColor: colors.surface }]}>
@@ -174,7 +178,7 @@ export default function ExploreScreen() {
       <View style={[styles.liveBar, { backgroundColor: colors.surface, marginHorizontal: spacing.lg }]}>
         <View style={styles.liveDot} />
         <Text style={[typography.captionMedium, { color: colors.foreground }]}>
-          {filtered.length} deals live tonight
+          {filtered.length} deals {is8PM ? 'live right now' : 'scheduled for tonight'}
         </Text>
         <Text style={[typography.caption, { color: colors.textMuted }]}>Sort: Best Deal</Text>
       </View>
