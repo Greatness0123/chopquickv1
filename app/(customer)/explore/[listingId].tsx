@@ -41,7 +41,7 @@ export default function ListingDetailScreen() {
   const clearListing = useListingStore((s) => s.clear);
   const { syncFromDatabase, balance } = useWalletStore();
   const { user } = useAuthStore();
- 
+
   const [quantity, setQuantity] = useState(1);
   const [paymentMethod, setPaymentMethod] = useState<'wallet' | 'card'>('wallet');
   const [paying, setPaying] = useState(false);
@@ -49,13 +49,13 @@ export default function ListingDetailScreen() {
 
   const topPad = Platform.OS === 'web' ? 67 : insets.top;
   const bottomPad = Platform.OS === 'web' ? 34 : insets.bottom;
-  
- useEffect(() => {
+
+  useEffect(() => {
     if (user?.id) {
-      syncFromDatabase(user.id); // ✅ Pass the ID here
+      syncFromDatabase(user.id);
     }
   }, [user?.id]);
-  // Nothing in the store — user landed here directly or store was cleared
+
   if (!listing) {
     return (
       <View style={[styles.container, { backgroundColor: colors.background, paddingTop: topPad }]}>
@@ -97,7 +97,7 @@ export default function ListingDetailScreen() {
       const collectionCode = generateCollectionCode();
       const paymentRef = generatePaymentReference();
       const qrPayload = encodeQRPayload({
-        order_id: 'pending', // Will be updated by RPC result if needed
+        order_id: 'pending',
         collection_code: collectionCode,
         restaurant_id: listing.restaurant_id,
         customer_id: user.id,
@@ -110,6 +110,7 @@ export default function ListingDetailScreen() {
         p_listing_id: listing.id,
         p_restaurant_id: listing.restaurant_id,
         p_quantity: quantity,
+        p_total_amount: total,
         p_payment_method: paymentMethod,
         p_payment_reference: paymentRef,
         p_collection_code: collectionCode,
@@ -139,10 +140,7 @@ export default function ListingDetailScreen() {
         restaurant: listing.restaurant,
       };
 
-      await Promise.all([
-        refreshUser(),
-        syncFromDatabase(user.id),
-      ]);
+      await Promise.all([refreshUser(), syncFromDatabase(user.id)]);
 
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       setCompletedOrder(order);
@@ -159,7 +157,6 @@ export default function ListingDetailScreen() {
     router.replace('/(customer)/orders');
   };
 
-  // QR screen after successful payment
   if (completedOrder) {
     return (
       <View style={[styles.container, { backgroundColor: colors.background }]}>
@@ -213,7 +210,7 @@ export default function ListingDetailScreen() {
               {listing.restaurant?.name}
             </Text>
             <View style={styles.ratingBadge}>
-              <Feather name="star" size={12} color="#F9E0B" />
+              <Feather name="star" size={12} color="#F9E00B" />
               <Text style={[typography.captionMedium, { color: colors.foreground }]}>
                 {listing.restaurant?.rating ?? '4.8'}
               </Text>
@@ -250,8 +247,10 @@ export default function ListingDetailScreen() {
           )}
 
           {/* Restaurant Details */}
-          <View style={[styles.section, { borderTopWidth: 1, borderTopColor: colors.border, pt: spacing.lg }]}>
-            <Text style={[typography.h4, { color: colors.foreground, marginBottom: spacing.sm }]}>Restaurant Information</Text>
+          <View style={[styles.section, { borderTopWidth: 1, borderTopColor: colors.border, paddingTop: spacing.lg }]}>
+            <Text style={[typography.h4, { color: colors.foreground, marginBottom: spacing.sm }]}>
+              Restaurant Information
+            </Text>
             <View style={styles.infoRow}>
               <Feather name="map-pin" size={14} color={colors.textMuted} />
               <Text style={[typography.body, { color: colors.textSecondary, flex: 1 }]}>
@@ -444,4 +443,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  section: { gap: spacing.sm },
+  infoRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
 });

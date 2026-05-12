@@ -1,4 +1,4 @@
-// order detail sceen — shows QR code for pickup
+// Order detail screen — shows QR code for pickup
 import { Feather } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React from 'react';
@@ -18,9 +18,19 @@ import { Button } from '../../../components/ui/Button';
 import { RatingInput } from '../../../components/customer/RatingInput';
 import { spacing, typography } from '../../../constants/colors';
 import { useColors } from '../../../hooks/useColors';
-
 import { supabase } from '../../../lib/supabase';
 import { useAuth } from '../../../context/AuthContext';
+
+type OrderStatus = 'pending_payment' | 'confirmed' | 'collected' | 'uncollected' | 'disputed' | 'refunded';
+
+const statusVariantMap: Record<OrderStatus, 'pending' | 'confirmed' | 'collected' | 'expired'> = {
+  pending_payment: 'pending',
+  confirmed: 'confirmed',
+  collected: 'collected',
+  uncollected: 'expired',
+  disputed: 'pending',
+  refunded: 'expired',
+};
 
 export default function OrderDetailScreen() {
   const colors = useColors();
@@ -47,7 +57,6 @@ export default function OrderDetailScreen() {
       if (error) throw error;
       setOrder(data);
 
-      // Check if already rated
       const { data: ratingData } = await supabase
         .from('ratings')
         .select('id')
@@ -82,6 +91,7 @@ export default function OrderDetailScreen() {
       setSubmittingRating(false);
     }
   };
+
   const topPad = Platform.OS === 'web' ? 67 : insets.top;
   const bottomPad = Platform.OS === 'web' ? 34 : insets.bottom;
 
@@ -90,7 +100,10 @@ export default function OrderDetailScreen() {
   if (!order) {
     return (
       <View style={[styles.container, { backgroundColor: colors.background, paddingTop: topPad + spacing.xl }]}>
-        <Pressable onPress={() => router.back()} style={[styles.backBtn, { backgroundColor: colors.surface, marginLeft: 16 }]}>
+        <Pressable
+          onPress={() => router.back()}
+          style={[styles.backBtn, { backgroundColor: colors.surface, marginLeft: 16 }]}
+        >
           <Feather name="arrow-left" size={20} color={colors.foreground} />
         </Pressable>
         <Text style={[typography.body, { color: colors.textSecondary, textAlign: 'center', marginTop: 40 }]}>
@@ -100,15 +113,7 @@ export default function OrderDetailScreen() {
     );
   }
 
-  const statusVariant = {
-    pending_payment: 'pending' as const,
-    confirmed: 'confirmed' as const,
-    collected: 'collected' as const,
-    uncollected: 'expired' as const,
-    disputed: 'pending' as const,
-    refunded: 'expired' as const,
-  }[order.order_status];
-
+  const statusVariant = statusVariantMap[order.order_status as OrderStatus] ?? 'pending';
   const isActive = ['pending_payment', 'confirmed'].includes(order.order_status);
 
   return (
@@ -128,18 +133,24 @@ export default function OrderDetailScreen() {
         {isActive && order.qr_payload ? (
           <QRCodeDisplay order={order} onExpire={() => {}} />
         ) : (
-          // Past order summary
           <View style={[styles.summaryCard, { backgroundColor: colors.surface }]}>
-            <View style={[styles.statusIcon, { backgroundColor: order.order_status === 'collected' ? colors.successDim : colors.errorDim }]}>
+            <View
+              style={[
+                styles.statusIcon,
+                { backgroundColor: order.order_status === 'collected' ? colors.successDim : colors.errorDim },
+              ]}
+            >
               <Feather
                 name={order.order_status === 'collected' ? 'check-circle' : 'x-circle'}
                 size={32}
                 color={order.order_status === 'collected' ? colors.success : colors.error}
               />
             </View>
+
             <Text style={[typography.h3, { color: colors.foreground, textAlign: 'center' }]}>
-              {order.order_status === 'collected' ? 'order Collected' : 'order expired'}
+              {order.order_status === 'collected' ? 'Order Collected' : 'Order Expired'}
             </Text>
+
             {order.collected_at && (
               <Text style={[typography.body, { color: colors.textSecondary, textAlign: 'center' }]}>
                 Collected {new Date(order.collected_at).toLocaleDateString('en-NG')}
@@ -165,14 +176,15 @@ export default function OrderDetailScreen() {
             {hasRated && (
               <View style={[styles.ratingSection, { borderTopWidth: 1, borderTopColor: colors.border }]}>
                 <Text style={[typography.captionMedium, { color: colors.success, textAlign: 'center' }]}>
-                  <Feather name="check-circle" size={12} /> Thanks for your rating!
+                  ✓ Thanks for your rating!
                 </Text>
               </View>
             )}
+
             <View style={styles.detailRows}>
               <DetailRow label="Restaurant" value={order.restaurant?.name ?? '—'} colors={colors} />
-              <DetailRow label="item" value={order.listing?.food_name ?? '—'} colors={colors} />
-              <DetailRow label="Qta" value={`×${order.quantity}`} colors={colors} />
+              <DetailRow label="Item" value={order.listing?.food_name ?? '—'} colors={colors} />
+              <DetailRow label="Qty" value={`×${order.quantity}`} colors={colors} />
               <DetailRow label="Total" value={`₦${order.total_amount.toLocaleString()}`} colors={colors} highlight />
               <DetailRow label="Payment" value={order.payment_method.replace('_', ' ')} colors={colors} />
               <DetailRow label="Reference" value={order.payment_reference ?? '—'} colors={colors} />
