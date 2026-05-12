@@ -52,18 +52,43 @@ export default function NewListingScreen() {
   const [category, setCategory] = useState<any>('other');
   const [imageUri, setImageUri] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [startTime, setStartTime] = useState('20:00');
+  const [endTime, setEndTime] = useState('21:30');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
   const discount = computeDiscount(originalPrice, currentPrice);
 
   const pickImage = async () => {
+    Alert.alert('Upload Image', 'Choose a source', [
+      { text: 'Camera', onPress: () => takePhoto() },
+      { text: 'Gallery', onPress: () => launchGallery() },
+      { text: 'Cancel', style: 'cancel' },
+    ]);
+  };
+
+  const takePhoto = async () => {
+    const { status } = await ImagePicker.requestCameraPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert('Permission needed', 'Camera access is required to take a photo.');
+      return;
+    }
+    const result = await ImagePicker.launchCameraAsync({
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 0.7,
+    });
+    if (!result.canceled && result.assets[0]?.uri) {
+      setImageUri(result.assets[0].uri);
+    }
+  };
+
+  const launchGallery = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [4, 3],
       quality: 0.7,
     });
-
     if (!result.canceled && result.assets[0]?.uri) {
       setImageUri(result.assets[0].uri);
     }
@@ -104,7 +129,12 @@ export default function NewListingScreen() {
     if (!originalPrice || isNaN(Number(originalPrice))) return 'Valid original price required';
     if (!currentPrice || isNaN(Number(currentPrice))) return 'Valid discounted price required';
     if (Number(currentPrice) >= Number(originalPrice)) return 'Sale price must be lower than original';
-    if (!portions || isNaN(Number(portions)) || Number(portions) < 1) return 'at least 1 portion required';
+    if (!portions || isNaN(Number(portions)) || Number(portions) < 1) return 'At least 1 portion required';
+
+    const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
+    if (!timeRegex.test(startTime)) return 'Invalid live time format (HH:mm)';
+    if (!timeRegex.test(endTime)) return 'Invalid expiry time format (HH:mm)';
+
     return null;
   };
 
@@ -122,8 +152,14 @@ export default function NewListingScreen() {
 
     setLoading(true);
     try {
+      const [startH, startM] = startTime.split(':').map(Number);
+      const [endH, endM] = endTime.split(':').map(Number);
+
+      const liveAt = new Date();
+      liveAt.setHours(startH, startM, 0, 0);
+
       const expiresAt = new Date();
-      expiresAt.setHours(21, 30, 0, 0);
+      expiresAt.setHours(endH, endM, 0, 0);
 
       const { data: listing, error } = await supabase
         .from('listings')
@@ -137,6 +173,7 @@ export default function NewListingScreen() {
           discount_percent: discount,
           portions_total: parseInt(portions),
           portions_remaining: parseInt(portions),
+          goes_live_at: liveAt.toISOString(),
           expires_at: expiresAt.toISOString(),
           status: 'live',
         })
@@ -289,6 +326,32 @@ export default function NewListingScreen() {
             </View>
           </View>
 
+          {/* Pickup Timing */}
+          <View style={styles.section}>
+            <Text style={[typography.h4, { color: colors.foreground }]}>Pickup Timing</Text>
+            <View style={styles.priceRow}>
+              <View style={{ flex: 1 }}>
+                <Input
+                  label="Goes Live At"
+                  value={startTime}
+                  onChangeText={setStartTime}
+                  placeholder="20:00"
+                />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Input
+                  label="Expires At"
+                  value={endTime}
+                  onChangeText={setEndTime}
+                  placeholder="21:30"
+                />
+              </View>
+            </View>
+            <Text style={[typography.caption, { color: colors.textMuted }]}>
+              Enter time in 24h format (e.g., 20:00)
+            </Text>
+          </View>
+
           {/* Category selection */}
           <View style={styles.section}>
             <Text style={[typography.h4, { color: colors.foreground }]}>Category</Text>
@@ -325,7 +388,7 @@ export default function NewListingScreen() {
           <View style={[styles.infoBanner, { backgroundColor: colors.elevated, borderColor: colors.border }]}>
             <Feather name="info" size={14} color={colors.textMuted} />
             <Text style={[typography.caption, { color: colors.textMuted, flex: 1 }]}>
-              Your listing will be visible to customers from 8pm tonight until 9:30pm or sold out.
+              Your listing will be visible to customers from {startTime} tonight until {endTime} or sold out.
             </Text>
           </View>
 

@@ -113,9 +113,13 @@ function ClassicTabLayout() {
       <Tabs.Screen name="orders/[orderId]" options={{ href: null }} />
       <Tabs.Screen name="wallet/add-funds" options={{ href: null }} />
       <Tabs.Screen name="wallet/history" options={{ href: null }} />
-      <Tabs.Screen name="profile/edit" options={{ href: null }} />
+      <Tabs.Screen name="wallet/transfer/index" options={{ href: null }} />
+      <Tabs.Screen name="profile/edit/index" options={{ href: null }} />
+      <Tabs.Screen name="profile/bank-account/index" options={{ href: null }} />
       <Tabs.Screen name="profile/impact" options={{ href: null }} />
       <Tabs.Screen name="profile/saved" options={{ href: null }} />
+      <Tabs.Screen name="support/index" options={{ href: null }} />
+      <Tabs.Screen name="addresses/index" options={{ href: null }} />
     </Tabs>
   );
 }

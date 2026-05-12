@@ -25,18 +25,6 @@ const PERIOD_LABELS: Record<Period, string> = {
   all: 'all Time',
 };
 
-// Mock weekly revenue data for bar chart
-const WEEKLY_DATA = [
-  { day: 'Mon', revenue: 8200, orders: 3 },
-  { day: 'Tue', revenue: 12400, orders: 5 },
-  { day: 'Wed', revenue: 6000, orders: 2 },
-  { day: 'Thu', revenue: 18600, orders: 7 },
-  { day: 'Fri', revenue: 24500, orders: 9 },
-  { day: 'Sat', revenue: 21000, orders: 8 },
-  { day: 'Sun', revenue: 15800, orders: 6 },
-];
-
-const MAX_REVENUE = Math.max(...WEEKLY_DATA.map((d) => d.revenue));
 
 function formatNGN(n: number) {
   if (n >= 1000) return `₦${(n / 1000).toFixed(1)}k`;
@@ -83,6 +71,27 @@ export default function ReportsScreen() {
   const totalOrders = collectedOrders.length;
   const avgOrderValue = totalOrders > 0 ? Math.round(totalRevenue / totalOrders) : 0;
   const cancelRate = orders.length > 0 ? Math.round((orders.filter(o => o.order_status === 'uncollected').length / orders.length) * 100) : 0;
+
+  const weeklyData = useMemo(() => {
+    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const now = new Date();
+    const data = days.map((day, idx) => {
+      const dayOrders = collectedOrders.filter(o => {
+        const d = new Date(o.created_at);
+        return d.getDay() === idx && (now.getTime() - d.getTime()) < 7 * 24 * 60 * 60 * 1000;
+      });
+      return {
+        day,
+        revenue: dayOrders.reduce((sum, o) => sum + o.total_amount, 0),
+        orders: dayOrders.length
+      };
+    });
+    // Rotate to start from 7 days ago
+    const today = now.getDay();
+    return [...data.slice(today + 1), ...data.slice(0, today + 1)];
+  }, [collectedOrders]);
+
+  const maxRevenue = Math.max(...weeklyData.map(d => d.revenue), 1000);
 
   return (
     <SafeAreaView style={[styles.safe, { backgroundColor: colors.background }]}>
@@ -160,9 +169,9 @@ export default function ReportsScreen() {
             Weekly Revenue
           </Text>
           <View style={styles.chart}>
-            {WEEKLY_DATA.map((d, i) => {
-              const barHeight = Math.max(4, (d.revenue / MAX_REVENUE) * 120);
-              const isToday = i === 4;
+            {weeklyData.map((d, i) => {
+              const barHeight = Math.max(4, (d.revenue / maxRevenue) * 120);
+              const isToday = i === weeklyData.length - 1;
               return (
                 <View key={d.day} style={styles.barCol}>
                   <Text style={[typography.label, { color: colors.textMuted, marginBottom: 4 }]}>

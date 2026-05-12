@@ -3,6 +3,7 @@ import { Feather } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {
+  ActivityIndicator,
   Alert,
   Pressable,
   ScrollView,
@@ -21,8 +22,9 @@ import { useColors } from '../../../hooks/useColors';
 export default function SettingsScreen() {
   const colors = useColors();
   const router = useRouter();
-  const { restaurant, user, logout } = useAuth();
+  const { restaurant, user, logout, refreshUser } = useAuth();
 
+  const [uploading, setUploading] = useState(false);
   const [newOrderNotifs, setNewOrderNotifs] = useState(true);
   const [lowStockNotifs, setLowStockNotifs] = useState(true);
   const [payoutNotifs, setPayoutNotifs] = useState(true);
@@ -39,6 +41,66 @@ export default function SettingsScreen() {
         },
       },
     ]);
+  };
+
+  const pickImage = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert('Permission needed', 'We need access to your photos to upload a logo.');
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.5,
+    });
+
+    if (!result.canceled && result.assets[0]?.uri) {
+      uploadLogo(result.assets[0].uri);
+    }
+  };
+
+  const uploadLogo = async (uri: string) => {
+    if (!restaurant?.id) return;
+    setUploading(true);
+    try {
+      const ext = uri.split('.').pop();
+      const fileName = `${restaurant.id}/logo_${Date.now()}.${ext}`;
+
+      const formData = new FormData();
+      formData.append('file', {
+        uri,
+        name: fileName,
+        type: `image/${ext}`,
+      } as any);
+
+      const { error } = await supabase.storage
+        .from('avatars')
+        .upload(fileName, formData, { upsert: true });
+
+      if (error) throw error;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(fileName);
+
+      const { error: updateError } = await supabase
+        .from('restaurants')
+        .update({ logo_url: publicUrl })
+        .eq('id', restaurant.id);
+
+      if (updateError) throw updateError;
+
+      await refreshUser();
+      Alert.alert('Success', 'Restaurant logo updated');
+    } catch (err) {
+      console.error('Upload error:', err);
+      Alert.alert('Error', 'Could not upload logo');
+    } finally {
+      setUploading(false);
+    }
   };
 
   function SectionHeader({ title }: { title: string }) {
@@ -130,13 +192,25 @@ export default function SettingsScreen() {
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
         {/* Restaurant profile */}
         <View style={[styles.profileCard, { backgroundColor: colors.surface }]}>
-          <View style={[styles.avatar, { backgroundColor: colors.primaryDim }]}>
+          <Pressable
+            onPress={pickImage}
+            disabled={uploading}
+            style={[styles.avatar, { backgroundColor: colors.primaryDim }]}
+          >
              {restaurant?.logo_url ? (
               <Image source={{ uri: restaurant.logo_url }} style={styles.avatarImg} />
             ) : (
               <Feather name="coffee" size={28} color={colors.primary} />
             )}
-          </View>
+            {uploading && (
+              <View style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(0,0,0,0.5)', alignItems: 'center', justifyContent: 'center' }]}>
+                <ActivityIndicator size="small" color="#FFF" />
+              </View>
+            )}
+            <View style={styles.cameraBadge}>
+              <Feather name="camera" size={10} color="#FFF" />
+            </View>
+          </Pressable>
           <View style={{ flex: 1 }}>
             <Text style={[typography.h4, { color: colors.foreground }]}>
               {restaurant?.name ?? 'Restaurant'}
@@ -162,7 +236,12 @@ export default function SettingsScreen() {
         {/* Payments */}
         <SectionHeader title="Payments" />
         <View style={styles.group}>
-          <SettingRow icon="credit-card" label="Bank Account" value={`${restaurant?.bank_name ?? 'None'} · ****${restaurant?.bank_account_number?.slice(-4) ?? '0000'}`} />
+          <SettingRow
+            icon="credit-card"
+            label="Bank Account"
+            value={restaurant?.bank_name ? `${restaurant.bank_name} · ****${restaurant.bank_account_number?.slice(-4)}` : 'Set up bank account'}
+            onPress={() => router.push('/(restaurant)/settings/bank-account' as any)}
+          />
           <SettingRow
             icon="arrow-up-right"
             label="Withdraw earnings"
@@ -225,6 +304,19 @@ const styles = StyleSheet.create({
   avatarImg: {
     width: '100%',
     height: '100%',
+  },
+  cameraBadge: {
+    position: 'absolute',
+    bottom: 2,
+    right: 2,
+    backgroundColor: '#000',
+    width: 18,
+    height: 18,
+    borderRadius: 9,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: '#FFF',
   },
   editBtn: {
     width: 36,

@@ -182,6 +182,7 @@ export default function ProfileScreen() {
             value={`₦${user?.wallet_balance?.toLocaleString('en-NG') ?? '0'}`}
             onPress={() => router.push('/(customer)/wallet' as any)}
           />
+          <RowItem icon="dollar-sign" label="Bank Account" onPress={() => router.push('/(customer)/profile/bank-account' as any)} />
           <RowItem icon="map-pin" label="Delivery addresses" onPress={() => router.push('/(customer)/addresses' as any)} />
         </View>
 

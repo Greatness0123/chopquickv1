@@ -148,7 +148,7 @@ export default function WalletScreen() {
               <Text style={[typography.captionMedium, { color: colors.foreground }]}>Add Funds</Text>
             </Pressable>
             <Pressable
-              onPress={() => {}}
+              onPress={() => router.push('/(customer)/wallet/transfer' as any)}
               style={[styles.actionBtn, { backgroundColor: colors.surface }]}
             >
               <View style={[styles.actionIcon, { backgroundColor: colors.elevated }]}>
@@ -157,7 +157,7 @@ export default function WalletScreen() {
               <Text style={[typography.captionMedium, { color: colors.foreground }]}>Transfer</Text>
             </Pressable>
             <Pressable
-              onPress={() => {}}
+              onPress={() => onRefresh()}
               style={[styles.actionBtn, { backgroundColor: colors.surface }]}
             >
               <View style={[styles.actionIcon, { backgroundColor: colors.elevated }]}>

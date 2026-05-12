@@ -104,15 +104,15 @@ export default function DashboardScreen() {
         {/* Today stats grid */}
         <View style={styles.statsRow}>
           <StatsCard
-            label="ToDaY'S ReVeNue"
-            value={formatNGN(todayRevenue || 24500)}
-            subValue="+₦4,200 vs yesterday"
+            label="Today's Revenue"
+            value={formatNGN(todayRevenue)}
+            subValue="revenue from collected orders"
             color={colors.success}
             style={{ flex: 1 }}
           />
           <StatsCard
             label="Meals Saved"
-            value={String(totalMealsSaved || 8)}
+            value={String(totalMealsSaved)}
             subValue="orders collected"
             color={colors.primary}
             style={{ flex: 1 }}
@@ -121,14 +121,14 @@ export default function DashboardScreen() {
 
         <View style={styles.statsRow}>
           <StatsCard
-            label="aCTiVe LiSTiNGS"
-            value={String(activeListings.length || 2)}
+            label="Active Listings"
+            value={String(activeListings.length)}
             subValue="live right now"
             style={{ flex: 1 }}
           />
           <StatsCard
-            label="PeNDiNG PiCKuP"
-            value={String(pendingOrders.length || 3)}
+            label="Pending Pickup"
+            value={String(pendingOrders.length)}
             subValue="awaiting collection"
             color={colors.warning}
             style={{ flex: 1 }}
