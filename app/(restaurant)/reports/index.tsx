@@ -263,7 +263,7 @@ export default function ReportsScreen() {
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1 },
+  safe: { flex: 1 ,paddingBottom: spacing.xxl},
   header: {
     flexDirection: 'row',
     alignItems: 'center',

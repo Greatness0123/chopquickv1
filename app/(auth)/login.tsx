@@ -144,7 +144,7 @@ export default function LoginScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1 },
+  container: { flex: 1,paddingBottom: spacing.xxl },
   scrollView: { width: '100%', maxWidth: 520, alignSelf: 'center' },
   content: { width: '100%', maxWidth: 520, alignSelf: 'center', paddingHorizontal: spacing.xl, paddingBottom: spacing.xxl, gap: spacing.xl },
   back: {

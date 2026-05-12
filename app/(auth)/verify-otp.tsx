@@ -65,7 +65,7 @@ export default function VerifyOTPScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1 },
+  container: { flex: 1,paddingBottom: spacing.xxl },
   content: { flex: 1, width: '100%', maxWidth: 520, alignSelf: 'center', paddingHorizontal: spacing.xl, gap: spacing.xl, alignItems: 'center' },
   back: {
     width: 40, height: 40, borderRadius: 20,

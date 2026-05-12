@@ -233,7 +233,7 @@ export default function ExploreScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, width: '100%', alignSelf: 'center' },
+  container: { flex: 1, width: '100%', alignSelf: 'center',paddingBottom: spacing.xxl },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',

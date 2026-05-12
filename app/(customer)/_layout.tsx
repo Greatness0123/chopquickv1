@@ -8,9 +8,9 @@ import { Feather } from '@expo/vector-icons';
 import React from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 
-import { useAuth } from '@/context/AuthContext';
-import { useColors } from '@/hooks/useColors';
-import { WebLayout } from '@/components/WebLayout';
+import { useAuth } from '../../context/AuthContext';
+import { useColors } from '../../hooks/useColors';
+import { WebLayout } from '../../components/WebLayout';
 
 function NativeTabLayout() {
   return (

@@ -162,7 +162,7 @@ export default function AddressesScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, width: '100%', maxWidth: 1280, alignSelf: 'center' },
+  container: { flex: 1, width: '100%', maxWidth: 1280, alignSelf: 'center',paddingBottom: spacing.xxl },
   header: {
     flexDirection: 'row',
     alignItems: 'center',

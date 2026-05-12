@@ -234,7 +234,7 @@ export default function ProfileScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, width: '100%', alignSelf: 'center' },
+  container: { flex: 1, width: '100%', alignSelf: 'center',paddingBottom: spacing.xxl },
   header: {
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.md,

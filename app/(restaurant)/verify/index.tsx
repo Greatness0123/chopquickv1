@@ -319,7 +319,7 @@ const CORNER = 24;
 const BORDER = 3;
 
 const styles = StyleSheet.create({
-  safe: { flex: 1 },
+  safe: { flex: 1,paddingBottom: spacing.xxl },
   header: {
     flexDirection: 'row',
     alignItems: 'center',

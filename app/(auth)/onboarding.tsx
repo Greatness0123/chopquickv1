@@ -149,7 +149,7 @@ export default function OnboardingScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1 },
+  container: { flex: 1, paddingBottom: spacing.xxl },
   slide: { flex: 1, width: '100%', alignItems: 'center', justifyContent: 'flex-start', paddingBottom: 190 },
   iconCircle: {
     width: '100%',

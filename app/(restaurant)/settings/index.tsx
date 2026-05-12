@@ -281,7 +281,7 @@ export default function SettingsScreen() {
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1 },
+  safe: { flex: 1 ,paddingBottom: spacing.xxl},
   header: {
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.md,

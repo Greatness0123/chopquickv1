@@ -122,7 +122,7 @@ export default function OrdersScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, width: '100%', maxWidth: 1280, alignSelf: 'center' },
+  container: { flex: 1, width: '100%', maxWidth: 1280, alignSelf: 'center',paddingBottom: spacing.xxl },
   header: {
     paddingHorizontal: spacing.lg,
     paddingBottom: spacing.md,

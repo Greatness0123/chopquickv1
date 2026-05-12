@@ -235,7 +235,7 @@ export default function BankAccountScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1 },
+  container: { flex: 1,paddingBottom: spacing.xxl },
   header: {
     flexDirection: 'row',
     alignItems: 'center',

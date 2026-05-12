@@ -102,7 +102,7 @@ export default function SupportScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, width: '100%', maxWidth: 800, alignSelf: 'center' },
+  container: { flex: 1, width: '100%', maxWidth: 800, alignSelf: 'center',paddingBottom: spacing.xxl },
   scroll: { paddingBottom: spacing.xl },
   header: {
     flexDirection: 'row',
