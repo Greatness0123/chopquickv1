@@ -137,13 +137,13 @@ export default function ProfileScreen() {
         <View style={styles.statsRow}>
           <View style={[styles.statCard, { backgroundColor: colors.surface }]}>
             <Text style={[typography.h3, { color: colors.primary }]}>
-              {user?.meals_saved_count ?? 14}
+              {user?.meals_saved_count ?? 0}
             </Text>
             <Text style={[typography.label, { color: colors.textMuted }]}>Meals Saved</Text>
           </View>
           <View style={[styles.statCard, { backgroundColor: colors.surface }]}>
             <Text style={[typography.h3, { color: colors.foreground }]}>
-              ₦{((user?.total_spent ?? 18200) / 1000).toFixed(1)}k
+              ₦{((user?.total_spent ?? 0) / 1000).toFixed(1)}k
             </Text>
             <Text style={[typography.label, { color: colors.textMuted }]}>Total Spent</Text>
           </View>
@@ -234,7 +234,7 @@ export default function ProfileScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, width: '100%', maxWidth: 1280, alignSelf: 'center' },
+  container: { flex: 1, width: '100%', alignSelf: 'center' },
   header: {
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.md,

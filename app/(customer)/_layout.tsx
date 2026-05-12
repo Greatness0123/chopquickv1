@@ -1,14 +1,16 @@
 // Customer bottom tab layout — explore, orders, wallet, profile
 import { BlurView } from 'expo-blur';
 import { isLiquidGlassAvailable } from 'expo-glass-effect';
-import { Tabs } from 'expo-router';
+import { Redirect, Tabs } from 'expo-router';
 import { Icon, Label, NativeTabs } from 'expo-router/unstable-native-tabs';
 import { SymbolView } from 'expo-symbols';
 import { Feather } from '@expo/vector-icons';
 import React from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 
+import { useAuth } from '@/context/AuthContext';
 import { useColors } from '@/hooks/useColors';
+import { WebLayout } from '@/components/WebLayout';
 
 function NativeTabLayout() {
   return (
@@ -125,6 +127,19 @@ function ClassicTabLayout() {
 }
 
 export default function CustomerLayout() {
-  if (isLiquidGlassAvailable()) return <NativeTabLayout />;
-  return <ClassicTabLayout />;
+  const { userRole, isLoading } = useAuth();
+
+  if (isLoading) return null;
+
+  if (userRole === 'restaurant_owner') {
+    return <Redirect href="/(restaurant)/dashboard" />;
+  }
+
+  const Layout = isLiquidGlassAvailable() ? NativeTabLayout : ClassicTabLayout;
+
+  return (
+    <WebLayout>
+      <Layout />
+    </WebLayout>
+  );
 }

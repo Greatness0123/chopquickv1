@@ -6,6 +6,7 @@ import { Platform, StyleSheet, View } from 'react-native';
 
 import { useAuth } from '@/context/AuthContext';
 import { useColors } from '@/hooks/useColors';
+import { WebLayout } from '@/components/WebLayout';
 
 export default function RestaurantLayout() {
   const { userRole, isLoading } = useAuth();
@@ -20,7 +21,8 @@ export default function RestaurantLayout() {
   const isIOS = Platform.OS === 'ios';
 
   return (
-    <Tabs
+    <WebLayout>
+      <Tabs
       screenOptions={{
         headerShown: false,
         tabBarActiveTintColor: colors.primary,
@@ -76,10 +78,11 @@ export default function RestaurantLayout() {
           tabBarIcon: ({ color }) => <Feather name="settings" size={22} color={color} />,
         }}
       />
-      {/* Hidden screens not shown in tab bar */}
-      <Tabs.Screen name="listings/new" options={{ href: null }} />
-      <Tabs.Screen name="withdraw/index" options={{ href: null }} />
-    </Tabs>
+        {/* Hidden screens not shown in tab bar */}
+        <Tabs.Screen name="listings/new" options={{ href: null }} />
+        <Tabs.Screen name="withdraw/index" options={{ href: null }} />
+      </Tabs>
+    </WebLayout>
   );
 }
 

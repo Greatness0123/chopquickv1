@@ -150,7 +150,7 @@ export default function ListingsScreen() {
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, width: '100%', maxWidth: 1280, alignSelf: 'center' },
+  safe: { flex: 1, width: '100%', alignSelf: 'center' },
   header: {
     flexDirection: 'row',
     alignItems: 'center',

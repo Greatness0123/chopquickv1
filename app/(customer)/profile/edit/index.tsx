@@ -190,7 +190,7 @@ export default function EditProfileScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, width: '100%', maxWidth: 600, alignSelf: 'center' },
+  container: { flex: 1, width: '100%', alignSelf: 'center' },
   scroll: { paddingBottom: spacing.xl },
   header: {
     flexDirection: 'row',
