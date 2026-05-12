@@ -46,7 +46,7 @@ export default function DashboardScreen() {
 
       const { data: ordersData } = await supabase
         .from('orders')
-        .select('*, listing:listings(*)')
+        .select('*, listing:listings(*), customer:profiles(full_name)')
         .eq('restaurant_id', restaurant.id);
 
       setListings(listingsData || []);
@@ -156,7 +156,7 @@ export default function DashboardScreen() {
         {/* active listings */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Text style={[typography.h4, { color: colors.foreground }]}>active Listings</Text>
+            <Text style={[typography.h4, { color: colors.foreground }]}>Active Listings</Text>
             <Pressable onPress={() => router.push('/(restaurant)/listings' as any)}>
               <Text style={[typography.captionMedium, { color: colors.primary }]}>See all</Text>
             </Pressable>
@@ -189,7 +189,7 @@ export default function DashboardScreen() {
             >
               <View style={styles.orderLeft}>
                 <Text style={[typography.bodyMedium, { color: colors.foreground }]}>
-                  #{order.collection_code}
+                  {order.customer.full_name}
                 </Text>
                 <Text style={[typography.caption, { color: colors.textSecondary }]}>
                   {order.listing?.food_name ?? 'Food item'} · {formatTime(order.created_at)}

@@ -45,7 +45,7 @@ export default function ReportsScreen() {
     try {
       const { data: ordersData } = await supabase
         .from('orders')
-        .select('*')
+        .select('*,customer:profiles(full_name), listing:listings(*))')
         .eq('restaurant_id', restaurant.id);
 
       const { data: listingsData } = await supabase

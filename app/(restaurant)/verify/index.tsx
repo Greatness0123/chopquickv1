@@ -16,14 +16,28 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Button } from '../../../components/ui/Button';
 import { spacing, typography } from '../../../constants/colors';
-import { MOCK_ORDERS } from '../../../constants/mockData';
 import { useColors } from '../../../hooks/useColors';
-import type { Order } from '../../../types';
-import { useAuth } from '../../../context/AuthContext';
 import { supabase } from '../../../lib/supabase';
+import type { Order } from '../../../types';
+
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 function formatNGN(n: number) {
   return `₦${n.toLocaleString('en-NG')}`;
+}
+
+// Formats raw input into CQ-XXXXX — auto-inserts hyphen after "CQ"
+function formatCollectionCode(raw: string): string {
+  // Strip everything that isn't alphanumeric
+  const clean = raw.replace(/[^A-Z0-9]/gi, '').toUpperCase();
+
+  if (clean.length === 0) return '';
+
+  // Always prefix with CQ
+  const body = clean.startsWith('CQ') ? clean.slice(2) : clean;
+  const digits = body.slice(0, 5);
+
+  return digits.length > 0 ? `CQ-${digits}` : 'CQ';
 }
 
 export default function VerifyScreen() {
@@ -34,23 +48,49 @@ export default function VerifyScreen() {
   const [showManual, setShowManual] = useState(Platform.OS === 'web');
   const [foundOrder, setFoundOrder] = useState<Order | null>(null);
   const [confirming, setConfirming] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const handleCodeChange = (text: string) => {
+    setManualCode(formatCollectionCode(text));
+  };
 
   const lookupOrder = async (code: string) => {
+    const trimmed = code.trim();
+    const upper = trimmed.toUpperCase();
+
+    if (!upper) return;
+
+    const isUUID = UUID_REGEX.test(trimmed);
+
+    const orFilter = [
+      `collection_code.eq.${upper}`,
+      `qr_payload.eq.${trimmed}`,
+      isUUID ? `id.eq.${trimmed}` : null,
+    ]
+      .filter(Boolean)
+      .join(',');
+
+    setLoading(true);
     try {
       const { data: order, error } = await supabase
         .from('orders')
         .select('*, listing:listings(*)')
-        .or(`collection_code.eq.${code.trim().toUpperCase()},qr_payload.eq.${code.trim()},id.eq.${code.trim()}`)
+        .or(orFilter)
         .single();
 
       if (error || !order) {
-        Alert.alert('Not Found', 'An order with this code does not exist. Check the code and try again.');
+        Alert.alert(
+          'Not Found',
+          'No order matched this code. Double-check the code and try again.',
+        );
         return;
       }
 
       setFoundOrder(order);
     } catch (err) {
-      Alert.alert('Error', 'Could not fetch order details');
+      Alert.alert('Error', 'Could not fetch order details. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -62,31 +102,37 @@ export default function VerifyScreen() {
 
   const handleMarkCollected = async () => {
     if (!foundOrder) return;
+
+    if (foundOrder.order_status === 'collected') {
+      Alert.alert('Already Collected', 'This order has already been marked as collected.');
+      return;
+    }
+
     setConfirming(true);
     try {
       const { error } = await supabase
         .from('orders')
         .update({
           order_status: 'collected',
-          collected_at: new Date().toISOString()
+          collected_at: new Date().toISOString(),
         })
         .eq('id', foundOrder.id);
 
       if (error) throw error;
 
-      // Update restaurant stats (simulated for now, usually handled by triggers)
       await supabase.rpc('increment_restaurant_stats', {
         rest_id: foundOrder.restaurant_id,
-        revenue: foundOrder.total_amount
+        revenue: foundOrder.total_amount,
       });
 
-      Alert.alert('Success!', 'Order marked as collected. ₦' + foundOrder.total_amount.toLocaleString('en-NG') + ' added to your earnings.');
+      Alert.alert(
+        'Collected!',
+        `${formatNGN(foundOrder.total_amount)} added to your earnings.`,
+      );
 
-      setFoundOrder(null);
-      setScanned(false);
-      setManualCode('');
+      reset();
     } catch (err: any) {
-      Alert.alert('Error', err.message || 'Could not update order status');
+      Alert.alert('Error', err.message || 'Could not update order status. Try again.');
     } finally {
       setConfirming(false);
     }
@@ -96,13 +142,16 @@ export default function VerifyScreen() {
     setFoundOrder(null);
     setScanned(false);
     setManualCode('');
+    setLoading(false);
   };
+
+  const canLookup = manualCode.replace(/[^A-Z0-9]/g, '').length >= 5;
 
   return (
     <SafeAreaView style={[styles.safe, { backgroundColor: colors.background }]}>
       {/* Header */}
       <View style={[styles.header, { borderBottomColor: colors.border }]}>
-        <Text style={[typography.h3, { color: colors.foreground }]}>Verify order</Text>
+        <Text style={[typography.h3, { color: colors.foreground }]}>Verify Order</Text>
         <Pressable
           onPress={() => setShowManual((v) => !v)}
           style={[styles.toggleBtn, { backgroundColor: colors.elevated }]}
@@ -115,7 +164,7 @@ export default function VerifyScreen() {
       </View>
 
       {!showManual && Platform.OS !== 'web' ? (
-        /* Camera view */
+        /* ── Camera view ── */
         <View style={styles.cameraContainer}>
           {!permission?.granted ? (
             <View style={styles.permBox}>
@@ -124,9 +173,9 @@ export default function VerifyScreen() {
                 Camera Permission Needed
               </Text>
               <Text style={[typography.body, { color: colors.textSecondary, textAlign: 'center' }]}>
-                allow camera access to scan pickup QR codes
+                Allow camera access to scan pickup QR codes
               </Text>
-              <Button label="Grant Camera access" onPress={requestPermission} fullWidth={false} />
+              <Button label="Grant Camera Access" onPress={requestPermission} fullWidth={false} />
             </View>
           ) : (
             <>
@@ -135,7 +184,6 @@ export default function VerifyScreen() {
                 onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
                 barcodeScannerSettings={{ barcodeTypes: ['qr'] }}
               />
-              {/* Viewfinder overlay */}
               <View style={styles.overlay}>
                 <View style={styles.scanFrame}>
                   <View style={[styles.corner, styles.topLeft, { borderColor: colors.primary }]} />
@@ -152,24 +200,26 @@ export default function VerifyScreen() {
                   onPress={reset}
                   style={[styles.rescanBtn, { backgroundColor: colors.elevated }]}
                 >
-                  <Text style={[typography.bodyMedium, { color: colors.foreground }]}>Scan again</Text>
+                  <Text style={[typography.bodyMedium, { color: colors.foreground }]}>
+                    Scan Again
+                  </Text>
                 </Pressable>
               )}
             </>
           )}
         </View>
       ) : (
-        /* Manual code entry */
+        /* ── Manual code entry ── */
         <View style={styles.manualContainer}>
           <View style={[styles.manualCard, { backgroundColor: colors.surface }]}>
             <Feather name="hash" size={32} color={colors.primary} />
-            <Text style={[typography.h1, { color: colors.foreground }]}>enter Collection Code</Text>
+            <Text style={[typography.h3, { color: colors.foreground }]}>Enter Collection Code</Text>
             <Text style={[typography.body, { color: colors.textSecondary, textAlign: 'center' }]}>
               Ask the customer for their 5-digit pickup code
             </Text>
             <TextInput
               value={manualCode}
-              onChangeText={(t) => setManualCode(t.toUpperCase())}
+              onChangeText={handleCodeChange}
               placeholder="CQ-12345"
               placeholderTextColor={colors.placeholder}
               style={[
@@ -182,18 +232,21 @@ export default function VerifyScreen() {
                 },
               ]}
               autoCapitalize="characters"
-              maxLength={8}
+              autoCorrect={false}
+              keyboardType="default"
+              maxLength={8} // CQ-XXXXX
             />
             <Button
-              label="Lookup order"
+              label={loading ? 'Looking up...' : 'Look Up Order'}
               onPress={() => lookupOrder(manualCode)}
-              disabled={manualCode.length < 3}
+              loading={loading}
+              disabled={!canLookup || loading}
             />
           </View>
         </View>
       )}
 
-      {/* order confirmation modal */}
+      {/* ── Order confirmation modal ── */}
       <Modal visible={!!foundOrder} transparent animationType="slide">
         <View style={styles.modalBackdrop}>
           <View style={[styles.modalCard, { backgroundColor: colors.surface }]}>
@@ -204,29 +257,27 @@ export default function VerifyScreen() {
 
             {foundOrder && (
               <View style={[styles.orderDetails, { backgroundColor: colors.elevated }]}>
-                <DetailRow label="Code" value={foundOrder.collection_code ?? '—'} colors={colors} />
-                <DetailRow label="item" value={foundOrder.listing?.food_name ?? '—'} colors={colors} />
-                <DetailRow label="Qta" value={`×${foundOrder.quantity}`} colors={colors} />
-                <DetailRow
-                  label="amount"
-                  value={formatNGN(foundOrder.total_amount)}
-                  colors={colors}
-                  highlight
-                />
-                <DetailRow
-                  label="Status"
-                  value={foundOrder.order_status}
-                  colors={colors}
-                />
+                <DetailRow label="Code"   value={foundOrder.collection_code ?? '—'} colors={colors} />
+                <DetailRow label="Item"   value={foundOrder.listing?.food_name ?? '—'} colors={colors} />
+                <DetailRow label="Qty"    value={`×${foundOrder.quantity}`} colors={colors} />
+                <DetailRow label="Amount" value={formatNGN(foundOrder.total_amount)} colors={colors} highlight />
+                <DetailRow label="Status" value={foundOrder.order_status} colors={colors} />
               </View>
             )}
 
             <View style={styles.modalActions}>
-              <Button label="Cancel" onPress={reset} variant="secondary" fullWidth={false} style={{ flex: 1 }} />
               <Button
-                label="Mark Collected"
+                label="Cancel"
+                onPress={reset}
+                variant="secondary"
+                fullWidth={false}
+                style={{ flex: 1 }}
+              />
+              <Button
+                label={confirming ? 'Confirming...' : 'Mark Collected'}
                 onPress={handleMarkCollected}
                 loading={confirming}
+                disabled={foundOrder?.order_status === 'collected'}
                 fullWidth={false}
                 style={{ flex: 1 }}
               />
@@ -252,7 +303,12 @@ function DetailRow({
   return (
     <View style={styles.detailRow}>
       <Text style={[typography.caption, { color: colors.textMuted }]}>{label}</Text>
-      <Text style={[typography.bodyMedium, { color: highlight ? colors.success : colors.foreground }]}>
+      <Text
+        style={[
+          typography.bodyMedium,
+          { color: highlight ? colors.success : colors.foreground },
+        ]}
+      >
         {value}
       </Text>
     </View>
@@ -287,21 +343,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: spacing.xl,
   },
-  scanFrame: {
-    width: 240,
-    height: 240,
-    position: 'relative',
-  },
-  corner: {
-    position: 'absolute',
-    width: CORNER,
-    height: CORNER,
-    borderWidth: BORDER,
-  },
-  topLeft: { top: 0, left: 0, borderRightWidth: 0, borderBottomWidth: 0, borderTopLeftRadius: 6 },
-  topRight: { top: 0, right: 0, borderLeftWidth: 0, borderBottomWidth: 0, borderTopRightRadius: 6 },
-  bottomLeft: { bottom: 0, left: 0, borderRightWidth: 0, borderTopWidth: 0, borderBottomLeftRadius: 6 },
-  bottomRight: { bottom: 0, right: 0, borderLeftWidth: 0, borderTopWidth: 0, borderBottomRightRadius: 6 },
+  scanFrame: { width: 240, height: 240, position: 'relative' },
+  corner: { position: 'absolute', width: CORNER, height: CORNER, borderWidth: BORDER },
+  topLeft:     { top: 0,    left: 0,  borderRightWidth: 0,  borderBottomWidth: 0, borderTopLeftRadius: 6 },
+  topRight:    { top: 0,    right: 0, borderLeftWidth: 0,   borderBottomWidth: 0, borderTopRightRadius: 6 },
+  bottomLeft:  { bottom: 0, left: 0,  borderRightWidth: 0,  borderTopWidth: 0,    borderBottomLeftRadius: 6 },
+  bottomRight: { bottom: 0, right: 0, borderLeftWidth: 0,   borderTopWidth: 0,    borderBottomRightRadius: 6 },
   scanHint: {
     backgroundColor: 'rgba(0,0,0,0.6)',
     paddingHorizontal: spacing.lg,

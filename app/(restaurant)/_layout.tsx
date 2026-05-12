@@ -4,9 +4,9 @@ import { Redirect, Tabs } from 'expo-router';
 import React from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 
-import { useAuth } from '@/context/AuthContext';
-import { useColors } from '@/hooks/useColors';
-import { WebLayout } from '@/components/WebLayout';
+import { useAuth } from '../../context/AuthContext';
+import { useColors } from '../../hooks/useColors';
+import { WebLayout } from '../../components/WebLayout';
 
 export default function RestaurantLayout() {
   const { userRole, isLoading } = useAuth();
@@ -80,6 +80,7 @@ export default function RestaurantLayout() {
       />
         {/* Hidden screens not shown in tab bar */}
         <Tabs.Screen name="listings/new" options={{ href: null }} />
+         <Tabs.Screen name="settings/bank-account/index" options={{ href: null }} />
         <Tabs.Screen name="withdraw/index" options={{ href: null }} />
       </Tabs>
     </WebLayout>

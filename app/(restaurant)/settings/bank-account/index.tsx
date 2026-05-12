@@ -67,31 +67,38 @@ export default function BankAccountScreen() {
   };
 
   const resolveAccount = async () => {
-    if (accountNumber.length !== 10 || !selectedBank) return;
-    setVerifying(true);
-    try {
-      // SECURITY NOTE: In a real production app, you MUST NOT call Paystack Resolve API
-      // directly from the frontend as it requires your Secret Key.
-      // You should call your backend which then calls Paystack.
-      // For this demo/setup, we will simulate the resolution or use a public mock if available.
-
-      // Simulating a successful resolution for demo purposes
-      await new Promise(r => setTimeout(r, 1000));
-      setAccountName('RESOLVED NAME (Demo Mode)');
-
-      /*
-      // REAL BACKEND CALL:
-      const res = await fetch(`${YOUR_BACKEND_URL}/api/resolve-bank`, {
-        method: 'POST',
-        body: JSON.stringify({ accountNumber, bankCode: selectedBank.code })
-      });
-      */
-    } catch (err) {
-      console.error('Error resolving account:', err);
-    } finally {
-      setVerifying(false);
-    }
-  };
+   if (accountNumber.length !== 10 || !selectedBank) return;
+       setVerifying(true);
+       try {
+         const res = await supabase.functions.invoke('resolve-bank-account', {
+           body: { account_number: accountNumber, bank_code: selectedBank.code },
+         });
+   
+         if (res.error) {
+           const message = res.error?.context
+             ? await res.error.context.json().then((d: any) => d.error).catch(() => res.error.message)
+             : res.error.message;
+           console.error('Resolve error detail:', message);
+           Alert.alert('Error', message ?? 'Failed to verify account number.');
+           setAccountName('');
+           return;
+         }
+   
+         if (res.data?.account_name) {
+           setAccountName(res.data.account_name);
+         } else {
+           setAccountName('');
+           Alert.alert('Not Found', 'Could not resolve account. Check the number and bank.');
+         }
+       } catch (err) {
+         console.error('Error resolving account:', err);
+         setAccountName('');
+         Alert.alert('Error', 'Failed to verify account number.');
+       } finally {
+         setVerifying(false);
+       }
+     };
+   
 
   useEffect(() => {
     if (accountNumber.length === 10 && selectedBank) {
@@ -204,7 +211,7 @@ export default function BankAccountScreen() {
             </View>
             <FlatList
               data={filteredBanks}
-              keyExtractor={(item) => item.code}
+              keyExtractor={(item, idx) => `${item.code}-${idx}`}
               renderItem={({ item }) => (
                 <Pressable
                   onPress={() => {
