@@ -52,6 +52,7 @@ export default function NewListingScreen() {
   const [category, setCategory] = useState<any>('other');
   const [imageUri, setImageUri] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
   const discount = computeDiscount(originalPrice, currentPrice);
 
