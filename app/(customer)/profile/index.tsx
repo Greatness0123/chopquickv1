@@ -33,10 +33,17 @@ export default function ProfileScreen() {
     .join('')
     .toUpperCase();
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     Alert.alert('Log out', 'are you sure you want to log out?', [
       { text: 'Cancel', style: 'cancel' },
-      { text: 'Log out', style: 'destructive', onPress: logout },
+      {
+        text: 'Log out',
+        style: 'destructive',
+        onPress: async () => {
+          await logout();
+          router.replace('/(auth)/login');
+        }
+      },
     ]);
   };
 

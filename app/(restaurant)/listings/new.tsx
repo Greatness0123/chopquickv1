@@ -1,9 +1,12 @@
 // New listing form — create surplus food item
 import { Feather } from '@expo/vector-icons';
+import * as ImagePicker from 'expo-image-picker';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {
+  ActivityIndicator,
   Alert,
+  Image,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -17,7 +20,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button } from '../../../components/ui/Button';
 import { Input } from '../../../components/ui/Input';
 import { spacing, typography } from '../../../constants/colors';
+import { useAuth } from '../../../context/AuthContext';
 import { useColors } from '../../../hooks/useColors';
+import { supabase } from '../../../lib/supabase';
 
 const FOOD_TAGS = ['Jollof', 'egusi', 'Fried Rice', 'Swollow', 'amala', 'Snack', 'Brnch', 'Vegan'];
 
@@ -37,16 +42,55 @@ function computeDiscount(original: string, current: string): number {
 export default function NewListingScreen() {
   const colors = useColors();
   const router = useRouter();
+  const { restaurant } = useAuth();
 
   const [foodName, setFoodName] = useState('');
   const [originalPrice, setOriginalPrice] = useState('');
   const [currentPrice, setCurrentPrice] = useState('');
   const [portions, setPortions] = useState('');
   const [description, setDescription] = useState('');
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [category, setCategory] = useState<any>('other');
+  const [imageUri, setImageUri] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   const discount = computeDiscount(originalPrice, currentPrice);
+
+  const pickImage = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 0.7,
+    });
+
+    if (!result.canceled && result.assets[0]?.uri) {
+      setImageUri(result.assets[0].uri);
+    }
+  };
+
+  const uploadImage = async (uri: string, listingId: string) => {
+    const ext = uri.split('.').pop();
+    const path = `${restaurant?.id}/${listingId}.${ext}`;
+
+    const formData = new FormData();
+    formData.append('file', {
+      uri,
+      name: path,
+      type: `image/${ext}`,
+    } as any);
+
+    const { error } = await supabase.storage
+      .from('listings')
+      .upload(path, formData);
+
+    if (error) throw error;
+
+    const { data: { publicUrl } } = supabase.storage
+      .from('listings')
+      .getPublicUrl(path);
+
+    return publicUrl;
+  };
 
   const toggleTag = (tag: string) => {
     setSelectedTags((prev) =>
@@ -69,13 +113,53 @@ export default function NewListingScreen() {
       Alert.alert('Validation error', err);
       return;
     }
+
+    if (!restaurant?.id) {
+      Alert.alert('Error', 'Restaurant profile not found');
+      return;
+    }
+
     setLoading(true);
-    // Stub — will call Supabase when keys are provided
-    await new Promise((r) => setTimeout(r, 1200));
-    setLoading(false);
-    Alert.alert('Listing Created', 'Your surplus deal is now live!', [
-      { text: 'oK', onPress: () => router.back() },
-    ]);
+    try {
+      const expiresAt = new Date();
+      expiresAt.setHours(21, 30, 0, 0);
+
+      const { data: listing, error } = await supabase
+        .from('listings')
+        .insert({
+          restaurant_id: restaurant.id,
+          food_name: foodName.trim(),
+          food_category: category,
+          description: description.trim(),
+          original_price: parseFloat(originalPrice),
+          current_price: parseFloat(currentPrice),
+          discount_percent: discount,
+          portions_total: parseInt(portions),
+          portions_remaining: parseInt(portions),
+          expires_at: expiresAt.toISOString(),
+          status: 'live',
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      if (imageUri && listing) {
+        const imageUrl = await uploadImage(imageUri, listing.id);
+        await supabase
+          .from('listings')
+          .update({ image_url: imageUrl })
+          .eq('id', listing.id);
+      }
+
+      setLoading(false);
+      Alert.alert('Listing Created', 'Your surplus deal is now live!', [
+        { text: 'OK', onPress: () => router.back() },
+      ]);
+    } catch (err: any) {
+      setLoading(false);
+      Alert.alert('Error', err.message || 'Could not create listing');
+    }
   };
 
   return (
@@ -98,6 +182,21 @@ export default function NewListingScreen() {
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
+          {/* Image picker */}
+          <Pressable
+            onPress={pickImage}
+            style={[styles.imagePicker, { backgroundColor: colors.surface, borderColor: colors.border }]}
+          >
+            {imageUri ? (
+              <Image source={{ uri: imageUri }} style={styles.preview} />
+            ) : (
+              <View style={styles.pickerContent}>
+                <Feather name="image" size={32} color={colors.textMuted} />
+                <Text style={[typography.caption, { color: colors.textMuted }]}>Upload food image</Text>
+              </View>
+            )}
+          </Pressable>
+
           {/* Basic info */}
           <View style={styles.section}>
             <Text style={[typography.h4, { color: colors.foreground }]}>Food Details</Text>
@@ -189,16 +288,16 @@ export default function NewListingScreen() {
             </View>
           </View>
 
-          {/* Food tags */}
+          {/* Category selection */}
           <View style={styles.section}>
-            <Text style={[typography.h4, { color: colors.foreground }]}>Food Tags</Text>
+            <Text style={[typography.h4, { color: colors.foreground }]}>Category</Text>
             <View style={styles.tagsWrap}>
-              {FOOD_TAGS.map((tag) => {
-                const active = selectedTags.includes(tag);
+              {['rice', 'chicken', 'pasta', 'soup', 'snacks', 'other'].map((cat) => {
+                const active = category === cat;
                 return (
                   <Pressable
-                    key={tag}
-                    onPress={() => toggleTag(tag)}
+                    key={cat}
+                    onPress={() => setCategory(cat)}
                     style={[
                       styles.tag,
                       {
@@ -210,10 +309,10 @@ export default function NewListingScreen() {
                     <Text
                       style={[
                         typography.captionMedium,
-                        { color: active ? colors.primary : colors.textSecondary },
+                        { color: active ? colors.primary : colors.textSecondary, textTransform: 'capitalize' },
                       ]}
                     >
-                      {tag}
+                      {cat}
                     </Text>
                   </Pressable>
                 );
@@ -248,6 +347,17 @@ const styles = StyleSheet.create({
   },
   backBtn: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center' },
   scroll: { padding: spacing.lg, gap: spacing.xl, paddingBottom: 40 },
+  imagePicker: {
+    height: 180,
+    borderRadius: 16,
+    borderWidth: 1.5,
+    borderStyle: 'dashed',
+    overflow: 'hidden',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  preview: { width: '100%', height: '100%' },
+  pickerContent: { alignItems: 'center', gap: 8 },
   section: { gap: spacing.md },
   priceRow: { flexDirection: 'row', gap: spacing.md },
   discountBanner: {

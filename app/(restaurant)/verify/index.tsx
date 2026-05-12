@@ -33,17 +33,22 @@ export default function VerifyScreen() {
   const [foundOrder, setFoundOrder] = useState<Order | null>(null);
   const [confirming, setConfirming] = useState(false);
 
-  const lookupOrder = (code: string) => {
-    const order = MOCK_ORDERS.find(
-      (o) =>
-        o.collection_code === code.trim().toUpperCase() ||
-        o.qr_payload === code.trim() ||
-        o.id === code.trim()
-    );
-    if (order) {
+  const lookupOrder = async (code: string) => {
+    try {
+      const { data: order, error } = await supabase
+        .from('orders')
+        .select('*, listing:listings(*)')
+        .or(`collection_code.eq.${code.trim().toUpperCase()},qr_payload.eq.${code.trim()},id.eq.${code.trim()}`)
+        .single();
+
+      if (error || !order) {
+        Alert.alert('Not Found', 'An order with this code does not exist. Check the code and try again.');
+        return;
+      }
+
       setFoundOrder(order);
-    } else {
-      Alert.alert('Not Found', 'an order with this code does not exist. Check the code and try again.');
+    } catch (err) {
+      Alert.alert('Error', 'Could not fetch order details');
     }
   };
 
@@ -56,13 +61,33 @@ export default function VerifyScreen() {
   const handleMarkCollected = async () => {
     if (!foundOrder) return;
     setConfirming(true);
-    // Stub — will call Supabase when keys are ready
-    await new Promise((r) => setTimeout(r, 1000));
-    setConfirming(false);
-    setFoundOrder(null);
-    setScanned(false);
-    setManualCode('');
-    Alert.alert('Success!', 'order marked as collected. ₦' + foundOrder.total_amount.toLocaleString('en-NG') + ' added to your earnings.');
+    try {
+      const { error } = await supabase
+        .from('orders')
+        .update({
+          order_status: 'collected',
+          collected_at: new Date().toISOString()
+        })
+        .eq('id', foundOrder.id);
+
+      if (error) throw error;
+
+      // Update restaurant stats (simulated for now, usually handled by triggers)
+      await supabase.rpc('increment_restaurant_stats', {
+        rest_id: foundOrder.restaurant_id,
+        revenue: foundOrder.total_amount
+      });
+
+      Alert.alert('Success!', 'Order marked as collected. ₦' + foundOrder.total_amount.toLocaleString('en-NG') + ' added to your earnings.');
+
+      setFoundOrder(null);
+      setScanned(false);
+      setManualCode('');
+    } catch (err: any) {
+      Alert.alert('Error', err.message || 'Could not update order status');
+    } finally {
+      setConfirming(false);
+    }
   };
 
   const reset = () => {
@@ -138,7 +163,7 @@ export default function VerifyScreen() {
             <Feather name="hash" size={32} color={colors.primary} />
             <Text style={[typography.h1, { color: colors.foreground }]}>enter Collection Code</Text>
             <Text style={[typography.body, { color: colors.textSecondary, textAlign: 'center' }]}>
-              ask the customer for their 5-digit pickup code
+              Ask the customer for their 5-digit pickup code
             </Text>
             <TextInput
               value={manualCode}
@@ -151,8 +176,7 @@ export default function VerifyScreen() {
                   backgroundColor: colors.elevated,
                   color: colors.foreground,
                   borderColor: colors.border,
-                },
-                { ...typography.h2,
+                  ...typography.h3,
                 },
               ]}
               autoCapitalize="characters"
@@ -174,7 +198,7 @@ export default function VerifyScreen() {
             <View style={[styles.successIcon, { backgroundColor: colors.successDim }]}>
               <Feather name="check-circle" size={32} color={colors.success} />
             </View>
-            <Text style={[typography.h1, { color: colors.foreground }]}>order Found</Text>
+            <Text style={[typography.h3, { color: colors.foreground }]}>Order Found</Text>
 
             {foundOrder && (
               <View style={[styles.orderDetails, { backgroundColor: colors.elevated }]}>

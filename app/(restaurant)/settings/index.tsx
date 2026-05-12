@@ -34,6 +34,7 @@ export default function SettingsScreen() {
         style: 'destructive',
         onPress: async () => {
           await logout();
+          router.replace('/(auth)/login');
         },
       },
     ]);
@@ -129,19 +130,20 @@ export default function SettingsScreen() {
         {/* Restaurant profile */}
         <View style={[styles.profileCard, { backgroundColor: colors.surface }]}>
           <View style={[styles.avatar, { backgroundColor: colors.primaryDim }]}>
-            <Feather name="coffee" size={28} color={colors.primary} />
+             {restaurant?.logo_url ? (
+              <Image source={{ uri: restaurant.logo_url }} style={styles.avatarImg} />
+            ) : (
+              <Feather name="coffee" size={28} color={colors.primary} />
+            )}
           </View>
           <View style={{ flex: 1 }}>
             <Text style={[typography.h4, { color: colors.foreground }]}>
-              {restaurant?.name ?? 'owner'}
+              {restaurant?.name ?? 'Restaurant'}
             </Text>
             <Text style={[typography.caption, { color: colors.textSecondary }]}>
               {restaurant?.area ?? 'Lagos'} · {user?.email}
             </Text>
           </View>
-          <Pressable style={[styles.editBtn, { backgroundColor: colors.elevated }]}>
-            <Feather name="edit-2" size={14} color={colors.textSecondary} />
-          </Pressable>
         </View>
 
         {/* Restaurant info */}
@@ -150,39 +152,16 @@ export default function SettingsScreen() {
           <SettingRow
             icon="map-pin"
             label="Location"
-            value={restaurant?.area ?? 'Lagos island'}
+            value={restaurant?.area ?? 'Lagos'}
           />
-          <SettingRow icon="phone" label="Contact Number" value={user?.phone ?? '+234 800 000 0000'} />
+          <SettingRow icon="phone" label="Contact Number" value={user?.phone ?? '+234 000 000 0000'} />
           <SettingRow icon="clock" label="Pickup Hours" value="8:00pm – 9:30pm" />
-        </View>
-
-        {/* Notifications */}
-        <SectionHeader title="Notifications" />
-        <View style={styles.group}>
-          <ToggleRow
-            icon="bell"
-            label="New order alerts"
-            value={newOrderNotifs}
-            onChange={setNewOrderNotifs}
-          />
-          <ToggleRow
-            icon="package"
-            label="Low stock warning"
-            value={lowStockNotifs}
-            onChange={setLowStockNotifs}
-          />
-          <ToggleRow
-            icon="dollar-sign"
-            label="Payout confirmations"
-            value={payoutNotifs}
-            onChange={setPayoutNotifs}
-          />
         </View>
 
         {/* Payments */}
         <SectionHeader title="Payments" />
         <View style={styles.group}>
-          <SettingRow icon="credit-card" label="Bank account" value="GT Bank · ****4567" />
+          <SettingRow icon="credit-card" label="Bank Account" value={`${restaurant?.bank_name ?? 'None'} · ****${restaurant?.bank_account_number?.slice(-4) ?? '0000'}`} />
           <SettingRow
             icon="arrow-up-right"
             label="Withdraw earnings"
@@ -240,6 +219,11 @@ const styles = StyleSheet.create({
     borderRadius: 28,
     alignItems: 'center',
     justifyContent: 'center',
+    overflow: 'hidden',
+  },
+  avatarImg: {
+    width: '100%',
+    height: '100%',
   },
   editBtn: {
     width: 36,
