@@ -35,7 +35,7 @@ export default function ListingDetailScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { listingId } = useLocalSearchParams<{ listingId: string }>();
-  const { addToCart } = useCartStore();
+  const { setItem } = useCartStore();
   const { balance, debit } = useWalletStore();
   const { user } = useAuthStore();
 

@@ -19,6 +19,8 @@ import { spacing, typography } from '../../../constants/colors';
 import { MOCK_ORDERS } from '../../../constants/mockData';
 import { useColors } from '../../../hooks/useColors';
 import type { Order } from '../../../types';
+import { useAuth } from '../../../context/AuthContext';
+import { supabase } from '../../../lib/supabase';
 
 function formatNGN(n: number) {
   return `₦${n.toLocaleString('en-NG')}`;
