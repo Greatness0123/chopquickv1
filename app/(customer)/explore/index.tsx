@@ -65,7 +65,7 @@ export default function ExploreScreen() {
         .from('listings')
         .select(`
           *,
-          restaurant:restaurants(*)
+          restaurant:restaurants!fk_restaurant(*)
         `)
         .eq('status', 'live')
         .gt('expires_at', new Date().toISOString());
@@ -183,7 +183,7 @@ export default function ExploreScreen() {
         <Text style={[typography.caption, { color: colors.textMuted }]}>Sort: Best Deal</Text>
       </View>
     </View>
-  );
+  )};
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
@@ -268,4 +268,3 @@ const styles = StyleSheet.create({
   skeletons: { padding: spacing.lg, gap: spacing.md },
 });
 
-// export default ExploreScreen;

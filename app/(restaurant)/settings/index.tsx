@@ -12,12 +12,15 @@ import {
   Text,
   View,
   Image,
+  
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { spacing, typography } from '../../../constants/colors';
 import { useAuth } from '../../../context/AuthContext';
 import { useColors } from '../../../hooks/useColors';
+import { supabase } from '../../../lib/supabase';
+import * as ImagePicker from 'expo-image-picker';
 
 export default function SettingsScreen() {
   const colors = useColors();

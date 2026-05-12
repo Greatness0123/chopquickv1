@@ -27,15 +27,23 @@ interface Bank {
   code: string;
 }
 
+interface UserBankFields {
+  bank_account_number?: string | null;
+  bank_account_name?: string | null;
+  bank_name?: string | null;
+}
+
 export default function CustomerBankAccountScreen() {
   const colors = useColors();
   const router = useRouter();
   const { user, refreshUser } = useAuth();
 
+  const profile = user as typeof user & UserBankFields;
+
   const [banks, setBanks] = useState<Bank[]>([]);
   const [selectedBank, setSelectedBank] = useState<Bank | null>(null);
-  const [accountNumber, setAccountNumber] = useState(user?.bank_account_number ?? '');
-  const [accountName, setAccountName] = useState(user?.bank_account_name ?? '');
+  const [accountNumber, setAccountNumber] = useState(profile?.bank_account_number ?? '');
+  const [accountName, setAccountName] = useState(profile?.bank_account_name ?? '');
   const [loading, setLoading] = useState(false);
   const [verifying, setVerifying] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
@@ -49,9 +57,7 @@ export default function CustomerBankAccountScreen() {
     try {
       const res = await fetch('https://api.paystack.co/bank');
       const data = await res.json();
-      if (data.status) {
-        setBanks(data.data);
-      }
+      if (data.status) setBanks(data.data);
     } catch (err) {
       console.error('Error fetching banks:', err);
     }
@@ -61,14 +67,30 @@ export default function CustomerBankAccountScreen() {
     if (accountNumber.length !== 10 || !selectedBank) return;
     setVerifying(true);
     try {
-      // SECURITY NOTE: In a real production app, you MUST NOT call Paystack Resolve API
-      // directly from the frontend as it requires your Secret Key.
+      const res = await supabase.functions.invoke('resolve-bank-account', {
+        body: { account_number: accountNumber, bank_code: selectedBank.code },
+      });
 
-      // Simulating a successful resolution for demo purposes
-      await new Promise(r => setTimeout(r, 1000));
-      setAccountName('RESOLVED NAME (Demo Mode)');
+      if (res.error) {
+        const message = res.error?.context
+          ? await res.error.context.json().then((d: any) => d.error).catch(() => res.error.message)
+          : res.error.message;
+        console.error('Resolve error detail:', message);
+        Alert.alert('Error', message ?? 'Failed to verify account number.');
+        setAccountName('');
+        return;
+      }
+
+      if (res.data?.account_name) {
+        setAccountName(res.data.account_name);
+      } else {
+        setAccountName('');
+        Alert.alert('Not Found', 'Could not resolve account. Check the number and bank.');
+      }
     } catch (err) {
       console.error('Error resolving account:', err);
+      setAccountName('');
+      Alert.alert('Error', 'Failed to verify account number.');
     } finally {
       setVerifying(false);
     }
@@ -77,6 +99,8 @@ export default function CustomerBankAccountScreen() {
   useEffect(() => {
     if (accountNumber.length === 10 && selectedBank) {
       resolveAccount();
+    } else if (accountNumber.length < 10) {
+      setAccountName('');
     }
   }, [accountNumber, selectedBank]);
 
@@ -101,14 +125,18 @@ export default function CustomerBankAccountScreen() {
       await refreshUser();
       Alert.alert('Success', 'Bank account updated');
       router.back();
-    } catch (err) {
-      Alert.alert('Error', 'Could not save bank details');
+    } catch (err: any) {
+      console.error('Save error:', JSON.stringify(err));
+      Alert.alert('Error', err?.message ?? 'Could not save bank details');
+
     } finally {
       setLoading(false);
     }
   };
 
-  const filteredBanks = banks.filter(b => b.name.toLowerCase().includes(search.toLowerCase()));
+  const filteredBanks = banks.filter(b =>
+    b.name.toLowerCase().includes(search.toLowerCase())
+  );
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
@@ -148,9 +176,18 @@ export default function CustomerBankAccountScreen() {
           <View style={[styles.nameBox, { backgroundColor: colors.surface }]}>
             <Text style={[typography.caption, { color: colors.textMuted }]}>Account Name</Text>
             {verifying ? (
-              <ActivityIndicator size="small" color={colors.primary} style={{ alignSelf: 'flex-start', marginTop: 4 }} />
+              <ActivityIndicator
+                size="small"
+                color={colors.primary}
+                style={{ alignSelf: 'flex-start', marginTop: 4 }}
+              />
             ) : (
-              <Text style={[typography.bodySemiBold, { color: accountName ? colors.foreground : colors.textMuted, marginTop: 4 }]}>
+              <Text
+                style={[
+                  typography.bodySemiBold,
+                  { color: accountName ? colors.foreground : colors.textMuted, marginTop: 4 },
+                ]}
+              >
                 {accountName || 'Enter account number to verify'}
               </Text>
             )}
@@ -175,17 +212,19 @@ export default function CustomerBankAccountScreen() {
                 <Feather name="x" size={24} color={colors.foreground} />
               </Pressable>
             </View>
+
             <View style={{ paddingHorizontal: spacing.lg, marginBottom: spacing.sm }}>
-               <Input
+              <Input
                 placeholder="Search bank..."
                 value={search}
                 onChangeText={setSearch}
                 leftIcon={<Feather name="search" size={18} color={colors.textMuted} />}
               />
             </View>
+
             <FlatList
               data={filteredBanks}
-              keyExtractor={(item) => item.code}
+              keyExtractor={(item, idx) => `${item.code}-${idx}`}
               renderItem={({ item }) => (
                 <Pressable
                   onPress={() => {
@@ -194,7 +233,7 @@ export default function CustomerBankAccountScreen() {
                   }}
                   style={({ pressed }) => [
                     styles.bankItem,
-                    { borderBottomColor: colors.border, opacity: pressed ? 0.7 : 1 }
+                    { borderBottomColor: colors.border, opacity: pressed ? 0.7 : 1 },
                   ]}
                 >
                   <Text style={[typography.body, { color: colors.foreground }]}>{item.name}</Text>
