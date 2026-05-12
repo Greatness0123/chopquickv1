@@ -19,6 +19,8 @@ CREATE TABLE public.profiles (
   phone TEXT,
   avatar_url TEXT,
   wallet_balance DECIMAL(12,2) DEFAULT 0.00,
+  meals_saved_count INTEGER DEFAULT 0,
+  total_spent DECIMAL(12,2) DEFAULT 0.00,
   role user_role DEFAULT 'customer',
   referral_code TEXT UNIQUE,
   referred_by UUID REFERENCES public.profiles(id),
@@ -271,11 +273,12 @@ CREATE TRIGGER update_restaurants_updated_at BEFORE UPDATE ON public.restaurants
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
-  INSERT INTO public.profiles (id, full_name, email, referral_code, role)
+  INSERT INTO public.profiles (id, full_name, email, phone, referral_code, role)
   VALUES (
     NEW.id,
     NEW.raw_user_meta_data->>'full_name',
     NEW.email,
+    NEW.raw_user_meta_data->>'phone',
     UPPER(SUBSTR(NEW.id::text, 1, 6)),
     (CASE WHEN NEW.raw_user_meta_data->>'role' = 'restaurant_owner' THEN 'restaurant_owner'::user_role ELSE 'customer'::user_role END)
   );
@@ -347,3 +350,25 @@ BEGIN
   WHERE id = rest_id;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Function to update customer stats on order collection
+CREATE OR REPLACE FUNCTION public.update_customer_stats()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF NEW.order_status = 'collected' AND (OLD.order_status IS NULL OR OLD.order_status != 'collected') THEN
+    UPDATE public.profiles
+    SET
+      meals_saved_count = meals_saved_count + 1,
+      total_spent = total_spent + NEW.total_amount
+    WHERE id = NEW.customer_id;
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Trigger to update customer stats
+DROP TRIGGER IF EXISTS on_order_collected ON public.orders;
+CREATE TRIGGER on_order_collected
+  AFTER UPDATE ON public.orders
+  FOR EACH ROW
+  EXECUTE PROCEDURE public.update_customer_stats();

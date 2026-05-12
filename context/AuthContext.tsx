@@ -138,7 +138,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       let profile: Profile;
       if (profileData && !profileError) {
-        profile = profileData;
+        profile = {
+          ...profileData,
+          email: profileData.email || user.email || '',
+          phone: profileData.phone || user.phone || '',
+        };
       } else {
         profile = buildProfile(user);
         // Sync to DB if missing
