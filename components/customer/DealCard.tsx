@@ -11,6 +11,7 @@ import type { Listing } from '../../types';
 import { Badge } from '../ui/Badge';
 import { CountdownTimer } from '../ui/CountdownTimer';
 import { PriceDisplay } from '../ui/PriceDisplay';
+import { useListingStore } from '../../stores/listing.store';
 
 interface DealCardProps {
   listing: Listing;
@@ -19,13 +20,17 @@ interface DealCardProps {
 export function DealCard({ listing }: DealCardProps) {
   const colors = useColors();
   const router = useRouter();
+  const setSelected = useListingStore((s) => s.setSelected);
 
   const isSoldOut = listing.status === 'sold_out' || listing.portions_remaining === 0;
   const portionsLeft = listing.portions_remaining;
 
   return (
     <Pressable
-      onPress={() => router.push(`/(customer)/explore/${listing.id}` as any)}
+      onPress={() => {
+        console.log('navigating to listing id:', listing.id);
+        setSelected(listing);
+        router.push(`/(customer)/explore/${listing.id}` as any)}}
       style={({ pressed }) => [
         styles.card,
         { backgroundColor: colors.surface, opacity: pressed ? 0.88 : 1 },
@@ -48,7 +53,7 @@ export function DealCard({ listing }: DealCardProps) {
         {!isSoldOut && (
           <View style={[styles.portionsPill, { backgroundColor: 'rgba(0,0,0,0.7)' }]}>
             <Feather name="users" size={10} color="#FFFFFF" />
-            <Text style={[typography.label, { color: '#FFFFFF' }]}>{portionsLeft} l2ft</Text>
+            <Text style={[typography.label, { color: '#FFFFFF' }]}>{portionsLeft} left</Text>
           </View>
         )}
       </View>

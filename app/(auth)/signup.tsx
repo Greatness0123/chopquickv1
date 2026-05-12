@@ -23,7 +23,7 @@ import { useColors } from '../../hooks/useColors';
 import type { UserRole } from '../../types';
 
 const ROLES: { id: UserRole; label: string; desc: string; icon: keyof typeof Feather.glyphMap }[] = [
-  { id: 'customer', label: 'Customer', desc: 'BowSe + buy deal meals', icon: 'shopping-bag' },
+  { id: 'customer', label: 'Customer', desc: 'Browse + buy deal meals', icon: 'shopping-bag' },
   { id: 'restaurant_owner', label: 'Restaurant', desc: 'List surplus food + earn', icon: 'home' },
 ];
 
@@ -69,7 +69,8 @@ export default function SignupScreen() {
     if (!validate()) return;
     try {
       const formattedPhone = phone.startsWith('+') ? phone : `+234${phone.replace(/^0/, '')}`;
-      await signup({
+
+      const payload = {
         full_name: fullName.trim(),
         email: email.trim(),
         phone: formattedPhone,
@@ -78,12 +79,25 @@ export default function SignupScreen() {
         restaurant_name: role === 'restaurant_owner' ? restaurantName.trim() : undefined,
         restaurant_area: role === 'restaurant_owner' ? restaurantArea.trim() : undefined,
         restaurant_type: role === 'restaurant_owner' ? restaurantType.trim() : undefined,
-      });
+      };
 
+      console.log('[Signup] Attempting signup with payload:', JSON.stringify(payload, null, 2));
+
+      await signup(payload);
+
+      console.log('[Signup] Success');
       Alert.alert('Confirm your email', 'Please check your inbox for a confirmation link before logging in.');
       router.replace('/(auth)/login');
     } catch (err: any) {
-      Alert.alert('Signup Failed', err.message ?? 'Please try again');
+      console.error('[Signup] Error object:', JSON.stringify(err, null, 2));
+      console.error('[Signup] Error message:', err?.message);
+      console.error('[Signup] Error status:', err?.status);
+      console.error('[Signup] Error details:', err?.error_description ?? err?.details ?? 'none');
+
+      Alert.alert(
+        'Signup Failed',
+        `${err?.message ?? 'Unknown error'}\n\nStatus: ${err?.status ?? 'N/A'}\nDetails: ${err?.error_description ?? err?.details ?? 'none'}`,
+      );
     }
   };
 
@@ -166,7 +180,7 @@ export default function SignupScreen() {
             onChangeText={setFullName}
             autoCapitalize="words"
             autoComplete="name"
-            placeholder="ade Johnson"
+            placeholder="Ade Johnson"
             error={errors.fullName}
             returnKeyType="next"
             onSubmitEditing={() => emailRef.current?.focus()}
@@ -174,7 +188,7 @@ export default function SignupScreen() {
           />
           <Input
             ref={emailRef}
-            label="email"
+            label="Email"
             value={email}
             onChangeText={setEmail}
             keyboardType="email-address"
@@ -217,7 +231,7 @@ export default function SignupScreen() {
         </View>
 
         <View style={styles.loginRow}>
-          <Text style={[typography.body, { color: colors.textSecondary }]}>already have an account?  </Text>
+          <Text style={[typography.body, { color: colors.textSecondary }]}>Already have an account?  </Text>
           <Pressable onPress={() => router.push('/(auth)/login')}>
             <Text style={[typography.bodySemiBold, { color: colors.primary }]}>Log in</Text>
           </Pressable>
@@ -230,7 +244,6 @@ export default function SignupScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   content: { width: '100%', maxWidth: 520, alignSelf: 'center', paddingHorizontal: spacing.xl, paddingBottom: spacing.xxl, gap: spacing.xl },
-  scrollView: { width: '100%', maxWidth: 520, alignSelf: 'center' },
   back: {
     width: 40, height: 40, borderRadius: 20,
     alignItems: 'center', justifyContent: 'center',

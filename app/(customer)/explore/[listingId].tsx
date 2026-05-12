@@ -1,9 +1,9 @@
-// Deal detail sceen — shows full listing info + checkout
+// Deal detail screen — shows full listing info + checkout
 import { Feather } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import * as Haptics from 'expo-haptics';
-import { useLocalSearchParams, useRouter } from 'expo-router';
-import React, { useState } from 'react';
+import { useRouter } from 'expo-router';
+import React, { useState, useEffect } from 'react';
 import {
   Alert,
   Platform,
@@ -20,12 +20,11 @@ import { Badge } from '../../../components/ui/Badge';
 import { Button } from '../../../components/ui/Button';
 import { CountdownTimer } from '../../../components/ui/CountdownTimer';
 import { PriceDisplay } from '../../../components/ui/PriceDisplay';
-import { MOCK_LISTINGS } from '../../../constants/mockData';
 import { spacing, typography } from '../../../constants/colors';
 import { useColors } from '../../../hooks/useColors';
 import { generateCollectionCode, encodeQRPayload } from '../../../lib/qr';
 import { generatePaymentReference } from '../../../lib/paystack';
-import { useCartStore } from '../../../stores/cart.store';
+import { useListingStore } from '../../../stores/listing.store';
 import { useWalletStore } from '../../../stores/wallet.store';
 import { useAuthStore } from '../../../stores/auth.store';
 import type { Order } from '../../../types';
@@ -34,12 +33,12 @@ export default function ListingDetailScreen() {
   const colors = useColors();
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { listingId } = useLocalSearchParams<{ listingId: string }>();
-  const { setItem } = useCartStore();
-  const { balance, debit } = useWalletStore();
-  const { user } = useAuthStore();
 
-  const listing = MOCK_LISTINGS.find((l) => l.id === listingId);
+  const listing = useListingStore((s) => s.selected);
+  const clearListing = useListingStore((s) => s.clear);
+  const { syncFromDatabase,balance, debit } = useWalletStore();
+  const { user } = useAuthStore();
+ 
   const [quantity, setQuantity] = useState(1);
   const [paymentMethod, setPaymentMethod] = useState<'wallet' | 'card'>('wallet');
   const [paying, setPaying] = useState(false);
@@ -47,10 +46,22 @@ export default function ListingDetailScreen() {
 
   const topPad = Platform.OS === 'web' ? 67 : insets.top;
   const bottomPad = Platform.OS === 'web' ? 34 : insets.bottom;
-
+  
+ useEffect(() => {
+    if (user?.id) {
+      syncFromDatabase(user.id); // ✅ Pass the ID here
+    }
+  }, [user?.id]);
+  // Nothing in the store — user landed here directly or store was cleared
   if (!listing) {
     return (
       <View style={[styles.container, { backgroundColor: colors.background, paddingTop: topPad }]}>
+        <Pressable
+          onPress={() => router.back()}
+          style={[styles.backBtn, { backgroundColor: colors.surface, top: topPad + 10, left: 16 }]}
+        >
+          <Feather name="arrow-left" size={20} color={colors.foreground} />
+        </Pressable>
         <Text style={[typography.body, { color: colors.textSecondary, textAlign: 'center', marginTop: 40 }]}>
           Listing not found
         </Text>
@@ -58,34 +69,37 @@ export default function ListingDetailScreen() {
     );
   }
 
+  const isSoldOut = listing.portions_remaining === 0;
   const total = listing.current_price * quantity;
   const maxQty = Math.min(listing.portions_remaining, 5);
 
   const handleCheckout = async () => {
     if (paymentMethod === 'wallet' && balance < total) {
-      Alert.alert('insufficient Balance', `You need ₦${total.toLocaleString()} but your balance is ₦${balance.toLocaleString()}. Top Wallet to top up.`);
+      Alert.alert(
+        'Insufficient Balance',
+        `You need ₦${total.toLocaleString()} but your wallet balance is ₦${balance.toLocaleString()}.`,
+      );
       return;
     }
+
     setPaying(true);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
 
     try {
-      // Simulate payment processing
       await new Promise((r) => setTimeout(r, 2000));
 
       const collectionCode = generateCollectionCode();
-      const expiresAt = listing.expires_at;
       const qrPayload = encodeQRPayload({
         order_id: `ord-${Date.now()}`,
         collection_code: collectionCode,
         restaurant_id: listing.restaurant_id,
         customer_id: user?.id ?? 'user-001',
         amount: total,
-        expires_at: expiresAt,
+        expires_at: listing.expires_at,
       });
 
       if (paymentMethod === 'wallet') {
-        debit(total, `order — ${listing.food_name} x${quantity}`);
+        debit(total, `Order — ${listing.food_name} x${quantity}`);
       }
 
       const order: Order = {
@@ -102,7 +116,7 @@ export default function ListingDetailScreen() {
         qr_payload: qrPayload,
         collection_code: collectionCode,
         order_status: 'confirmed',
-        expires_at: expiresAt,
+        expires_at: listing.expires_at,
         created_at: new Date().toISOString(),
         listing,
         restaurant: listing.restaurant,
@@ -115,32 +129,34 @@ export default function ListingDetailScreen() {
     }
   };
 
-  // QR sceen after successful payment
+  const handleClose = () => {
+    clearListing();
+    router.replace('/(customer)/orders');
+  };
+
+  // QR screen after successful payment
   if (completedOrder) {
     return (
       <View style={[styles.container, { backgroundColor: colors.background }]}>
         <ScrollView
-          contentContainerStyle={[styles.qrContent, { paddingTop: topPad + spacing.md, paddingBottom: bottomPad + spacing.xl }]}
+          contentContainerStyle={[
+            styles.qrContent,
+            { paddingTop: topPad + spacing.md, paddingBottom: bottomPad + spacing.xl },
+          ]}
         >
           <View style={styles.qrHeader}>
-            <Pressable onPress={() => router.replace('/(customer)/orders')} style={[styles.iconBtn, { backgroundColor: colors.surface }]}>
+            <Pressable onPress={handleClose} style={[styles.iconBtn, { backgroundColor: colors.surface }]}>
               <Feather name="x" size={20} color={colors.foreground} />
             </Pressable>
-            <Text style={[typography.h4, { color: colors.foreground }]}>order Confirmed</Text>
+            <Text style={[typography.h4, { color: colors.foreground }]}>Order Confirmed</Text>
             <View style={{ width: 40 }} />
           </View>
           <QRCodeDisplay order={completedOrder} onExpire={() => {}} />
-          <Button
-            label="View all orders"
-            onPress={() => router.replace('/(customer)/orders')}
-            variant="secondary"
-          />
+          <Button label="View all orders" onPress={handleClose} variant="secondary" />
         </ScrollView>
       </View>
     );
   }
-
-  const isSoldOut = listing.portions_remaining === 0;
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
@@ -172,7 +188,7 @@ export default function ListingDetailScreen() {
               {listing.restaurant?.name}
             </Text>
             <View style={styles.ratingBadge}>
-              <Feather name="star" size={12} color="#Fu9E0B" />
+              <Feather name="star" size={12} color="#F9E0B" />
               <Text style={[typography.captionMedium, { color: colors.foreground }]}>
                 {listing.restaurant?.rating ?? '4.8'}
               </Text>
@@ -193,7 +209,7 @@ export default function ListingDetailScreen() {
           {/* Countdown */}
           <View style={[styles.timerRow, { backgroundColor: colors.surface }]}>
             <Feather name="clock" size={16} color={colors.warning} />
-            <Text style={[typography.captionMedium, { color: colors.textSecondary }]}>expires in:</Text>
+            <Text style={[typography.captionMedium, { color: colors.textSecondary }]}>Expires in:</Text>
             <CountdownTimer expiresAt={listing.expires_at} compact />
             <Text style={[typography.caption, { color: colors.textMuted }]}>·</Text>
             <Text style={[typography.caption, { color: colors.textMuted }]}>
@@ -208,7 +224,7 @@ export default function ListingDetailScreen() {
             </Text>
           )}
 
-          {/* allergen */}
+          {/* Allergen note */}
           {listing.allergen_note && (
             <View style={[styles.allergenRow, { backgroundColor: colors.warningDim }]}>
               <Feather name="alert-triangle" size={14} color={colors.warning} />
@@ -260,7 +276,12 @@ export default function ListingDetailScreen() {
                     size={16}
                     color={paymentMethod === m ? colors.primary : colors.textSecondary}
                   />
-                  <Text style={[typography.captionMedium, { color: paymentMethod === m ? colors.primary : colors.textSecondary }]}>
+                  <Text
+                    style={[
+                      typography.captionMedium,
+                      { color: paymentMethod === m ? colors.primary : colors.textSecondary },
+                    ]}
+                  >
                     {m === 'wallet' ? `Wallet (₦${balance.toLocaleString()})` : 'Card'}
                   </Text>
                 </Pressable>
@@ -272,7 +293,16 @@ export default function ListingDetailScreen() {
 
       {/* Sticky checkout footer */}
       {!isSoldOut && (
-        <View style={[styles.footer, { backgroundColor: colors.background, paddingBottom: bottomPad + spacing.md, borderTopColor: colors.border }]}>
+        <View
+          style={[
+            styles.footer,
+            {
+              backgroundColor: colors.background,
+              paddingBottom: bottomPad + spacing.md,
+              borderTopColor: colors.border,
+            },
+          ]}
+        >
           <View>
             <Text style={[typography.caption, { color: colors.textMuted }]}>Total</Text>
             <Text style={[typography.h3, { color: colors.primary }]}>₦{total.toLocaleString()}</Text>
@@ -295,9 +325,13 @@ const styles = StyleSheet.create({
   imageWrap: { position: 'relative' },
   image: { width: '100%', height: 260 },
   backBtn: {
-    position: 'absolute', left: 16,
-    width: 40, height: 40, borderRadius: 20,
-    alignItems: 'center', justifyContent: 'center',
+    position: 'absolute',
+    left: 16,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   imageBadges: { position: 'absolute', bottom: 12, left: 16, flexDirection: 'row', gap: 6 },
   body: { padding: spacing.lg, gap: spacing.lg },
@@ -331,8 +365,11 @@ const styles = StyleSheet.create({
   },
   qtyControl: { flexDirection: 'row', alignItems: 'center', gap: spacing.lg },
   qtyBtn: {
-    width: 40, height: 40, borderRadius: 20,
-    alignItems: 'center', justifyContent: 'center',
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   payRow: { flexDirection: 'row', gap: spacing.md },
   payMethod: {
@@ -360,7 +397,10 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   iconBtn: {
-    width: 40, height: 40, borderRadius: 20,
-    alignItems: 'center', justifyContent: 'center',
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

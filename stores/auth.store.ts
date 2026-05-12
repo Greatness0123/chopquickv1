@@ -3,7 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
-import type { Profile, Restaurant, UserRole } from '@/types';
+import type { Profile, Restaurant, UserRole } from '../types';
 
 interface AuthState {
   user: Profile | null;
@@ -49,8 +49,8 @@ export const useAuthStore = create<AuthState>()(
       name: 'chopquick-auth',
       storage: createJSONStorage(() => AsyncStorage),
       partialize: (state) => ({
+        // restaurant excluded — always fetched fresh from Supabase on hydration
         user: state.user,
-        restaurant: state.restaurant,
         isAuthenticated: state.isAuthenticated,
         userRole: state.userRole,
       }),

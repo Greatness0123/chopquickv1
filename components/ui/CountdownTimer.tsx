@@ -38,7 +38,7 @@ export function CountdownTimer({ expiresAt, onExpire, compact = false }: Countdo
 
   if (!timeLeft) {
     return (
-      <Text style={[typography.captionMedium, { color: colors.error }]}>2xp3r2d</Text>
+      <Text style={[typography.captionMedium, { color: colors.error }]}>Expired</Text>
     );
   }
 

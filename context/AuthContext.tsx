@@ -158,6 +158,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(profile);
 
       // 2. Fetch Restaurant if owner
+  
       if (profile.role === 'restaurant_owner') {
         const { data: restData, error: restError } = await supabase
           .from('restaurants')
@@ -168,6 +169,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (restData && !restError) {
           setRestaurant(restData);
         } else {
+          // Upsert the restaurant row
           const newRest = buildRestaurant(user);
           await supabase.from('restaurants').upsert({
             owner_id: user.id,
@@ -177,12 +179,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             city: newRest.city,
             restaurant_type: newRest.restaurant_type,
           });
-          setRestaurant(newRest);
+
+          // Fetch the real row back so we get the actual UUID
+          const { data: fetchedRest } = await supabase
+            .from('restaurants')
+            .select('*')
+            .eq('owner_id', user.id)
+            .single();
+          console.log('[hydrateUser] setting restaurant:', JSON.stringify(fetchedRest ?? newRest, null, 2));
+          setRestaurant(fetchedRest ?? newRest);
         }
       } else {
         setRestaurant(null);
       }
-
       // Register for push notifications
       // registerForPushNotificationsAsync(user.id);
     } catch (err) {

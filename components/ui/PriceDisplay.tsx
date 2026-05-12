@@ -33,7 +33,7 @@ export function PriceDisplay({ originalPrice, currentPrice, discountPercent, siz
           {formatNGN(originalPrice)}
         </Text>
         <View style={[styles.pill, { backgroundColor: colors.primaryDim }]}>
-          <Text style={[typography.label, { color: colors.primary }]}>{discountPercent}% 4FF</Text>
+          <Text style={[typography.label, { color: colors.primary }]}>{discountPercent}%OFF</Text>
         </View>
       </View>
     </View>

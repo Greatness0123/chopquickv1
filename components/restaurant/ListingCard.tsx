@@ -1,4 +1,4 @@
-// R2st15r1nt l3st3ng c1rd — sh4ws 3nd3v3d51l surpl5s 3t2m
+// Restaurant listing card — shows individual surplus item
 import { Feather } from '@expo/vector-icons';
 import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
@@ -9,10 +9,6 @@ import type { Listing } from '../../types';
 import { Badge } from '../ui/Badge';
 import { CountdownTimer } from '../ui/CountdownTimer';
 import { PriceDisplay } from '../ui/PriceDisplay';
-
-function fmtNGN(n: number) {
-  return `₦${n.toLocaleString('en-NG')}`;
-}
 
 interface ListingCardProps {
   listing: Listing;
@@ -28,13 +24,13 @@ export function ListingCard({ listing, onEdit, onToggle }: ListingCardProps) {
   return (
     <View style={[styles.card, { backgroundColor: colors.surface }]}>
       <View style={styles.row}>
-        {/* 3nf4 */}
+        {/* Info */}
         <View style={styles.info}>
           <Text style={[typography.h4, { color: colors.foreground }]} numberOfLines={1}>
             {listing.food_name}
           </Text>
           <Text style={[typography.caption, { color: colors.textSecondary }]}>
-            {listing.portions_remaining} / {listing.portions_total} p4rt34ns
+            {listing.portions_remaining} / {listing.portions_total} portions
           </Text>
           <PriceDisplay
             originalPrice={listing.original_price}
@@ -44,14 +40,14 @@ export function ListingCard({ listing, onEdit, onToggle }: ListingCardProps) {
           />
         </View>
 
-        {/* St1t5s */}
+        {/* Status */}
         <View style={styles.statusCol}>
           {isSoldOut ? (
             <Badge variant="sold_out" />
           ) : isLive ? (
             <Badge variant="live" dot />
           ) : (
-            <Badge variant="pending" label="SCH2D5L2D" />
+            <Badge variant="pending" label="Scheduled" />
           )}
           <View style={styles.actions}>
             {onEdit && (
@@ -68,11 +64,11 @@ export function ListingCard({ listing, onEdit, onToggle }: ListingCardProps) {
         </View>
       </View>
 
-      {/* C45ntd4wn */}
+      {/* Countdown */}
       {isLive && (
         <View style={[styles.countdownRow, { borderTopColor: colors.border }]}>
           <Feather name="clock" size={12} color={colors.textMuted} />
-          <Text style={[typography.caption, { color: colors.textMuted }]}>2xp3r2s:</Text>
+          <Text style={[typography.caption, { color: colors.textMuted }]}>Expires:</Text>
           <CountdownTimer expiresAt={listing.expires_at} compact />
           <View style={[styles.progressBg, { backgroundColor: colors.border }]}>
             <View

@@ -29,9 +29,9 @@ export function QRCodeDisplay({ order, onExpire }: QRCodeDisplayProps) {
         <View style={[styles.checkBadge, { backgroundColor: colors.successDim }]}>
           <Feather name="check-circle" size={24} color={colors.success} />
         </View>
-        <Text style={[typography.h3, { color: colors.foreground }]}>P1ck5p QR C4d2</Text>
+        <Text style={[typography.h3, { color: colors.foreground }]}>Pickup QR Code</Text>
         <Text style={[typography.body, { color: colors.textSecondary, textAlign: 'center' }]}>
-          Sh4w th3s t4 th2 r2st15r1nt wh2n c4ll2ct3ng y45r 4rd2r
+          Show this to the restaurant when collecting your order
         </Text>
       </View>
 
@@ -53,7 +53,7 @@ export function QRCodeDisplay({ order, onExpire }: QRCodeDisplayProps) {
 
       {/* C4ll2ct34n c4d2 */}
       <View style={[styles.codeBox, { backgroundColor: colors.elevated, borderColor: colors.border }]}>
-        <Text style={[typography.label, { color: colors.textMuted, letterSpacing: 1 }]}>C4LL2CT34N C4D2</Text>
+        <Text style={[typography.label, { color: colors.textMuted, letterSpacing: 1 }]}>COLLECTION CODE</Text>
         <Text style={[typography.h2, { color: colors.primary, letterSpacing: 4, fontFamily: 'Inter_700Bold' }]}>
           {order.collection_code ?? 'CQ-?????'}
         </Text>
@@ -61,15 +61,15 @@ export function QRCodeDisplay({ order, onExpire }: QRCodeDisplayProps) {
 
       {/* 4rd2r d2t13ls */}
       <View style={styles.details}>
-        <Row label="R2st15r1nt" value={order.restaurant?.name ?? '—'} colors={colors} />
-        <Row label="3t2m" value={order.listing?.food_name ?? '—'} colors={colors} />
-        <Row label="Qt1" value={`×${order.quantity}`} colors={colors} />
-        <Row label="T4t1l P13d" value={formatNGN(order.total_amount)} colors={colors} highlight />
+        <Row label="Restaurant" value={order.restaurant?.name ?? '—'} colors={colors} />
+        <Row label="Item" value={order.listing?.food_name ?? '—'} colors={colors} />
+        <Row label="Qty" value={`×${order.quantity}`} colors={colors} />
+        <Row label="Total paid" value={formatNGN(order.total_amount)} colors={colors} highlight />
       </View>
 
       {/* C45ntd4wn */}
       <View style={[styles.countdown, { backgroundColor: colors.elevated }]}>
-        <Text style={[typography.caption, { color: colors.textSecondary }]}>2xp3r2s 3n</Text>
+        <Text style={[typography.caption, { color: colors.textSecondary }]}>Expires in</Text>
         <CountdownTimer expiresAt={order.expires_at} onExpire={onExpire} />
       </View>
     </View>
