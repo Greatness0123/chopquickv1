@@ -94,6 +94,15 @@ export default function ExploreScreen() {
     fetchListings();
   }, [category]);
 
+  // Handle auto-expiry of items in the UI
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      const now = new Date().toISOString();
+      setListings((prev) => prev.filter((l) => l.expires_at > now));
+    }, 30000); // 30 seconds
+    return () => clearInterval(interval);
+  }, []);
+
   const filtered = useMemo(() => {
     return listings.filter((l) => {
       const matchesSearch = !search ||
@@ -206,7 +215,7 @@ export default function ExploreScreen() {
           }
           contentContainerStyle={[
             styles.list,
-            { paddingBottom: (Platform.OS === 'web' ? 34 : insets.bottom) + 80 },
+            { paddingBottom: (Platform.OS === 'web' ? 34 : insets.bottom) + 120 },
           ]}
           refreshControl={
             <RefreshControl

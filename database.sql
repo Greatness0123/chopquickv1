@@ -372,3 +372,125 @@ CREATE TRIGGER on_order_collected
   AFTER UPDATE ON public.orders
   FOR EACH ROW
   EXECUTE PROCEDURE public.update_customer_stats();
+
+-- Table for individual ratings to prevent multiple ratings from the same order/user
+CREATE TABLE public.ratings (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  order_id UUID REFERENCES public.orders(id) UNIQUE NOT NULL,
+  customer_id UUID REFERENCES public.profiles(id) NOT NULL,
+  restaurant_id UUID REFERENCES public.restaurants(id) NOT NULL,
+  rating INTEGER CHECK (rating >= 1 AND rating <= 5),
+  comment TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE public.ratings ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Users can view all ratings." ON public.ratings FOR SELECT USING (true);
+CREATE POLICY "Customers can insert their own ratings." ON public.ratings FOR INSERT WITH CHECK (auth.uid() = customer_id);
+
+-- RPC to rate restaurant and update aggregates
+CREATE OR REPLACE FUNCTION public.rate_restaurant(
+  p_order_id UUID,
+  p_rating INTEGER,
+  p_comment TEXT DEFAULT NULL
+)
+RETURNS void AS $$
+DECLARE
+  v_customer_id UUID;
+  v_restaurant_id UUID;
+BEGIN
+  -- 1. Get info and verify order status
+  SELECT customer_id, restaurant_id INTO v_customer_id, v_restaurant_id
+  FROM public.orders
+  WHERE id = p_order_id AND order_status = 'collected';
+
+  IF v_customer_id IS NULL THEN
+    RAISE EXCEPTION 'Order not found or not collected';
+  END IF;
+
+  IF v_customer_id != auth.uid() THEN
+    RAISE EXCEPTION 'Unauthorized';
+  END IF;
+
+  -- 2. Insert rating
+  INSERT INTO public.ratings (order_id, customer_id, restaurant_id, rating, comment)
+  VALUES (p_order_id, v_customer_id, v_restaurant_id, p_rating, p_comment);
+
+  -- 3. Update restaurant aggregate
+  UPDATE public.restaurants
+  SET
+    rating = (rating * rating_count + p_rating) / (rating_count + 1),
+    rating_count = rating_count + 1
+  WHERE id = v_restaurant_id;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- RPC to process an order atomically
+CREATE OR REPLACE FUNCTION public.process_order(
+  p_customer_id UUID,
+  p_listing_id UUID,
+  p_restaurant_id UUID,
+  p_quantity INTEGER,
+  p_payment_method TEXT,
+  p_payment_reference TEXT,
+  p_collection_code TEXT,
+  p_qr_payload TEXT,
+  p_expires_at TIMESTAMPTZ
+)
+RETURNS UUID AS $$
+DECLARE
+  v_order_id UUID;
+  v_current_balance DECIMAL;
+  v_portions_remaining INTEGER;
+  v_unit_price DECIMAL;
+  v_total_amount DECIMAL;
+BEGIN
+  -- 0. Security check
+  IF auth.uid() != p_customer_id THEN
+    RAISE EXCEPTION 'Unauthorized';
+  END IF;
+
+  -- 1. Get current listing info and check portions
+  SELECT portions_remaining, current_price INTO v_portions_remaining, v_unit_price
+  FROM public.listings WHERE id = p_listing_id FOR UPDATE;
+
+  IF v_portions_remaining < p_quantity THEN
+    RAISE EXCEPTION 'Not enough portions available';
+  END IF;
+
+  v_total_amount := v_unit_price * p_quantity;
+
+  -- 2. Handle Wallet Payment
+  IF p_payment_method = 'wallet' THEN
+    SELECT wallet_balance INTO v_current_balance FROM public.profiles WHERE id = p_customer_id FOR UPDATE;
+    IF v_current_balance < v_total_amount THEN
+      RAISE EXCEPTION 'Insufficient wallet balance';
+    END IF;
+
+    UPDATE public.profiles SET wallet_balance = wallet_balance - v_total_amount WHERE id = p_customer_id;
+
+    -- Log transaction
+    INSERT INTO public.transactions (user_id, type, amount, balance_after, description, reference)
+    VALUES (p_customer_id, 'order_payment', -v_total_amount, v_current_balance - v_total_amount, 'Food order payment', p_payment_reference);
+  END IF;
+
+  -- 3. Create Order
+  INSERT INTO public.orders (
+    customer_id, listing_id, restaurant_id, quantity, unit_price,
+    total_amount, payment_method, payment_status, payment_reference,
+    collection_code, qr_payload, order_status, expires_at
+  ) VALUES (
+    p_customer_id, p_listing_id, p_restaurant_id, p_quantity, v_unit_price,
+    v_total_amount, p_payment_method, 'paid', p_payment_reference,
+    p_collection_code, p_qr_payload, 'confirmed', p_expires_at
+  ) RETURNING id INTO v_order_id;
+
+  -- 4. Update Listing
+  UPDATE public.listings
+  SET portions_remaining = portions_remaining - p_quantity,
+      status = (CASE WHEN portions_remaining - p_quantity = 0 THEN 'sold_out'::listing_status ELSE status END)
+  WHERE id = p_listing_id;
+
+  RETURN v_order_id;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;

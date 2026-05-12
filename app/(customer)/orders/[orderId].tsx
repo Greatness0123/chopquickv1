@@ -15,25 +15,86 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { QRCodeDisplay } from '../../../components/customer/QRCodeDisplay';
 import { Badge } from '../../../components/ui/Badge';
 import { Button } from '../../../components/ui/Button';
-import { MOCK_ORDERS } from '../../../constants/mockData';
+import { RatingInput } from '../../../components/customer/RatingInput';
 import { spacing, typography } from '../../../constants/colors';
 import { useColors } from '../../../hooks/useColors';
+
+import { supabase } from '../../../lib/supabase';
+import { useAuth } from '../../../context/AuthContext';
 
 export default function OrderDetailScreen() {
   const colors = useColors();
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const { user } = useAuth();
   const { orderId } = useLocalSearchParams<{ orderId: string }>();
 
-  const order = MOCK_ORDERS.find((o) => o.id === orderId);
+  const [order, setOrder] = React.useState<any>(null);
+  const [loading, setLoading] = React.useState(true);
+  const [rating, setRating] = React.useState(0);
+  const [hasRated, setHasRated] = React.useState(false);
+  const [submittingRating, setSubmittingRating] = React.useState(false);
+
+  const fetchOrder = async () => {
+    if (!orderId) return;
+    try {
+      const { data, error } = await supabase
+        .from('orders')
+        .select('*, listing:listings(*), restaurant:restaurants(*)')
+        .eq('id', orderId)
+        .single();
+
+      if (error) throw error;
+      setOrder(data);
+
+      // Check if already rated
+      const { data: ratingData } = await supabase
+        .from('ratings')
+        .select('id')
+        .eq('order_id', orderId)
+        .maybeSingle();
+
+      if (ratingData) setHasRated(true);
+    } catch (err) {
+      console.error('Error fetching order:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  React.useEffect(() => {
+    fetchOrder();
+  }, [orderId]);
+
+  const handleRate = async () => {
+    if (rating === 0) return;
+    setSubmittingRating(true);
+    try {
+      const { error } = await supabase.rpc('rate_restaurant', {
+        p_order_id: orderId,
+        p_rating: rating,
+      });
+      if (error) throw error;
+      setHasRated(true);
+    } catch (err) {
+      console.error('Error rating restaurant:', err);
+    } finally {
+      setSubmittingRating(false);
+    }
+  };
   const topPad = Platform.OS === 'web' ? 67 : insets.top;
   const bottomPad = Platform.OS === 'web' ? 34 : insets.bottom;
+
+  if (loading) return null;
 
   if (!order) {
     return (
       <View style={[styles.container, { backgroundColor: colors.background, paddingTop: topPad + spacing.xl }]}>
-        <Text style={[typography.body, { color: colors.textSecondary, textAlign: 'center' }]}>
-          order not found
+        <Pressable onPress={() => router.back()} style={[styles.backBtn, { backgroundColor: colors.surface, marginLeft: 16 }]}>
+          <Feather name="arrow-left" size={20} color={colors.foreground} />
+        </Pressable>
+        <Text style={[typography.body, { color: colors.textSecondary, textAlign: 'center', marginTop: 40 }]}>
+          Order not found
         </Text>
       </View>
     );
@@ -83,6 +144,30 @@ export default function OrderDetailScreen() {
               <Text style={[typography.body, { color: colors.textSecondary, textAlign: 'center' }]}>
                 Collected {new Date(order.collected_at).toLocaleDateString('en-NG')}
               </Text>
+            )}
+
+            {order.order_status === 'collected' && !hasRated && (
+              <View style={[styles.ratingSection, { borderTopWidth: 1, borderTopColor: colors.border }]}>
+                <Text style={[typography.bodyMedium, { color: colors.foreground, textAlign: 'center' }]}>
+                  How was your meal?
+                </Text>
+                <RatingInput rating={rating} onRatingChange={setRating} />
+                <Button
+                  label="Submit Rating"
+                  onPress={handleRate}
+                  loading={submittingRating}
+                  disabled={rating === 0}
+                  size="sm"
+                />
+              </View>
+            )}
+
+            {hasRated && (
+              <View style={[styles.ratingSection, { borderTopWidth: 1, borderTopColor: colors.border }]}>
+                <Text style={[typography.captionMedium, { color: colors.success, textAlign: 'center' }]}>
+                  <Feather name="check-circle" size={12} /> Thanks for your rating!
+                </Text>
+              </View>
             )}
             <View style={styles.detailRows}>
               <DetailRow label="Restaurant" value={order.restaurant?.name ?? '—'} colors={colors} />
@@ -140,4 +225,5 @@ const styles = StyleSheet.create({
     alignItems: 'center', justifyContent: 'center',
   },
   detailRows: { width: '100%' },
+  ratingSection: { width: '100%', marginTop: spacing.md, paddingTop: spacing.lg, gap: spacing.sm },
 });

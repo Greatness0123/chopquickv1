@@ -240,7 +240,7 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.md,
     borderBottomWidth: 1,
   },
-  scroll: { padding: spacing.lg, paddingBottom: 100 },
+  scroll: { padding: spacing.lg, paddingBottom: 120 },
   profileCard: {
     borderRadius: 20,
     padding: spacing.xl,

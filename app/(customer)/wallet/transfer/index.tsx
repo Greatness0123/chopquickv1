@@ -75,8 +75,9 @@ export default function TransferScreen() {
       if (debitError) throw debitError;
 
       await refreshUser();
-      Alert.alert('Success', `₦${transferAmount.toLocaleString()} sent to ${recipient.full_name}`);
-      router.back();
+      Alert.alert('Success', `₦${transferAmount.toLocaleString()} sent to ${recipient.full_name}`, [
+        { text: 'OK', onPress: () => router.back() }
+      ]);
     } catch (err: any) {
       Alert.alert('Transfer Failed', err.message || 'Something went wrong');
     } finally {

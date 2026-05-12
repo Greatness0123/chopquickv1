@@ -216,7 +216,7 @@ export default function DashboardScreen() {
 
 const styles = StyleSheet.create({
   safe: { flex: 1, width: '100%', alignSelf: 'center' },
-  scroll: { padding: spacing.lg, gap: spacing.lg, paddingBottom: 100 },
+  scroll: { padding: spacing.lg, gap: spacing.lg, paddingBottom: 120 },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
