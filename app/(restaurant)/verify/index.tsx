@@ -250,10 +250,19 @@ export default function VerifyScreen() {
       <Modal visible={!!foundOrder} transparent animationType="slide">
         <View style={styles.modalBackdrop}>
           <View style={[styles.modalCard, { backgroundColor: colors.surface }]}>
-            <View style={[styles.successIcon, { backgroundColor: colors.successDim }]}>
-              <Feather name="check-circle" size={32} color={colors.success} />
+            <View style={[
+              styles.successIcon,
+              { backgroundColor: foundOrder?.order_status === 'collected' ? colors.border : colors.successDim }
+            ]}>
+              <Feather
+                name={foundOrder?.order_status === 'collected' ? 'info' : 'check-circle'}
+                size={32}
+                color={foundOrder?.order_status === 'collected' ? colors.textMuted : colors.success}
+              />
             </View>
-            <Text style={[typography.h3, { color: colors.foreground }]}>Order Found</Text>
+            <Text style={[typography.h3, { color: colors.foreground }]}>
+              {foundOrder?.order_status === 'collected' ? 'Already Collected' : 'Order Found'}
+            </Text>
 
             {foundOrder && (
               <View style={[styles.orderDetails, { backgroundColor: colors.elevated }]}>
@@ -261,26 +270,42 @@ export default function VerifyScreen() {
                 <DetailRow label="Item"   value={foundOrder.listing?.food_name ?? '—'} colors={colors} />
                 <DetailRow label="Qty"    value={`×${foundOrder.quantity}`} colors={colors} />
                 <DetailRow label="Amount" value={formatNGN(foundOrder.total_amount)} colors={colors} highlight />
-                <DetailRow label="Status" value={foundOrder.order_status} colors={colors} />
+                <DetailRow
+                  label="Status"
+                  value={foundOrder.order_status.toUpperCase()}
+                  colors={colors}
+                  highlight={foundOrder.order_status === 'collected'}
+                />
+              </View>
+            )}
+
+            {foundOrder?.order_status === 'collected' && (
+              <View style={[styles.alreadyCollectedBadge, { backgroundColor: colors.errorDim }]}>
+                <Feather name="alert-circle" size={16} color={colors.error} />
+                <Text style={[typography.captionMedium, { color: colors.error }]}>
+                  THIS ORDER HAS BEEN PICKED UP
+                </Text>
               </View>
             )}
 
             <View style={styles.modalActions}>
               <Button
-                label="Cancel"
+                label={foundOrder?.order_status === 'collected' ? "Close" : "Cancel"}
                 onPress={reset}
                 variant="secondary"
                 fullWidth={false}
                 style={{ flex: 1 }}
               />
-              <Button
-                label={confirming ? 'Confirming...' : 'Mark Collected'}
-                onPress={handleMarkCollected}
-                loading={confirming}
-                disabled={foundOrder?.order_status === 'collected'}
-                fullWidth={false}
-                style={{ flex: 1 }}
-              />
+              {foundOrder?.order_status !== 'collected' && (
+                <Button
+                  label={confirming ? 'Confirming...' : 'Mark Collected'}
+                  onPress={handleMarkCollected}
+                  loading={confirming}
+                  disabled={foundOrder?.order_status === 'collected'}
+                  fullWidth={false}
+                  style={{ flex: 1 }}
+                />
+              )}
             </View>
           </View>
         </View>
@@ -426,5 +451,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: spacing.md,
     width: '100%',
+  },
+  alreadyCollectedBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    marginTop: -8,
   },
 });

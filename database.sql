@@ -341,13 +341,31 @@ CREATE OR REPLACE FUNCTION public.increment_restaurant_stats(
   revenue DECIMAL(15,2)
 )
 RETURNS void AS $$
+DECLARE
+  v_owner_id UUID;
 BEGIN
+  -- 1. Update restaurant stats
   UPDATE public.restaurants
   SET
-    total_meals_saved = total_meals_saved + 1,
     total_revenue_recovered = total_revenue_recovered + revenue,
     total_co2_diverted_kg = total_co2_diverted_kg + 0.5 -- Estimated CO2 per meal
-  WHERE id = rest_id;
+  WHERE id = rest_id
+  RETURNING owner_id INTO v_owner_id;
+
+  -- 2. Credit restaurant owner's wallet
+  UPDATE public.profiles
+  SET wallet_balance = wallet_balance + revenue
+  WHERE id = v_owner_id;
+
+  -- 3. Log transaction for the restaurant owner
+  INSERT INTO public.transactions (user_id, type, amount, balance_after, description)
+  VALUES (
+    v_owner_id,
+    'wallet_credit',
+    revenue,
+    (SELECT wallet_balance FROM public.profiles WHERE id = v_owner_id),
+    'Order collection earnings'
+  );
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
@@ -361,6 +379,11 @@ BEGIN
       meals_saved_count = meals_saved_count + 1,
       total_spent = total_spent + NEW.total_amount
     WHERE id = NEW.customer_id;
+
+    -- Also update total_meals_saved on the restaurant
+    UPDATE public.restaurants
+    SET total_meals_saved = total_meals_saved + 1
+    WHERE id = NEW.restaurant_id;
   END IF;
   RETURN NEW;
 END;
