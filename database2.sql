@@ -442,6 +442,3 @@ ALTER TABLE public.restaurants ADD COLUMN IF NOT EXISTS bank_code TEXT;
 
 
 
-
-npx supabase secrets set PAYSTACK_SECRET_KEY=sk_live_db250af753b32fb064b04973c42ccced43f8004f
-npx supabase secrets set SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVsbnRseXljZm9rdG1zaGxycHZqIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3ODUxMDU5OCwiZXhwIjoyMDk0MDg2NTk4fQ.rOCXr99Wc9CsabIpWjIJfztx1rtJNeelTDsn3fy9jKE
