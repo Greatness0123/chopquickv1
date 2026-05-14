@@ -3,7 +3,6 @@ import { Feather } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {
-  Alert,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -18,6 +17,7 @@ import { Input } from '../../components/ui/Input';
 import { spacing, typography } from '../../constants/colors';
 import { useAuth } from '../../context/AuthContext';
 import { useColors } from '../../hooks/useColors';
+import { useToast } from '../../components/ui/Toast';
 
 export default function ForgotPasswordScreen() {
   const colors = useColors();
@@ -27,12 +27,13 @@ export default function ForgotPasswordScreen() {
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
   const { resetPassword } = useAuth();
+  const { showToast } = useToast();
 
   const topPad = Platform.OS === 'web' ? 67 : insets.top;
 
   const handleReset = async () => {
     if (!email.trim()) {
-      Alert.alert('Error', 'Email address is required');
+      showToast('Email address is required', 'error');
       return;
     }
 
@@ -40,9 +41,10 @@ export default function ForgotPasswordScreen() {
     try {
       await resetPassword(email.trim());
       setSent(true);
+      showToast('Reset link sent to your email', 'success');
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unable to send reset link';
-      Alert.alert('Reset failed', message);
+      showToast(message, 'error');
     } finally {
       setLoading(false);
     }

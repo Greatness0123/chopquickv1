@@ -5,7 +5,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { typography } from '../../constants/colors';
 import { useColors } from '../../hooks/useColors';
 
-type BadgeVariant = 'live' | 'sold_out' | 'confirmed' | 'collected' | 'expired' | 'last_one' | 'discount' | 'pending';
+type BadgeVariant = 'live' | 'sold_out' | 'confirmed' | 'collected' | 'expired' | 'last_one' | 'discount' | 'pending' | 'processing' | 'rejected' | 'reversed';
 
 const VARIANT_CONFIG: Record<BadgeVariant, { label: string; bg: string; text: string }> = {
   live: { label: 'LIVE', bg: 'rgba(232,72,15,0.15)', text: '#E8480F' },
@@ -16,6 +16,9 @@ const VARIANT_CONFIG: Record<BadgeVariant, { label: string; bg: string; text: st
   last_one: { label: 'LAST ONE', bg: 'rgba(245,158,11,0.15)', text: '#F59E0B' },
   discount: { label: 'DISCOUNT', bg: 'rgba(232,72,15,0.15)', text: '#E8480F' },
   pending: { label: 'PENDING', bg: 'rgba(245,158,11,0.15)', text: '#F59E0B' },
+  processing: { label: 'PROCESSING', bg: 'rgba(59,130,246,0.15)', text: '#3B82F6' },
+  rejected: { label: 'REJECTED', bg: 'rgba(239,68,68,0.15)', text: '#EF4444' },
+  reversed: { label: 'REVERSED', bg: 'rgba(239,68,68,0.15)', text: '#EF4444' },
 };
 
 interface BadgeProps {

@@ -2,9 +2,9 @@
 import { Feather } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { Image } from 'expo-image';
-import React from 'react';
+import React, { useCallback } from 'react';
 import {
-  Alert,
+  ActivityIndicator,
   Pressable,
   ScrollView,
   Share,
@@ -18,33 +18,36 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { spacing, typography } from '../../../constants/colors';
 import { useAuth } from '../../../context/AuthContext';
 import { useColors } from '../../../hooks/useColors';
-import { useWalletStore } from '../../../stores/wallet.store';
+import { useDialog } from '../../../components/ui/Dialog';
 
 export default function ProfileScreen() {
   const colors = useColors();
   const router = useRouter();
-  const { user, logout } = useAuth();
+  const { user, logout, refreshUser } = useAuth();
+  const { showConfirm } = useDialog();
   const [pushNotifs, setPushNotifs] = React.useState(true);
+  const [refreshing, setRefreshing] = React.useState(false);
 
-  const initials = (user?.full_name ?? '?')
-    .split(' ')
-    .slice(0, 2)
-    .map((w) => w[0])
-    .join('')
-    .toUpperCase();
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    try {
+      await refreshUser();
+    } finally {
+      setRefreshing(false);
+    }
+  }, [refreshUser]);
 
   const handleLogout = async () => {
-    Alert.alert('Log out', 'are you sure you want to log out?', [
-      { text: 'Cancel', style: 'cancel' },
-      {
-        text: 'Log out',
-        style: 'destructive',
-        onPress: async () => {
-          await logout();
-          router.replace('/(auth)/login');
-        }
-      },
-    ]);
+    const confirmed = await showConfirm({
+      title: 'Log out',
+      message: 'Are you sure you want to log out?',
+      confirmText: 'Log out',
+      destructive: true,
+    });
+    if (confirmed) {
+      await logout();
+      router.replace('/(auth)/login');
+    }
   };
 
   const shareReferral = () => {
@@ -110,16 +113,30 @@ export default function ProfileScreen() {
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       <View style={[styles.header, { borderBottomColor: colors.border }]}>
         <Text style={[typography.h3, { color: colors.foreground }]}>Profile</Text>
+        <Pressable onPress={onRefresh} style={styles.refreshBtn}>
+          {refreshing ? (
+            <ActivityIndicator size="small" color={colors.primary} />
+          ) : (
+            <Feather name="refresh-cw" size={18} color={colors.primary} />
+          )}
+        </Pressable>
       </View>
 
-      <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        contentContainerStyle={styles.scroll}
+        showsVerticalScrollIndicator={false}
+        refreshing={refreshing}
+        onRefresh={onRefresh}
+      >
         {/* avatar + name */}
         <View style={[styles.profileCard, { backgroundColor: colors.surface }]}>
           <View style={[styles.avatar, { backgroundColor: colors.primary }]}>
             {user?.avatar_url ? (
               <Image source={{ uri: user.avatar_url }} style={styles.avatarImg} />
             ) : (
-              <Text style={[typography.h2, { color: '#FFFFFF' }]}>{initials}</Text>
+              <Text style={[typography.h2, { color: colors.foreground }]}>
+                {user?.full_name?.split(' ').slice(0, 2).map((w) => w[0]).join('').toUpperCase() ?? '?'}
+              </Text>
             )}
           </View>
           <Text style={[typography.h3, { color: colors.foreground }]}>
@@ -161,7 +178,7 @@ export default function ProfileScreen() {
           style={[styles.referralCard, { backgroundColor: colors.surface, borderColor: colors.border }]}
         >
           <View style={[styles.referralBadge, { backgroundColor: colors.primary }]}>
-            <Feather name="gift" size={20} color="#FFFFFF" />
+            <Feather name="gift" size={20} color={colors.foreground} />
           </View>
           <View style={{ flex: 1 }}>
             <Text style={[typography.bodySemiBold, { color: colors.foreground }]}>Refer & Earn</Text>
@@ -200,7 +217,7 @@ export default function ProfileScreen() {
               value={pushNotifs}
               onValueChange={setPushNotifs}
               trackColor={{ false: colors.border, true: colors.primary }}
-              thumbColor="#FFFFFF"
+              thumbColor={colors.foreground}
             />
           </View>
         </View>
@@ -209,8 +226,9 @@ export default function ProfileScreen() {
         <SectionLabel title="Support" />
         <View style={styles.group}>
           <RowItem icon="help-circle" label="Help & Support" onPress={() => router.push('/(customer)/support' as any)} />
-          <RowItem icon="file-text" label="Terms of Service" onPress={() => {}} />
-          <RowItem icon="shield" label="Privacy Policy" onPress={() => {}} />
+          <RowItem icon="file-text" label="Terms of Service" onPress={() => router.push('/(customer)/support' as any)} />
+          <RowItem icon="shield" label="Privacy Policy" onPress={() => router.push('/(customer)/support' as any)} />
+          {/* <RowItem icon="sliders" label="Admin" onPress={() => router.push('/admin' as any)} /> */}
         </View>
 
         {/* Danger zone */}
@@ -226,7 +244,7 @@ export default function ProfileScreen() {
         </View>
 
         <Text style={[typography.caption, { color: colors.textMuted, textAlign: 'center', marginTop: spacing.xl }]}>
-          ChopQuick v0.0.0
+          ChopQuick v1.0.0
         </Text>
       </ScrollView>
     </SafeAreaView>
@@ -234,11 +252,21 @@ export default function ProfileScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, width: '100%', alignSelf: 'center',paddingBottom: spacing.xxl },
+  container: { flex: 1, width: '100%', alignSelf: 'center', paddingBottom: spacing.xxl },
   header: {
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.md,
     borderBottomWidth: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  refreshBtn: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   scroll: { padding: spacing.lg, paddingBottom: 120 },
   profileCard: {

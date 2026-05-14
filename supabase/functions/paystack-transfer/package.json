@@ -1,0 +1,6 @@
+{
+  "name": "paystack-transfer",
+  "version": "1.0.0",
+  "description": "Initiates Paystack transfers for restaurant withdrawals",
+  "main": "index.ts"
+}

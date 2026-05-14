@@ -3,7 +3,6 @@ import { Feather } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect } from 'react';
 import {
-  Alert,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -21,6 +20,7 @@ import { Button } from '../../components/ui/Button';
 import { spacing, typography } from '../../constants/colors';
 import { useAuth } from '../../context/AuthContext';
 import { useColors } from '../../hooks/useColors';
+import { useToast } from '../../components/ui/Toast';
 
 export default function VerifyOTPScreen() {
   const colors = useColors();
@@ -28,12 +28,13 @@ export default function VerifyOTPScreen() {
   const insets = useSafeAreaInsets();
   const { phone } = useLocalSearchParams<VerifyOtpParams>();
   const { isLoading } = useAuth();
+  const { showToast } = useToast();
 
   const topPad = Platform.OS === 'web' ? 67 : insets.top;
 
   useEffect(() => {
     if (phone) {
-      Alert.alert('Phone verification disabled', 'OTP is temporarily disabled. Please confirm your account via email instead.');
+      showToast('OTP is temporarily disabled. Please confirm your account via email instead.', 'info');
     }
   }, [phone]);
 

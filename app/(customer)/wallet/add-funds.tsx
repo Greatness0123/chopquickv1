@@ -2,7 +2,6 @@ import { Feather } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {
-  Alert,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -23,6 +22,7 @@ import { useAuth } from '../../../context/AuthContext';
 import { useColors } from '../../../hooks/useColors';
 import { generatePaymentReference, toKobo } from '../../../lib/paystack';
 import { supabase } from '../../../lib/supabase';
+import { useToast } from '../../../components/ui/Toast';
 
 const PAYSTACK_CALLBACK = 'https://standard.paystack.co/close';
 
@@ -31,6 +31,7 @@ export default function AddFundsScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { user } = useAuth();
+  const { showToast } = useToast();
 
   const [amount, setAmount] = useState('');
   const [loading, setLoading] = useState(false);
@@ -40,7 +41,7 @@ export default function AddFundsScreen() {
   const handleFunding = async () => {
     const fundAmount = parseFloat(amount);
     if (isNaN(fundAmount) || fundAmount < 100) {
-      Alert.alert('Error', 'Minimum funding amount is ₦100');
+      showToast('Minimum funding amount is ₦100', 'error');
       return;
     }
 
@@ -59,13 +60,13 @@ export default function AddFundsScreen() {
       });
 
       if (error || !data?.authorization_url) {
-        Alert.alert('Error', error?.message ?? 'Could not initialize payment');
+        showToast(error?.message ?? 'Could not initialize payment', 'error');
         return;
       }
 
       setAuthUrl(data.authorization_url);
     } catch {
-      Alert.alert('Error', 'Could not initialize payment');
+      showToast('Could not initialize payment', 'error');
     } finally {
       setLoading(false);
     }
@@ -74,7 +75,7 @@ export default function AddFundsScreen() {
   const handleNavigationChange = (navState: { url: string }) => {
     if (navState.url.startsWith(PAYSTACK_CALLBACK)) {
       setAuthUrl(null);
-      Alert.alert('Payment Initiated', 'Your payment is being processed. Your balance will update shortly.');
+      showToast('Your payment is being processed. Your balance will update shortly.', 'success');
       router.back();
     }
   };

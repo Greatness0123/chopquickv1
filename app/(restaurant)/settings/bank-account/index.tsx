@@ -3,7 +3,6 @@ import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
-  Alert,
   FlatList,
   Modal,
   Pressable,
@@ -20,7 +19,7 @@ import { spacing, typography } from '../../../../constants/colors';
 import { useAuth } from '../../../../context/AuthContext';
 import { useColors } from '../../../../hooks/useColors';
 import { supabase } from '../../../../lib/supabase';
-import { PAYSTACK_PUBLIC_KEY } from '../../../../lib/paystack';
+import { useToast } from '../../../../components/ui/Toast';
 
 interface Bank {
   id: number;
@@ -32,6 +31,7 @@ export default function BankAccountScreen() {
   const colors = useColors();
   const router = useRouter();
   const { restaurant, refreshUser } = useAuth();
+  const { showToast } = useToast();
 
   const [banks, setBanks] = useState<Bank[]>([]);
   const [selectedBank, setSelectedBank] = useState<Bank | null>(null);
@@ -79,7 +79,7 @@ export default function BankAccountScreen() {
              ? await res.error.context.json().then((d: any) => d.error).catch(() => res.error.message)
              : res.error.message;
            console.error('Resolve error detail:', message);
-           Alert.alert('Error', message ?? 'Failed to verify account number.');
+           showToast(message ?? 'Failed to verify account number.', 'error');
            setAccountName('');
            return;
          }
@@ -88,12 +88,12 @@ export default function BankAccountScreen() {
            setAccountName(res.data.account_name);
          } else {
            setAccountName('');
-           Alert.alert('Not Found', 'Could not resolve account. Check the number and bank.');
+           showToast('Could not resolve account. Check the number and bank.', 'error');
          }
        } catch (err) {
          console.error('Error resolving account:', err);
          setAccountName('');
-         Alert.alert('Error', 'Failed to verify account number.');
+         showToast('Failed to verify account number.', 'error');
        } finally {
          setVerifying(false);
        }
@@ -108,7 +108,7 @@ export default function BankAccountScreen() {
 
   const handleSave = async () => {
     if (!restaurant?.id || !selectedBank || !accountNumber || !accountName) {
-      Alert.alert('Error', 'Please fill all fields');
+      showToast('Please fill all fields', 'error');
       return;
     }
 
@@ -125,10 +125,10 @@ export default function BankAccountScreen() {
 
       if (error) throw error;
       await refreshUser();
-      Alert.alert('Success', 'Bank account updated');
+      showToast('Bank account updated', 'success');
       router.back();
     } catch (err) {
-      Alert.alert('Error', 'Could not save bank details');
+      showToast('Could not save bank details', 'error');
     } finally {
       setLoading(false);
     }

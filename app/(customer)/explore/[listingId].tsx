@@ -5,7 +5,6 @@ import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
 import React, { useState, useEffect } from 'react';
 import {
-  Alert,
   Platform,
   Pressable,
   ScrollView,
@@ -29,6 +28,7 @@ import { useWalletStore } from '../../../stores/wallet.store';
 import { useAuthStore } from '../../../stores/auth.store';
 import { useAuth } from '../../../context/AuthContext';
 import { supabase } from '../../../lib/supabase';
+import { useToast } from '../../../components/ui/Toast';
 import type { Order } from '../../../types';
 
 export default function ListingDetailScreen() {
@@ -36,6 +36,7 @@ export default function ListingDetailScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { refreshUser } = useAuth();
+  const { showToast } = useToast();
 
   const listing = useListingStore((s) => s.selected);
   const clearListing = useListingStore((s) => s.clear);
@@ -78,14 +79,14 @@ export default function ListingDetailScreen() {
 
   const handleCheckout = async () => {
     if (!user?.id) {
-      Alert.alert('Error', 'User not authenticated');
+      showToast('User not authenticated', 'error');
       return;
     }
 
     if (paymentMethod === 'wallet' && balance < total) {
-      Alert.alert(
-        'Insufficient Balance',
+      showToast(
         `You need ₦${total.toLocaleString()} but your wallet balance is ₦${balance.toLocaleString()}.`,
+        'error'
       );
       return;
     }
@@ -146,7 +147,7 @@ export default function ListingDetailScreen() {
       setCompletedOrder(order);
     } catch (err: any) {
       console.error('Checkout error:', err);
-      Alert.alert('Checkout Failed', err.message || 'Something went wrong');
+      showToast(err.message || 'Something went wrong', 'error');
     } finally {
       setPaying(false);
     }

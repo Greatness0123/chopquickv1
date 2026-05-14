@@ -348,7 +348,7 @@ BEGIN
   UPDATE public.restaurants
   SET
     total_revenue_recovered = total_revenue_recovered + revenue,
-    total_co2_diverted_kg = total_co2_diverted_kg + 0.5 -- Estimated CO2 per meal
+    total_co2_diverted_kg = total_co2_diverted_kg + 0.5
   WHERE id = rest_id
   RETURNING owner_id INTO v_owner_id;
 
@@ -388,6 +388,64 @@ BEGIN
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
+
+CREATE OR REPLACE FUNCTION public.capture_order_payment()
+RETURNS TRIGGER AS $$
+DECLARE
+  v_customer_balance DECIMAL;
+BEGIN
+  -- Only fire when order transitions TO 'collected'
+  IF NEW.order_status = 'collected' AND (OLD.order_status IS NULL OR OLD.order_status != 'collected') THEN
+    -- Capture payment from customer wallet (for wallet payments, funds were reserved at checkout)
+    IF NEW.payment_method = 'wallet' THEN
+      SELECT wallet_balance INTO v_customer_balance
+      FROM public.profiles WHERE id = NEW.customer_id FOR UPDATE;
+
+      UPDATE public.profiles
+      SET wallet_balance = wallet_balance - NEW.total_amount
+      WHERE id = NEW.customer_id;
+
+      INSERT INTO public.transactions (user_id, type, amount, balance_after, description, reference)
+      VALUES (
+        NEW.customer_id,
+        'wallet_debit',
+        -NEW.total_amount,
+        v_customer_balance - NEW.total_amount,
+        'Order collected — payment captured',
+        COALESCE(NEW.payment_reference, 'N/A')
+      );
+    END IF;
+
+    -- For card payments in demo mode (no real Paystack capture), also deduct
+    IF NEW.payment_method = 'card' THEN
+      SELECT wallet_balance INTO v_customer_balance
+      FROM public.profiles WHERE id = NEW.customer_id FOR UPDATE;
+
+      UPDATE public.profiles
+      SET wallet_balance = wallet_balance - NEW.total_amount
+      WHERE id = NEW.customer_id;
+
+      INSERT INTO public.transactions (user_id, type, amount, balance_after, description, reference)
+      VALUES (
+        NEW.customer_id,
+        'wallet_debit',
+        -NEW.total_amount,
+        v_customer_balance - NEW.total_amount,
+        'Card order collected — payment captured',
+        COALESCE(NEW.payment_reference, 'N/A')
+      );
+    END IF;
+  END IF;
+
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+DROP TRIGGER IF EXISTS on_order_collected_payment ON public.orders;
+CREATE TRIGGER on_order_collected_payment
+  AFTER UPDATE ON public.orders
+  FOR EACH ROW
+  EXECUTE PROCEDURE public.capture_order_payment();
 
 -- Trigger to update customer stats
 DROP TRIGGER IF EXISTS on_order_collected ON public.orders;
@@ -483,18 +541,10 @@ BEGIN
 
   v_total_amount := v_unit_price * p_quantity;
 
-  -- 2. Handle Wallet Payment
+  -- 2. Reserve portions for wallet orders (no deduction yet — deducted at collection)
   IF p_payment_method = 'wallet' THEN
-    SELECT wallet_balance INTO v_current_balance FROM public.profiles WHERE id = p_customer_id FOR UPDATE;
-    IF v_current_balance < v_total_amount THEN
-      RAISE EXCEPTION 'Insufficient wallet balance';
-    END IF;
-
-    UPDATE public.profiles SET wallet_balance = wallet_balance - v_total_amount WHERE id = p_customer_id;
-
-    -- Log transaction
-    INSERT INTO public.transactions (user_id, type, amount, balance_after, description, reference)
-    VALUES (p_customer_id, 'order_payment', -v_total_amount, v_current_balance - v_total_amount, 'Food order payment', p_payment_reference);
+    -- Funds are held but not yet deducted; deduction happens when order status = 'collected'
+    NULL;
   END IF;
 
   -- 3. Create Order

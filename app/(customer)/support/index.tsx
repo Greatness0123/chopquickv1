@@ -3,7 +3,6 @@ import { Feather } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {
-  Alert,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -18,17 +17,35 @@ import { Button } from '../../../components/ui/Button';
 import { Input } from '../../../components/ui/Input';
 import { spacing, typography } from '../../../constants/colors';
 import { useColors } from '../../../hooks/useColors';
+import { useToast } from '../../../components/ui/Toast';
 
 const FAQS = [
-  { q: 'How do I collect my meal?', a: 'Once you pay, you will get a QR code in "My Orders". Show this to the restaurant staff between 8:00 - 9:30 PM.' },
+  { q: 'How do I collect my meal?', a: "Once you pay, you will get a QR code in 'My Orders'. Show this to the restaurant staff between 8:00 - 9:30 PM." },
   { q: 'Can I cancel my order?', a: 'Surplus meals are non-refundable to prevent food waste. Please ensure you can pick up before ordering.' },
-  { q: 'Is the food fresh?', a: 'Yes! These are fresh meals prepared today that simply haven’t sold by closing time.' },
+  { q: "Is the food fresh?", a: "Yes! These are fresh meals prepared today that simply haven't sold by closing time." },
 ];
+
+function FaqItem({ faq }: { faq: { q: string; a: string } }) {
+  const colors = useColors();
+  const [open, setOpen] = useState(false);
+  return (
+    <Pressable onPress={() => setOpen(!open)} style={[styles.faqCard, { backgroundColor: colors.surface }]}>
+      <View style={styles.faqHeader}>
+        <Text style={[typography.bodySemiBold, { color: colors.foreground, flex: 1 }]}>{faq.q}</Text>
+        <Feather name={open ? 'chevron-up' : 'chevron-down'} size={16} color={colors.textMuted} />
+      </View>
+      {open && (
+        <Text style={[typography.caption, { color: colors.textSecondary, marginTop: spacing.sm }]}>{faq.a}</Text>
+      )}
+    </Pressable>
+  );
+}
 
 export default function SupportScreen() {
   const colors = useColors();
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const { showToast } = useToast();
 
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
@@ -39,7 +56,7 @@ export default function SupportScreen() {
     setTimeout(() => {
       setLoading(false);
       setMessage('');
-      Alert.alert('Message Sent', 'Our support team will get back to you within 24 hours.');
+      showToast('Our support team will get back to you within 24 hours.', 'success');
     }, 1500);
   };
 
@@ -61,10 +78,7 @@ export default function SupportScreen() {
         <View style={styles.section}>
           <Text style={[typography.h4, { color: colors.foreground, marginBottom: spacing.md }]}>Frequently Asked Questions</Text>
           {FAQS.map((faq, i) => (
-            <View key={i} style={[styles.faqCard, { backgroundColor: colors.surface }]}>
-              <Text style={[typography.bodySemiBold, { color: colors.primary }]}>{faq.q}</Text>
-              <Text style={[typography.caption, { color: colors.textSecondary, marginTop: 4 }]}>{faq.a}</Text>
-            </View>
+            <FaqItem key={i} faq={faq} />
           ))}
         </View>
 
@@ -116,7 +130,8 @@ const styles = StyleSheet.create({
     alignItems: 'center', justifyContent: 'center',
   },
   section: { padding: spacing.lg },
-  faqCard: { padding: spacing.lg, borderRadius: 12, marginBottom: spacing.md },
+  faqCard: { padding: spacing.lg, borderRadius: 12, marginBottom: spacing.md, gap: spacing.sm },
+  faqHeader: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
   form: { padding: spacing.lg, borderRadius: 16, gap: spacing.sm },
   directContact: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, marginTop: spacing.xl },
 });

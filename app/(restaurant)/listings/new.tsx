@@ -5,7 +5,6 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import React, { useState, useEffect } from 'react';
 import {
   ActivityIndicator,
-  Alert,
   Image,
   KeyboardAvoidingView,
   Platform,
@@ -23,8 +22,10 @@ import { spacing, typography } from '../../../constants/colors';
 import { useAuth } from '../../../context/AuthContext';
 import { useColors } from '../../../hooks/useColors';
 import { supabase } from '../../../lib/supabase';
+import { useToast } from '../../../components/ui/Toast';
+import { useDialog } from '../../../components/ui/Dialog';
 
-const FOOD_TAGS = ['Jollof', 'egusi', 'Fried Rice', 'Swollow', 'amala', 'Snack', 'Brnch', 'Vegan'];
+const FOOD_TAGS = ['Jollof', 'Egusi', 'Fried Rice', 'Swallow', 'Amala', 'Snack', 'Brunch', 'Vegan'];
 
 function getDefaultExpiry() {
   const d = new Date();
@@ -45,6 +46,8 @@ export default function NewListingScreen() {
   const { id } = useLocalSearchParams<{ id?: string }>();
   const isEditing = !!id;
   const { restaurant } = useAuth();
+  const { showToast } = useToast();
+  const { showConfirm } = useDialog();
 
   const [foodName, setFoodName] = useState('');
   const [originalPrice, setOriginalPrice] = useState('');
@@ -92,22 +95,27 @@ export default function NewListingScreen() {
       }
     } catch (err) {
       console.error('Error fetching listing:', err);
-      Alert.alert('Error', 'Could not load listing details');
+      showToast('Could not load listing details', 'error');
     }
   };
 
   const pickImage = async () => {
-    Alert.alert('Upload Image', 'Choose a source', [
-      { text: 'Camera', onPress: () => takePhoto() },
-      { text: 'Gallery', onPress: () => launchGallery() },
-      { text: 'Cancel', style: 'cancel' },
-    ]);
+    const confirmed = await showConfirm({
+      title: 'Upload Image',
+      message: 'Choose a source',
+      confirmText: 'Camera',
+    });
+    if (confirmed) {
+      takePhoto();
+    } else {
+      launchGallery();
+    }
   };
 
   const takePhoto = async () => {
     const { status } = await ImagePicker.requestCameraPermissionsAsync();
     if (status !== 'granted') {
-      Alert.alert('Permission needed', 'Camera access is required to take a photo.');
+      showToast('Camera access is required to take a photo.', 'error');
       return;
     }
     const result = await ImagePicker.launchCameraAsync({
@@ -179,12 +187,12 @@ export default function NewListingScreen() {
   const handleSubmit = async () => {
     const err = validate();
     if (err) {
-      Alert.alert('Validation error', err);
+      showToast(err, 'error');
       return;
     }
 
     if (!restaurant?.id) {
-      Alert.alert('Error', 'Restaurant profile not found');
+      showToast('Restaurant profile not found', 'error');
       return;
     }
 
@@ -246,14 +254,14 @@ export default function NewListingScreen() {
       }
 
       setLoading(false);
-      Alert.alert(
-        isEditing ? 'Listing Updated' : 'Listing Created',
+      showToast(
         isEditing ? 'Your changes have been saved.' : 'Your surplus deal is now live!',
-        [{ text: 'OK', onPress: () => router.back() }]
+        'success'
       );
+      router.back();
     } catch (err: any) {
       setLoading(false);
-      Alert.alert('Error', err.message || 'Could not create listing');
+      showToast(err.message || 'Could not create listing', 'error');
     }
   };
 
@@ -367,7 +375,7 @@ export default function NewListingScreen() {
                   <Text
                     style={[
                       typography.bodyMedium,
-                      { color: portions === n ? '#FFFFFF' : colors.foreground },
+                      { color: portions === n ? colors.foreground : colors.foreground },
                     ]}
                   >
                     {n}

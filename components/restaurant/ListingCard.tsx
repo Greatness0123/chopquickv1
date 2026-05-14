@@ -14,12 +14,15 @@ interface ListingCardProps {
   listing: Listing;
   onEdit?: () => void;
   onToggle?: () => void;
+  onRelist?: () => void;
 }
 
-export function ListingCard({ listing, onEdit, onToggle }: ListingCardProps) {
+export function ListingCard({ listing, onEdit, onToggle, onRelist }: ListingCardProps) {
   const colors = useColors();
+  const now = new Date().toISOString();
   const isSoldOut = listing.portions_remaining === 0;
-  const isLive = listing.status === 'live';
+  const isLive = listing.status === 'live' && listing.expires_at > now;
+  const isExpired = listing.status === 'live' && listing.expires_at <= now;
 
   return (
     <View style={[styles.card, { backgroundColor: colors.surface }]}>
@@ -44,6 +47,8 @@ export function ListingCard({ listing, onEdit, onToggle }: ListingCardProps) {
         <View style={styles.statusCol}>
           {isSoldOut ? (
             <Badge variant="sold_out" />
+          ) : isExpired ? (
+            <Badge variant="expired" />
           ) : isLive ? (
             <Badge variant="live" dot />
           ) : (
@@ -58,6 +63,11 @@ export function ListingCard({ listing, onEdit, onToggle }: ListingCardProps) {
             {onToggle && (
               <Pressable onPress={onToggle} style={[styles.actionBtn, { backgroundColor: colors.elevated }]}>
                 <Feather name={isLive ? 'pause' : 'play'} size={14} color={colors.textSecondary} />
+              </Pressable>
+            )}
+            {onRelist && isExpired && (
+              <Pressable onPress={onRelist} style={[styles.actionBtn, { backgroundColor: colors.primaryDim }]}>
+                <Feather name="refresh-cw" size={14} color={colors.primary} />
               </Pressable>
             )}
           </View>

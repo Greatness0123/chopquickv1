@@ -1,4 +1,4 @@
-// Signup sceen — customer by default, restaurant link at bottom
+// Restaurant signup sceen — signup for restaurant owners
 import { Feather } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useRef, useState } from 'react';
@@ -14,14 +14,14 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { Button } from '../../components/ui/Button';
-import { Input } from '../../components/ui/Input';
-import { spacing, typography } from '../../constants/colors';
-import { useAuth } from '../../context/AuthContext';
-import { useColors } from '../../hooks/useColors';
-import { useToast } from '../../components/ui/Toast';
+import { Button } from '../../../components/ui/Button';
+import { Input } from '../../../components/ui/Input';
+import { spacing, typography } from '../../../constants/colors';
+import { useAuth } from '../../../context/AuthContext';
+import { useColors } from '../../../hooks/useColors';
+import { useToast } from '../../../components/ui/Toast';
 
-export default function SignupScreen() {
+export default function RestaurantSignupScreen() {
   const colors = useColors();
   const router = useRouter();
   const insets = useSafeAreaInsets();
@@ -32,6 +32,9 @@ export default function SignupScreen() {
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
+  const [restaurantName, setRestaurantName] = useState('');
+  const [restaurantArea, setRestaurantArea] = useState('');
+  const [restaurantType, setRestaurantType] = useState('');
   const [showPwd, setShowPwd] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -47,6 +50,9 @@ export default function SignupScreen() {
     if (!email.trim()) e.email = 'Email is required';
     if (!phone.trim()) e.phone = 'Phone number is required';
     if (password.length < 6) e.password = 'Password must be at least 6 chars';
+    if (!restaurantName.trim()) e.restaurantName = 'Restaurant name is required';
+    if (!restaurantArea.trim()) e.restaurantArea = 'Restaurant area is required';
+    if (!restaurantType.trim()) e.restaurantType = 'Restaurant type is required';
     setErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -61,21 +67,24 @@ export default function SignupScreen() {
         email: email.trim(),
         phone: formattedPhone,
         password,
-        role: 'customer' as const,
+        role: 'restaurant_owner' as const,
+        restaurant_name: restaurantName.trim(),
+        restaurant_area: restaurantArea.trim(),
+        restaurant_type: restaurantType.trim(),
       };
 
-      console.log('[Signup] Attempting signup with payload:', JSON.stringify(payload, null, 2));
+      console.log('[RestaurantSignup] Attempting signup with payload:', JSON.stringify(payload, null, 2));
 
       await signup(payload);
 
-      console.log('[Signup] Success');
+      console.log('[RestaurantSignup] Success');
       showToast('Please check your inbox for a confirmation link before logging in.', 'success');
       router.replace('/(auth)/login');
     } catch (err: any) {
-      console.error('[Signup] Error object:', JSON.stringify(err, null, 2));
-      console.error('[Signup] Error message:', err?.message);
-      console.error('[Signup] Error status:', err?.status);
-      console.error('[Signup] Error details:', err?.error_description ?? err?.details ?? 'none');
+      console.error('[RestaurantSignup] Error object:', JSON.stringify(err, null, 2));
+      console.error('[RestaurantSignup] Error message:', err?.message);
+      console.error('[RestaurantSignup] Error status:', err?.status);
+      console.error('[RestaurantSignup] Error details:', err?.error_description ?? err?.details ?? 'none');
 
       showToast(
         err?.message ?? 'Unknown error',
@@ -99,21 +108,56 @@ export default function SignupScreen() {
         </Pressable>
 
         <View style={styles.header}>
-          <Text style={[typography.h1, { color: colors.foreground }]}>Create account</Text>
+          <View style={[styles.iconBadge, { backgroundColor: colors.primaryDim }]}>
+            <Feather name="home" size={24} color={colors.primary} />
+          </View>
+          <Text style={[typography.h1, { color: colors.foreground }]}>Restaurant Signup</Text>
           <Text style={[typography.body, { color: colors.textSecondary }]}>
-            Join thousands saving meals in Lagos
+            List your surplus food and start earning
           </Text>
         </View>
 
-        {/* Customer Form */}
+        {/* Restaurant Fields */}
+        <View style={styles.restaurantSection}>
+          <Text style={[typography.h4, { color: colors.foreground, marginBottom: spacing.sm }]}>Restaurant Details</Text>
+          <View style={styles.restaurantFields}>
+            <Input
+              label="Restaurant name"
+              value={restaurantName}
+              onChangeText={setRestaurantName}
+              placeholder="Mama's Kitchen"
+              error={errors.restaurantName}
+              leftIcon={<Feather name="home" size={18} color={colors.placeholder} />}
+            />
+            <Input
+              label="Restaurant area"
+              value={restaurantArea}
+              onChangeText={setRestaurantArea}
+              placeholder="Lekki Phase 1"
+              error={errors.restaurantArea}
+              leftIcon={<Feather name="map-pin" size={18} color={colors.placeholder} />}
+            />
+            <Input
+              label="Restaurant type"
+              value={restaurantType}
+              onChangeText={setRestaurantType}
+              placeholder="Local Buka, Fast Food, Cafe"
+              error={errors.restaurantType}
+              leftIcon={<Feather name="layers" size={18} color={colors.placeholder} />}
+            />
+          </View>
+        </View>
+
+        {/* Account Details */}
         <View style={styles.form}>
+          <Text style={[typography.h4, { color: colors.foreground, marginBottom: spacing.sm }]}>Account Details</Text>
           <Input
             label="Full Name"
             value={fullName}
             onChangeText={setFullName}
             autoCapitalize="words"
             autoComplete="name"
-            placeholder="Ade Johnson"
+            placeholder="Chi Akarah"
             error={errors.fullName}
             returnKeyType="next"
             onSubmitEditing={() => emailRef.current?.focus()}
@@ -127,7 +171,7 @@ export default function SignupScreen() {
             keyboardType="email-address"
             autoCapitalize="none"
             autoComplete="email"
-            placeholder="you@example.com"
+            placeholder="chi@mamaput.ng"
             error={errors.email}
             returnKeyType="next"
             onSubmitEditing={() => phoneRef.current?.focus()}
@@ -140,7 +184,7 @@ export default function SignupScreen() {
             onChangeText={setPhone}
             keyboardType="phone-pad"
             autoComplete="tel"
-            placeholder="+2348012345678"
+            placeholder="+2348098765432"
             error={errors.phone}
             returnKeyType="next"
             onSubmitEditing={() => pwdRef.current?.focus()}
@@ -160,7 +204,7 @@ export default function SignupScreen() {
             onRightIconPress={() => setShowPwd((p) => !p)}
           />
 
-          <Button label="Create account" onPress={handleSignup} loading={isLoading} size="lg" />
+          <Button label="Create Restaurant Account" onPress={handleSignup} loading={isLoading} size="lg" />
         </View>
 
         <View style={styles.loginRow}>
@@ -170,12 +214,12 @@ export default function SignupScreen() {
           </Pressable>
         </View>
 
-        {/* Sign up as Restaurant link at bottom */}
-        <View style={styles.restaurantLink}>
+        {/* Customer signup link */}
+        <View style={styles.customerLink}>
           <Text style={[typography.body, { color: colors.textSecondary }]}>
-            Want to list your restaurant?  </Text>
-          <Pressable onPress={() => router.push('/(auth)/signup-restaurant')}>
-            <Text style={[typography.bodySemiBold, { color: colors.primary }]}>Sign up as Restaurant</Text>
+            Want to buy food instead?  </Text>
+          <Pressable onPress={() => router.push('/(auth)/signup')}>
+            <Text style={[typography.bodySemiBold, { color: colors.primary }]}>Sign up as Customer</Text>
           </Pressable>
         </View>
       </ScrollView>
@@ -191,8 +235,18 @@ const styles = StyleSheet.create({
     alignItems: 'center', justifyContent: 'center',
     alignSelf: 'flex-start',
   },
+  iconBadge: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignSelf: 'flex-start',
+  },
   header: { gap: spacing.sm },
   form: { gap: spacing.lg },
+  restaurantSection: { gap: spacing.md },
+  restaurantFields: { gap: spacing.lg },
   loginRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center' },
-  restaurantLink: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: spacing.md },
+  customerLink: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: spacing.md },
 });

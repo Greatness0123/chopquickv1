@@ -1,6 +1,6 @@
-// orders sceen — active + past orders
+// Orders screen — active + past orders
 import { Feather } from '@expo/vector-icons';
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   Platform,
   Pressable,
@@ -8,6 +8,7 @@ import {
   StyleSheet,
   Text,
   View,
+  RefreshControl,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -20,7 +21,7 @@ import { supabase } from '../../../lib/supabase';
 import { useAuth } from '../../../context/AuthContext';
 
 const TABS = [
-  { id: 'active', label: 'active' },
+  { id: 'active', label: 'Active' },
   { id: 'past', label: 'Past' },
 ];
 
@@ -32,6 +33,7 @@ export default function OrdersScreen() {
   const [tab, setTab] = useState<'active' | 'past'>('active');
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
   const topPad = Platform.OS === 'web' ? 67 : insets.top;
   const bottomPad = Platform.OS === 'web' ? 34 : insets.bottom;
@@ -50,10 +52,16 @@ export default function OrdersScreen() {
       console.error('Error fetching orders:', err);
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
   };
 
   React.useEffect(() => {
+    fetchOrders();
+  }, [user?.id]);
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
     fetchOrders();
   }, [user?.id]);
 
@@ -83,14 +91,14 @@ export default function OrdersScreen() {
               <Text
                 style={[
                   typography.captionMedium,
-                  { color: tab === t.id ? '#FFFFFF' : colors.textSecondary },
+                  { color: tab === t.id ? colors.foreground : colors.textSecondary },
                 ]}
               >
                 {t.label}
               </Text>
               {t.id === 'active' && activeOrders.length > 0 && (
-                <View style={[styles.badge, { backgroundColor: tab === 'active' ? '#FFFFFFoo' : colors.primary }]}>
-                  <Text style={[typography.label, { color: '#FFFFFF' }]}>{activeOrders.length}</Text>
+                <View style={[styles.badge, { backgroundColor: tab === 'active' ? colors.foreground : colors.primary }]}>
+                  <Text style={[typography.label, { color: tab === 'active' ? colors.background : colors.foreground }]}>{activeOrders.length}</Text>
                 </View>
               )}
             </Pressable>
@@ -104,6 +112,13 @@ export default function OrdersScreen() {
           { paddingBottom: bottomPad + 120 },
         ]}
         showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor={colors.primary}
+          />
+        }
       >
         {currentOrders.length === 0 ? (
           <EmptyState
@@ -122,7 +137,7 @@ export default function OrdersScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, width: '100%', maxWidth: 1280, alignSelf: 'center',paddingBottom: spacing.xxl },
+  container: { flex: 1, width: '100%', maxWidth: 1280, alignSelf: 'center', paddingBottom: spacing.xxl },
   header: {
     paddingHorizontal: spacing.lg,
     paddingBottom: spacing.md,

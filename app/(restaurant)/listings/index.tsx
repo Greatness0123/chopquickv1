@@ -18,6 +18,7 @@ import { spacing, typography } from '../../../constants/colors';
 import { useAuth } from '../../../context/AuthContext';
 import { useColors } from '../../../hooks/useColors';
 import { supabase } from '../../../lib/supabase';
+import { useDialog } from '../../../components/ui/Dialog';
 import type { Listing } from '../../../types';
 
 type FilterTab = 'all' | 'live' | 'sold_out';
@@ -26,6 +27,7 @@ export default function ListingsScreen() {
   const colors = useColors();
   const router = useRouter();
   const { restaurant } = useAuth();
+  const { showConfirm } = useDialog();
   const [filter, setFilter] = useState<FilterTab>('all');
   const [refreshing, setRefreshing] = useState(false);
   const [listings, setListings] = useState<Listing[]>([]);
@@ -67,20 +69,35 @@ export default function ListingsScreen() {
     fetchListings();
   };
 
-  const handleToggle = async (listing: Listing) => {
-    const newStatus = listing.status === 'live' ? 'scheduled' : 'live';
+  const handleRelist = async (listing: Listing) => {
+    const confirmed = await showConfirm({
+      title: 'Relist Item',
+      message: `Make "${listing.food_name}" live again? This will reset the expiry time to 9:30PM tonight.`,
+      confirmText: 'Relist',
+    });
+
+    if (!confirmed) return;
+
     try {
+      const expiresAt = new Date();
+      expiresAt.setHours(21, 30, 0, 0);
+      const goesLiveAt = new Date();
+      goesLiveAt.setHours(20, 0, 0, 0);
+
       const { error } = await supabase
         .from('listings')
-        .update({ status: newStatus })
+        .update({
+          status: 'live',
+          expires_at: expiresAt.toISOString(),
+          goes_live_at: goesLiveAt.toISOString(),
+          portions_remaining: listing.portions_total,
+        })
         .eq('id', listing.id);
 
       if (error) throw error;
-      setListings((prev) =>
-        prev.map((l) => (l.id === listing.id ? { ...l, status: newStatus } : l))
-      );
+      fetchListings();
     } catch (err) {
-      console.error('Error toggling listing:', err);
+      console.error('Error relisting:', err);
     }
   };
 
@@ -108,8 +125,8 @@ export default function ListingsScreen() {
           onPress={() => router.push('/(restaurant)/listings/new' as any)}
           style={[styles.addBtn, { backgroundColor: colors.primary }]}
         >
-          <Feather name="plus" size={18} color="#FFFFFF" />
-          <Text style={[typography.captionMedium, { color: '#FFFFFF' }]}>New</Text>
+          <Feather name="plus" size={18} color={colors.foreground} />
+          <Text style={[typography.captionMedium, { color: colors.foreground }]}>New</Text>
         </Pressable>
       </View>
 
@@ -172,7 +189,7 @@ export default function ListingsScreen() {
               key={listing.id}
               listing={listing}
               onEdit={() => router.push(`/(restaurant)/listings/new?id=${listing.id}` as any)}
-              onToggle={() => handleToggle(listing)}
+              onRelist={() => handleRelist(listing)}
             />
           ))
         )}

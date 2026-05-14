@@ -3,7 +3,6 @@ import { Feather } from '@expo/vector-icons';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import React, { useState } from 'react';
 import {
-  Alert,
   Modal,
   Platform,
   Pressable,
@@ -18,6 +17,7 @@ import { Button } from '../../../components/ui/Button';
 import { spacing, typography } from '../../../constants/colors';
 import { useColors } from '../../../hooks/useColors';
 import { supabase } from '../../../lib/supabase';
+import { useToast } from '../../../components/ui/Toast';
 import type { Order } from '../../../types';
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -42,6 +42,7 @@ function formatCollectionCode(raw: string): string {
 
 export default function VerifyScreen() {
   const colors = useColors();
+  const { showToast } = useToast();
   const [permission, requestPermission] = useCameraPermissions();
   const [scanned, setScanned] = useState(false);
   const [manualCode, setManualCode] = useState('');
@@ -79,16 +80,13 @@ export default function VerifyScreen() {
         .single();
 
       if (error || !order) {
-        Alert.alert(
-          'Not Found',
-          'No order matched this code. Double-check the code and try again.',
-        );
+        showToast('No order matched this code. Double-check the code and try again.', 'error');
         return;
       }
 
       setFoundOrder(order);
     } catch (err) {
-      Alert.alert('Error', 'Could not fetch order details. Please try again.');
+      showToast('Could not fetch order details. Please try again.', 'error');
     } finally {
       setLoading(false);
     }
@@ -104,7 +102,7 @@ export default function VerifyScreen() {
     if (!foundOrder) return;
 
     if (foundOrder.order_status === 'collected') {
-      Alert.alert('Already Collected', 'This order has already been marked as collected.');
+      showToast('This order has already been marked as collected.', 'warning');
       return;
     }
 
@@ -131,14 +129,11 @@ export default function VerifyScreen() {
         revenue: foundOrder.total_amount,
       });
 
-      Alert.alert(
-        'Collected!',
-        `${formatNGN(foundOrder.total_amount)} added to your earnings.`,
-      );
+      showToast(`${formatNGN(foundOrder.total_amount)} added to your earnings.`, 'success');
 
       reset();
     } catch (err: any) {
-      Alert.alert('Error', err.message || 'Could not update order status. Try again.');
+      showToast(err.message || 'Could not update order status. Try again.', 'error');
     } finally {
       setConfirming(false);
     }

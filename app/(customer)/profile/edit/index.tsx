@@ -5,7 +5,6 @@ import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {
   ActivityIndicator,
-  Alert,
   Image,
   KeyboardAvoidingView,
   Platform,
@@ -23,12 +22,14 @@ import { spacing, typography } from '../../../../constants/colors';
 import { useAuth } from '../../../../context/AuthContext';
 import { useColors } from '../../../../hooks/useColors';
 import { supabase } from '../../../../lib/supabase';
+import { useToast } from '../../../../components/ui/Toast';
 
 export default function EditProfileScreen() {
   const colors = useColors();
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { user, refreshUser } = useAuth();
+  const { showToast } = useToast();
 
   const [name, setName] = useState(user?.full_name ?? '');
   const [phone, setPhone] = useState(user?.phone ?? '');
@@ -80,10 +81,10 @@ export default function EditProfileScreen() {
       if (updateError) throw updateError;
 
       await refreshUser();
-      Alert.alert('Success', 'Profile photo updated');
+      showToast('Profile photo updated', 'success');
     } catch (err) {
       console.error('Upload error:', err);
-      Alert.alert('Error', 'Could not upload image');
+      showToast('Could not upload image', 'error');
     } finally {
       setUploading(false);
     }
@@ -103,10 +104,10 @@ export default function EditProfileScreen() {
 
       if (error) throw error;
       await refreshUser();
-      Alert.alert('Success', 'Profile updated successfully');
+      showToast('Profile updated successfully', 'success');
       router.back();
     } catch (err) {
-      Alert.alert('Error', 'Could not update profile');
+      showToast('Could not update profile', 'error');
     } finally {
       setLoading(false);
     }

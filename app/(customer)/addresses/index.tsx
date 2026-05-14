@@ -4,7 +4,6 @@ import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
-  Alert,
   FlatList,
   Pressable,
   StyleSheet,
@@ -18,6 +17,8 @@ import { spacing, typography } from '../../../constants/colors';
 import { useAuth } from '../../../context/AuthContext';
 import { useColors } from '../../../hooks/useColors';
 import { supabase } from '../../../lib/supabase';
+import { useToast } from '../../../components/ui/Toast';
+import { useDialog } from '../../../components/ui/Dialog';
 
 interface Address {
   id: string;
@@ -31,6 +32,8 @@ export default function AddressesScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { user } = useAuth();
+  const { showToast } = useToast();
+  const { showConfirm } = useDialog();
   const [addresses, setAddresses] = useState<Address[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -56,16 +59,17 @@ export default function AddressesScreen() {
     fetchAddresses();
   }, [user?.id]);
 
+  const [loadingId, setLoadingId] = useState<string | null>(null);
+
   const setDefault = async (id: string) => {
+    setLoadingId(id);
     try {
-      // 1. Unset existing default
       await supabase
         .from('addresses')
         .update({ is_default: false })
         .eq('user_id', user?.id)
         .eq('is_default', true);
 
-      // 2. Set new default
       const { error } = await supabase
         .from('addresses')
         .update({ is_default: true })
@@ -74,27 +78,28 @@ export default function AddressesScreen() {
       if (error) throw error;
       fetchAddresses();
     } catch (err) {
-      Alert.alert('Error', 'Could not update default address');
+      showToast('Could not update default address', 'error');
+    } finally {
+      setLoadingId(null);
     }
   };
 
   const deleteAddress = async (id: string) => {
-    Alert.alert('Delete Address', 'Are you sure?', [
-      { text: 'Cancel', style: 'cancel' },
-      {
-        text: 'Delete',
-        style: 'destructive',
-        onPress: async () => {
-          try {
-            const { error } = await supabase.from('addresses').delete().eq('id', id);
-            if (error) throw error;
-            fetchAddresses();
-          } catch (err) {
-            Alert.alert('Error', 'Could not delete address');
-          }
-        },
-      },
-    ]);
+    const confirmed = await showConfirm({
+      title: 'Delete Address',
+      message: 'Are you sure you want to delete this address?',
+      confirmText: 'Delete',
+      destructive: true,
+    });
+    if (confirmed) {
+      try {
+        const { error } = await supabase.from('addresses').delete().eq('id', id);
+        if (error) throw error;
+        fetchAddresses();
+      } catch (err) {
+        showToast('Could not delete address', 'error');
+      }
+    }
   };
 
   return (
@@ -131,6 +136,9 @@ export default function AddressesScreen() {
                       <Text style={[typography.label, { color: colors.primary }]}>DEFAULT</Text>
                     </View>
                   )}
+                  {loadingId === item.id && (
+                    <ActivityIndicator size="small" color={colors.primary} />
+                  )}
                 </View>
                 <Text style={[typography.caption, { color: colors.textSecondary }]}>{item.address_line}</Text>
               </View>
@@ -153,7 +161,7 @@ export default function AddressesScreen() {
       <View style={[styles.footer, { paddingBottom: insets.bottom + spacing.lg }]}>
         <Button
           label="Add New Address"
-          onPress={() => Alert.alert('Coming Soon', 'This feature is under development.')}
+          onPress={() => router.push('/(customer)/addresses/add' as any)}
           size="lg"
         />
       </View>

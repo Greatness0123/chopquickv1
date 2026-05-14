@@ -80,6 +80,7 @@ export default function RestaurantLayout() {
       />
         {/* Hidden screens not shown in tab bar */}
         <Tabs.Screen name="listings/new" options={{ href: null }} />
+        <Tabs.Screen name="withdraw/history" options={{ href: null }} />
          <Tabs.Screen name="settings/bank-account/index" options={{ href: null }} />
         <Tabs.Screen name="withdraw/index" options={{ href: null }} />
       </Tabs>

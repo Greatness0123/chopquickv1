@@ -3,7 +3,6 @@ import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
-  Alert,
   FlatList,
   Modal,
   Pressable,
@@ -20,6 +19,7 @@ import { spacing, typography } from '../../../../constants/colors';
 import { useAuth } from '../../../../context/AuthContext';
 import { useColors } from '../../../../hooks/useColors';
 import { supabase } from '../../../../lib/supabase';
+import { useToast } from '../../../../components/ui/Toast';
 
 interface Bank {
   id: number;
@@ -37,6 +37,7 @@ export default function CustomerBankAccountScreen() {
   const colors = useColors();
   const router = useRouter();
   const { user, refreshUser } = useAuth();
+  const { showToast } = useToast();
 
   const profile = user as typeof user & UserBankFields;
 
@@ -76,7 +77,7 @@ export default function CustomerBankAccountScreen() {
           ? await res.error.context.json().then((d: any) => d.error).catch(() => res.error.message)
           : res.error.message;
         console.error('Resolve error detail:', message);
-        Alert.alert('Error', message ?? 'Failed to verify account number.');
+        showToast(message ?? 'Failed to verify account number.', 'error');
         setAccountName('');
         return;
       }
@@ -85,12 +86,12 @@ export default function CustomerBankAccountScreen() {
         setAccountName(res.data.account_name);
       } else {
         setAccountName('');
-        Alert.alert('Not Found', 'Could not resolve account. Check the number and bank.');
+        showToast('Could not resolve account. Check the number and bank.', 'error');
       }
     } catch (err) {
       console.error('Error resolving account:', err);
       setAccountName('');
-      Alert.alert('Error', 'Failed to verify account number.');
+      showToast('Failed to verify account number.', 'error');
     } finally {
       setVerifying(false);
     }
@@ -106,7 +107,7 @@ export default function CustomerBankAccountScreen() {
 
   const handleSave = async () => {
     if (!user?.id || !selectedBank || !accountNumber || !accountName) {
-      Alert.alert('Error', 'Please fill all fields');
+      showToast('Please fill all fields', 'error');
       return;
     }
 
@@ -123,11 +124,11 @@ export default function CustomerBankAccountScreen() {
 
       if (error) throw error;
       await refreshUser();
-      Alert.alert('Success', 'Bank account updated');
+      showToast('Bank account updated', 'success');
       router.back();
     } catch (err: any) {
       console.error('Save error:', JSON.stringify(err));
-      Alert.alert('Error', err?.message ?? 'Could not save bank details');
+      showToast(err?.message ?? 'Could not save bank details', 'error');
 
     } finally {
       setLoading(false);

@@ -16,6 +16,8 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { ErrorBoundary } from '../components/ErrorBoundary';
 import { AuthProvider } from '../context/AuthContext';
+import { DialogProvider } from '../components/ui/Dialog';
+import { ToastProvider } from '../components/ui/Toast';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -28,6 +30,7 @@ function RootContent() {
       <Stack.Screen name="(auth)" />
       <Stack.Screen name="(customer)" />
       <Stack.Screen name="(restaurant)" />
+      <Stack.Screen name="(admin)" />
     </Stack>
   );
 }
@@ -63,7 +66,11 @@ export default function RootLayout() {
       <ErrorBoundary>
         <QueryClientProvider client={queryClient}>
           <AuthProvider>
-            <RootLayoutNav />
+            <DialogProvider>
+              <ToastProvider>
+                <RootLayoutNav />
+              </ToastProvider>
+            </DialogProvider>
           </AuthProvider>
         </QueryClientProvider>
       </ErrorBoundary>

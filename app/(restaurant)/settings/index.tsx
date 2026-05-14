@@ -4,7 +4,6 @@ import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {
   ActivityIndicator,
-  Alert,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -21,35 +20,38 @@ import { useAuth } from '../../../context/AuthContext';
 import { useColors } from '../../../hooks/useColors';
 import { supabase } from '../../../lib/supabase';
 import * as ImagePicker from 'expo-image-picker';
+import { useToast } from '../../../components/ui/Toast';
+import { useDialog } from '../../../components/ui/Dialog';
 
 export default function SettingsScreen() {
   const colors = useColors();
   const router = useRouter();
   const { restaurant, user, logout, refreshUser } = useAuth();
+  const { showToast } = useToast();
+  const { showConfirm } = useDialog();
 
   const [uploading, setUploading] = useState(false);
   const [newOrderNotifs, setNewOrderNotifs] = useState(true);
   const [lowStockNotifs, setLowStockNotifs] = useState(true);
   const [payoutNotifs, setPayoutNotifs] = useState(true);
 
-  const handleLogout = () => {
-    Alert.alert('Log out', 'are you sure you want to log out?', [
-      { text: 'Cancel', style: 'cancel' },
-      {
-        text: 'Log out',
-        style: 'destructive',
-        onPress: async () => {
-          await logout();
-          router.replace('/(auth)/login');
-        },
-      },
-    ]);
+  const handleLogout = async () => {
+    const confirmed = await showConfirm({
+      title: 'Log out',
+      message: 'Are you sure you want to log out?',
+      confirmText: 'Log out',
+      destructive: true,
+    });
+    if (confirmed) {
+      await logout();
+      router.replace('/(auth)/login');
+    }
   };
 
   const pickImage = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== 'granted') {
-      Alert.alert('Permission needed', 'We need access to your photos to upload a logo.');
+      showToast('We need access to your photos to upload a logo.', 'error');
       return;
     }
 
@@ -97,10 +99,10 @@ export default function SettingsScreen() {
       if (updateError) throw updateError;
 
       await refreshUser();
-      Alert.alert('Success', 'Restaurant logo updated');
+      showToast('Restaurant logo updated', 'success');
     } catch (err) {
       console.error('Upload error:', err);
-      Alert.alert('Error', 'Could not upload logo');
+      showToast('Could not upload logo', 'error');
     } finally {
       setUploading(false);
     }
@@ -180,7 +182,7 @@ export default function SettingsScreen() {
           value={value}
           onValueChange={onChange}
           trackColor={{ false: colors.border, true: colors.primary }}
-          thumbColor="#FFFFFF"
+          thumbColor={colors.foreground}
         />
       </View>
     );
@@ -207,10 +209,10 @@ export default function SettingsScreen() {
             )}
             {uploading && (
               <View style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(0,0,0,0.5)', alignItems: 'center', justifyContent: 'center' }]}>
-                <ActivityIndicator size="small" color="#FFF" />
+                <ActivityIndicator size="small" color={colors.foreground} />
               </View>
             )}
-            <View style={styles.cameraBadge}>
+            <View style={[styles.cameraBadge, { backgroundColor: colors.foreground, borderColor: colors.background }]}>
               <Feather name="camera" size={10} color="#FFF" />
             </View>
           </Pressable>
@@ -273,7 +275,7 @@ export default function SettingsScreen() {
         </View>
 
         <Text style={[typography.caption, styles.version, { color: colors.textMuted }]}>
-          ChopQuick v0.0.0 · Mock Mode
+          ChopQuick v1.0.0
         </Text>
       </ScrollView>
     </SafeAreaView>
@@ -288,13 +290,16 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
   },
   scroll: { padding: spacing.lg, gap: spacing.sm, paddingBottom: 120 },
-  profileCard: {
-    flexDirection: 'row',
+  cameraBadge: {
+    position: 'absolute',
+    bottom: 2,
+    right: 2,
+    width: 18,
+    height: 18,
+    borderRadius: 9,
     alignItems: 'center',
-    gap: spacing.md,
-    borderRadius: 16,
-    padding: spacing.lg,
-    marginBottom: spacing.md,
+    justifyContent: 'center',
+    borderWidth: 1,
   },
   avatar: {
     width: 56,

@@ -35,10 +35,12 @@ export default function DashboardScreen() {
   const [refreshing, setRefreshing] = React.useState(false);
   const [listings, setListings] = React.useState<any[]>([]);
   const [orders, setOrders] = React.useState<any[]>([]);
+  const [fetchError, setFetchError] = React.useState<string | null>(null);
 
   const fetchDashboardData = async () => {
     if (!restaurant?.id) return;
     try {
+      setFetchError(null);
       const { data: listingsData } = await supabase
         .from('listings')
         .select('*')
@@ -52,6 +54,7 @@ export default function DashboardScreen() {
       setListings(listingsData || []);
       setOrders(ordersData || []);
     } catch (err) {
+      setFetchError('Failed to load dashboard data');
       console.error('Error fetching dashboard data:', err);
     } finally {
       setRefreshing(false);
@@ -79,6 +82,15 @@ export default function DashboardScreen() {
 
   return (
     <SafeAreaView style={[styles.safe, { backgroundColor: colors.background }]}>
+      {fetchError ? (
+        <View style={[styles.errorState, { backgroundColor: colors.surface }]}>
+          <Feather name="alert-circle" size={40} color={colors.error} />
+          <Text style={[typography.bodyMedium, { color: colors.textSecondary }]}>{fetchError}</Text>
+          <Pressable onPress={fetchDashboardData} style={[styles.retryBtn, { backgroundColor: colors.primary }]}>
+            <Text style={[typography.bodySemiBold, { color: colors.foreground }]}>Retry</Text>
+          </Pressable>
+        </View>
+      ) : (
       <ScrollView
         contentContainerStyle={styles.scroll}
         refreshControl={
@@ -144,8 +156,8 @@ export default function DashboardScreen() {
             onPress={() => router.push('/(restaurant)/listings/new' as any)}
             style={[styles.newListingBtn, { backgroundColor: colors.primary }]}
           >
-            <Feather name="plus" size={18} color="#FFFFFF" />
-            <Text style={[typography.bodySemiBold, { color: '#FFFFFF' }]}>New Listing</Text>
+            <Feather name="plus" size={18} color={colors.foreground} />
+            <Text style={[typography.bodySemiBold, { color: colors.foreground }]}>New Listing</Text>
           </Pressable>
           <Pressable
             onPress={() => router.push('/(restaurant)/verify' as any)}
@@ -220,6 +232,7 @@ export default function DashboardScreen() {
           )}
         </View>
       </ScrollView>
+      )}
     </SafeAreaView>
   );
 }
@@ -227,6 +240,8 @@ export default function DashboardScreen() {
 const styles = StyleSheet.create({
   safe: { flex: 1, width: '100%', alignSelf: 'center',paddingBottom: spacing.xxl },
   scroll: { padding: spacing.lg, gap: spacing.lg, paddingBottom: 120 },
+  errorState: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: spacing.lg, margin: spacing.lg, borderRadius: 16 },
+  retryBtn: { paddingHorizontal: spacing.xl, paddingVertical: spacing.md, borderRadius: 10 },
   header: {
     flexDirection: 'row',
     alignItems: 'center',

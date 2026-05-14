@@ -27,8 +27,7 @@ export function RatingInput({ rating, onRatingChange, maxRating = 5 }: RatingInp
           <Feather
             name={i < rating ? 'star' : 'star'}
             size={32}
-            color={i < rating ? '#FFD700' : colors.border}
-            style={i < rating ? styles.filledStar : null}
+            color={i < rating ? '#FFB800' : colors.border}
           />
         </Pressable>
       ))}
@@ -46,9 +45,5 @@ const styles = StyleSheet.create({
   star: {
     padding: 4,
   },
-  filledStar: {
-    textShadowColor: 'rgba(255, 215, 0, 0.5)',
-    textShadowOffset: { width: 0, height: 0 },
-    textShadowRadius: 10,
-  },
+  filledStar: {},
 });

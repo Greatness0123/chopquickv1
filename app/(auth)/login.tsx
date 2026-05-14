@@ -3,7 +3,6 @@ import { Feather } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {
-  Alert,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -19,12 +18,14 @@ import { Input } from '../../components/ui/Input';
 import { spacing, typography } from '../../constants/colors';
 import { useAuth } from '../../context/AuthContext';
 import { useColors } from '../../hooks/useColors';
+import { useToast } from '../../components/ui/Toast';
 
 export default function LoginScreen() {
   const colors = useColors();
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { login, isLoading } = useAuth();
+  const { showToast } = useToast();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -47,7 +48,7 @@ export default function LoginScreen() {
       await login(email.trim(), password);
       router.replace('/');
     } catch (err: any) {
-      Alert.alert('Login Failed', err.message ?? 'Please check your credentials');
+      showToast(err.message ?? 'Please check your credentials', 'error');
     }
   };
 
@@ -63,7 +64,7 @@ export default function LoginScreen() {
         showsVerticalScrollIndicator={false}
       >
         {/* Back button */}
-        <Pressable onPress={() => router.back()} style={[styles.back, { backgroundColor: colors.surface }]}>
+        <Pressable onPress={() => router.push('/(auth)/onboarding')} style={[styles.back, { backgroundColor: colors.surface }]}>
           <Feather name="arrow-left" size={20} color={colors.foreground} />
         </Pressable>
 

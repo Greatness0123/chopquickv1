@@ -13,6 +13,7 @@ interface WalletState {
   isSynced: boolean;
 
   syncFromDatabase: (userId: string) => Promise<void>;
+  refreshProfile: (userId: string) => Promise<void>;
   debit: (amount: number, description: string) => void;
   credit: (amount: number, description: string) => void;
   setLoading: (loading: boolean) => void;
@@ -32,6 +33,7 @@ export const useWalletStore = create<WalletState>()(
       ...INITIAL_STATE,
 
       syncFromDatabase: async (userId) => {
+        if (!userId) return;
         set({ isLoading: true });
         try {
           const [walletResult, txnResult] = await Promise.all([
@@ -39,7 +41,7 @@ export const useWalletStore = create<WalletState>()(
               .from('profiles')
               .select('wallet_balance')
               .eq('id', userId)
-              .single(),
+              .maybeSingle(),
 
             supabase
               .from('transactions')
@@ -49,19 +51,36 @@ export const useWalletStore = create<WalletState>()(
               .limit(50),
           ]);
 
-          if (walletResult.error) throw walletResult.error;
+          if (walletResult?.error && walletResult.error.code !== 'PGRST116') {
+            throw walletResult.error;
+          }
           if (txnResult.error) throw txnResult.error;
 
           set({
-            balance: walletResult.data.wallet_balance,
+            balance: walletResult?.data?.wallet_balance ?? 0,
             transactions: txnResult.data ?? [],
             isSynced: true,
           });
         } catch (error) {
           console.error('[WalletStore] sync failed:', error);
-          // Keep stale cached values rather than wiping them on failure
         } finally {
           set({ isLoading: false });
+        }
+      },
+
+      refreshProfile: async (userId) => {
+        if (!userId) return;
+        try {
+          const { data, error } = await supabase
+            .from('profiles')
+            .select('wallet_balance')
+            .eq('id', userId)
+            .maybeSingle();
+
+          if (error && error.code !== 'PGRST116') throw error;
+          if (data) set({ balance: data.wallet_balance ?? 0 });
+        } catch (error) {
+          console.error('[WalletStore] refreshProfile failed:', error);
         }
       },
 

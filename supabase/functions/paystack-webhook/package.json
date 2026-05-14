@@ -1,0 +1,6 @@
+{
+  "name": "paystack-webhook",
+  "version": "1.0.0",
+  "description": "Handles Paystack transfer webhook events to update withdrawal status",
+  "main": "index.ts"
+}

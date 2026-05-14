@@ -3,7 +3,6 @@ import { Feather } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {
-  Alert,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -20,12 +19,16 @@ import { spacing, typography } from '../../../../constants/colors';
 import { useAuth } from '../../../../context/AuthContext';
 import { useColors } from '../../../../hooks/useColors';
 import { supabase } from '../../../../lib/supabase';
+import { useToast } from '../../../../components/ui/Toast';
+import { useDialog } from '../../../../components/ui/Dialog';
 
 export default function TransferScreen() {
   const colors = useColors();
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { user, refreshUser } = useAuth();
+  const { showToast } = useToast();
+  const { showConfirm } = useDialog();
 
   const [recipientEmail, setRecipientEmail] = useState('');
   const [amount, setAmount] = useState('');
@@ -36,18 +39,24 @@ export default function TransferScreen() {
     const transferAmount = parseFloat(amount);
 
     if (!recipientEmail || isNaN(transferAmount) || transferAmount <= 0) {
-      Alert.alert('Error', 'Please enter valid recipient and amount');
+      showToast('Please enter valid recipient and amount', 'error');
       return;
     }
 
     if (transferAmount > (user.wallet_balance || 0)) {
-      Alert.alert('Insufficient Funds', 'You do not have enough balance for this transfer');
+      showToast('You do not have enough balance for this transfer', 'error');
       return;
     }
 
+    const confirmed = await showConfirm({
+      title: 'Confirm Transfer',
+      message: `Send ₦${transferAmount.toLocaleString()} to ${recipientEmail}?`,
+      confirmText: 'Send',
+    });
+    if (!confirmed) return;
+
     setLoading(true);
     try {
-      // 1. Find recipient
       const { data: recipient, error: findError } = await supabase
         .from('profiles')
         .select('id, full_name')
@@ -62,9 +71,6 @@ export default function TransferScreen() {
         throw new Error('You cannot transfer to yourself');
       }
 
-      // 2. Perform transfer (Atomic via RPC or manual transaction)
-      // For simplicity in this demo, we'll do two updates. In production, use a Postgres Function.
-
       const { error: debitError } = await supabase.rpc('transfer_funds', {
         sender_id: user.id,
         recipient_id: recipient.id,
@@ -75,11 +81,10 @@ export default function TransferScreen() {
       if (debitError) throw debitError;
 
       await refreshUser();
-      Alert.alert('Success', `₦${transferAmount.toLocaleString()} sent to ${recipient.full_name}`, [
-        { text: 'OK', onPress: () => router.back() }
-      ]);
+      showToast(`₦${transferAmount.toLocaleString()} sent to ${recipient.full_name}`, 'success');
+      router.back();
     } catch (err: any) {
-      Alert.alert('Transfer Failed', err.message || 'Something went wrong');
+      showToast(err.message || 'Something went wrong', 'error');
     } finally {
       setLoading(false);
     }
